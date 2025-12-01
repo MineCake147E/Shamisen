@@ -12,8 +12,8 @@ namespace Shamisen.Benchmarks.Synthesis
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class SinusoidSourceBenchmarks
     {
-        private SinusoidSource source;
-        private float[] buffer;
+        private SinusoidSource? source;
+        private float[]? buffer;
         private const int Frames = 1441;
 
         private class Config : ManualConfig
@@ -36,13 +36,13 @@ namespace Shamisen.Benchmarks.Synthesis
         }
 
         [Benchmark]
-        public void SinusoidSource() => _ = source.Read(buffer);
+        public void SinusoidSource() => _ = source?.Read(buffer);
 
         [GlobalCleanup]
         public void Cleanup()
         {
             buffer = null;
-            source.Dispose();
+            source?.Dispose();
         }
     }
 }

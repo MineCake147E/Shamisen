@@ -645,6 +645,37 @@
               <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="T:Shamisen.Codecs.Flac.FlacUtils">
+            <summary>
+            Contains some utility functions about manipulating FLAC audio samples.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacUtils.ReadRiceEncodedResidual(System.Span{System.Int32},Shamisen.Codecs.Flac.Parsing.FlacBitReader,System.Int32,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Reads the rice encoded residual.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <param name="bitReader">The bit reader.</param>
+            <param name="predictorOrder">The predictor order.</param>
+            <param name="partitionOrder">The partition order.</param>
+            <param name="blockSize">Size of the block.</param>
+            <param name="isRice2">if set to <c>true</c> [is rice2].</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacUtils.ShiftLeftLogical(System.Span{System.Int32},System.Int32)">
+            <summary>
+            Shifts the values in specified <paramref name="span"/> left with specified <paramref name="shift"/>.
+            </summary>
+            <param name="span">The span.</param>
+            <param name="shift">The shift.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacUtils.ShiftRightArithmetic(System.Span{System.Int32},System.Int32)">
+            <summary>
+            Shifts the values in specified <paramref name="span"/> left with specified <paramref name="shift"/>.
+            </summary>
+            <param name="span">The span.</param>
+            <param name="shift">The shift.</param>
+        </member>
         <member name="T:Shamisen.Codecs.Flac.IFlacSubFrame">
             <summary>
             Defines a base infrastructure of a FLAC sub-frame.
@@ -2156,30 +2187,6 @@
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
-        <member name="T:Shamisen.Codecs.Flac.SubFrames.FlacUtils">
-            <summary>
-            Contains some utility functions about manipulating FLAC audio samples.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacUtils.ReadRiceEncodedResidual(System.Span{System.Int32},Shamisen.Codecs.Flac.Parsing.FlacBitReader,System.Int32,System.Int32,System.Int32,System.Boolean)">
-            <summary>
-            Reads the rice encoded residual.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <param name="bitReader">The bit reader.</param>
-            <param name="predictorOrder">The predictor order.</param>
-            <param name="partitionOrder">The partition order.</param>
-            <param name="blockSize">Size of the block.</param>
-            <param name="isRice2">if set to <c>true</c> [is rice2].</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacUtils.ShiftLeft(System.Span{System.Int32},System.Int32)">
-            <summary>
-            Shifts the values in specified <paramref name="span"/> left with specified <paramref name="shift"/>.
-            </summary>
-            <param name="span">The span.</param>
-            <param name="shift">The shift.</param>
-        </member>
         <member name="T:Shamisen.Codecs.Flac.SubFrames.FlacVerbatimSubFrame">
             <summary>
             Represents a verbatim FLAC sub-frame.
@@ -2221,6 +2228,12 @@
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Utils.FixedArray32`1">
+            <summary>
+            A 32-element fixed array of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type of the elements.</typeparam>
         </member>
     </members>
 </doc>

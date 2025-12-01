@@ -21,11 +21,11 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class Pcm24ToSampleConverterBenchmarks
     {
-        private class Config : ManualConfig
+        internal sealed class Config : ManualConfig
         {
             public Config()
             {
-                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(FrameSelector));
                 //_ = AddColumn(new PlaybackSpeedColumn(
                 //    FrameSelector,
@@ -34,9 +34,8 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
             }
         }
 
-        private IReadableAudioSource<float, SampleFormat> source;
-        private float[] dstBuffer;
-        private Int24[] srcBuffer;
+        private float[]? dstBuffer;
+        private Int24[]? srcBuffer;
         private const int SampleRate = 192000;
 
         [Params(/*2047, */4095, Priority = -990)]

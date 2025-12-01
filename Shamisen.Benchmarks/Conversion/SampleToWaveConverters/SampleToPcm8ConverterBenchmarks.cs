@@ -32,8 +32,8 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
             }
         }
 
-        private float[] bufferSrc;
-        private Int24[] bufferDst;
+        private float[]? bufferSrc;
+        private Int24[]? bufferDst;
         [Params(1)]
         public int Channels { get; set; }
 

@@ -25,7 +25,7 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
                 _ = AddColumn(new FrameThroughputColumn(a => Frames));
             }
         }
-        private float[] buffer;
+        private float[]? buffer;
         [Params(1)]
         public int Channels { get; set; }
 

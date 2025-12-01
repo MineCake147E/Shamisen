@@ -34,9 +34,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
-using System.Runtime.CompilerServices;
-
 using Shamisen.Codecs.Flac.Parsing;
+using Shamisen.Codecs.Flac.Utils;
 using Shamisen.Data;
 
 namespace Shamisen.Codecs.Flac.SubFrames
@@ -128,80 +127,23 @@ namespace Shamisen.Codecs.Flac.SubFrames
             {
                 throw new FlacException("Invalid FLAC Stream!", bitReader);
             }
-            Span<int> coeffs = stackalloc int[order];
+            FixedArray32<int> faCoeffs = default;
+            Span<int> coeffs = faCoeffs;
+            coeffs = coeffs.Slice(0, order);
             for (var i = 0; i < coeffs.Length; i++)
             {
-                if (!bitReader.ReadBitsInt32(quantizedPrecision, out var value)) throw new FlacException("Invalid FLAC Stream!", bitReader);
-                coeffs[i] = value;
+                if (!bitReader.ReadBitsInt32(quantizedPrecision, out coeffs[i])) throw new FlacException("Invalid FLAC Stream!", bitReader);
             }
+            coeffs = faCoeffs;
             //Read residual
             FlacFixedPredictionSubFrame.ReadResidualPart(bitReader, blockSize, order, out partition, residualSpan);
             //Restore signal
-            var accumulatorBitsRequired = bitsPerSample + quantizedPrecision + MathI.LogBase2((uint)order);
-            RestoreSignal(shiftsNeeded, accumulatorBitsRequired, residualSpan, coeffs, dataSpan);
+            var multiplyBitsRequired = bitsPerSample + quantizedPrecision;
+            var accumulatorBitsRequired = multiplyBitsRequired + MathI.LogBase2((uint)order);
+            RestoreSignal(new(new((byte)order, (byte)multiplyBitsRequired, (byte)accumulatorBitsRequired), shiftsNeeded, coeffs, dataSpan));
             if (wastedBits > 0)
-                FlacUtils.ShiftLeft(dataSpan, wastedBits);
+                FlacUtils.ShiftLeftLogical(dataSpan, wastedBits);
         }
-
-        #region RestoreSignal
-
-        //Refereed https://github.com/xiph/flac/blob/master/src/libFLAC/lpc.c and written for C# use.
-
-        #region License notice
-
-        /* libFLAC - Free Lossless Audio Codec library
-         * Copyright (C) 2000-2009  Josh Coalson
-         * Copyright (C) 2011-2018  Xiph.Org Foundation
-         *
-         * Redistribution and use in source and binary forms, with or without
-         * modification, are permitted provided that the following conditions
-         * are met:
-         *
-         * - Redistributions of source code must retain the above copyright
-         * notice, this list of conditions and the following disclaimer.
-         *
-         * - Redistributions in binary form must reproduce the above copyright
-         * notice, this list of conditions and the following disclaimer in the
-         * documentation and/or other materials provided with the distribution.
-         *
-         * - Neither the name of the Xiph.org Foundation nor the names of its
-         * contributors may be used to endorse or promote products derived from
-         * this software without specific prior written permission.
-         *
-         * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-         * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-         * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-         * A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
-         * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-         * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-         * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-         * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-         * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-         * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-         * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-         */
-
-        #endregion License notice
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal(int shiftsNeeded, int accumulatorBitsRequired, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-        {
-            //
-#pragma warning disable IDE0022
-            RestoreSignalDefault(shiftsNeeded, accumulatorBitsRequired, residual, coeffs, output);
-#pragma warning restore IDE0022
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalWide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-        {
-            //
-#pragma warning disable IDE0022
-            RestoreSignalDefaultWide(shiftsNeeded, residual, coeffs, output);
-#pragma warning restore IDE0022
-        }
-
-        #endregion RestoreSignal
 
         /// <summary>
         /// Reads the data to the specified <paramref name="buffer" />.

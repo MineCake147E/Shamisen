@@ -28,7 +28,7 @@ namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
         {
             public Config()
             {
-                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(FrameSelector));
                 //_ = AddColumn(new PlaybackSpeedColumn(
                 //    FrameSelector,
@@ -38,18 +38,18 @@ namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
         }
         #endregion
 
-        private DummySource<float, SampleFormat> sourceMA;
-        private DummySourceCSCore sourceCC;
-        private DmoResampler dmoResampler;
-        private SplineResampler splineResampler;
+        private DummySource<float, SampleFormat>? sourceMA;
+        private DummySourceCSCore? sourceCC;
+        private DmoResampler? dmoResampler;
+        private SplineResampler? splineResampler;
 
         [ParamsSource(nameof(ValuesForConversionRatio))]
         public (int before, int after) ConversionRatio { get; set; }
 
         public IEnumerable<(int, int)> ValuesForConversionRatio => new[] { (44100, 192000), (48000, 192000) };
 
-        private float[] bufferS;
-        private byte[] bufferCC;
+        private float[]? bufferS;
+        private byte[]? bufferCC;
 
         [Params(1, 2)]
         public int Channels { get; set; }
@@ -83,7 +83,7 @@ namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
         public void ShamisenSplineResampler()
         {
             var span = bufferS.AsSpan();
-            _ = splineResampler.Read(span);
+            _ = splineResampler?.Read(span);
         }
 
         [Benchmark]
@@ -93,8 +93,10 @@ namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
         [Arguments(4)]
         public void CSCoreDmoResampler(int quality)
         {
+            var span = bufferS.AsSpan();
+            ObjectDisposedException.ThrowIf(dmoResampler is null, this);
             dmoResampler.Quality = quality;
-            _ = dmoResampler.Read(bufferCC, 0, bufferS.Length);
+            _ = dmoResampler.Read(bufferCC, 0, span.Length);
         }
 
         /*

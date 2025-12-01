@@ -14,8 +14,8 @@ namespace Shamisen.Benchmarks.Synthesis
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class SquareWaveSourceBenchmarks
     {
-        private SquareWaveSource source;
-        private float[] buffer;
+        private SquareWaveSource? source;
+        private float[]? buffer;
         private const int Frames = 1441;
         private const int SampleRate = 192000;
 
@@ -55,13 +55,13 @@ namespace Shamisen.Benchmarks.Synthesis
         }
 
         [Benchmark]
-        public void SquareWaveSource() => _ = source.Read(buffer);
+        public void SquareWaveSource() => _ = source?.Read(buffer);
 
         [GlobalCleanup]
         public void Cleanup()
         {
             buffer = null;
-            source.Dispose();
+            source?.Dispose();
         }
     }
 }

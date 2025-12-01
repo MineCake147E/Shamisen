@@ -20,20 +20,20 @@ namespace Shamisen.Benchmarks.Utils.SpanExtensionBenchmarks
         {
             public Config()
             {
-                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(frameSelector));
             }
         }
-        private DateOnly[] bufferDstDateOnly;
+        private DateOnly[]? bufferDstDateOnly;
 
-        private DateTime[] bufferDstDateTime;
+        private DateTime[]? bufferDstDateTime;
 
-        private Guid[] bufferDstGuid;
+        private Guid[]? bufferDstGuid;
 
-        private Int24[] bufferDstInt24;
+        private Int24[]? bufferDstInt24;
 
-        private float[] bufferDstSingle;
-        private ulong[] bufferDstUInt64;
+        private float[]? bufferDstSingle;
+        private ulong[]? bufferDstUInt64;
         private static readonly DateOnly DateOnlyParameter = DateOnly.FromDateTime(DateTime.UtcNow);
         private static readonly DateTime DateTimeParameter = DateTime.UtcNow;
         private static readonly Guid GuidParameter = Guid.NewGuid();

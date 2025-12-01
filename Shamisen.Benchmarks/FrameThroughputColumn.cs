@@ -34,9 +34,9 @@ namespace Shamisen.Benchmarks
         {
             try
             {
-                var nf = FrameSelector?.Invoke(benchmarkCase);
-                var frames = (double)nf * 1.0E9f;
-                var mean = summary[benchmarkCase].ResultStatistics.Mean;
+                var nf = FrameSelector?.Invoke(benchmarkCase) ?? 0.0;
+                var frames = nf * 1.0E9f;
+                var mean = summary[benchmarkCase]?.ResultStatistics?.Mean ?? double.PositiveInfinity;
                 var throughput = frames / mean;
                 return $"{throughput:#,#.00000000}";
             }

@@ -21,7 +21,7 @@ namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
         {
             public Config()
             {
-                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(frameSelector));
             }
         }
@@ -30,7 +30,7 @@ namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
 
         [Params(2, 3, 4, 9)]
         public int Channels { get; set; }
-        private float[] bufferDst, bufferA, bufferB;
+        private float[]? bufferDst, bufferA, bufferB;
 
         [GlobalSetup]
         public void Setup()

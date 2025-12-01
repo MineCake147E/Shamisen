@@ -28,7 +28,7 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
         {
             public Config()
             {
-                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(FrameSelector));
                 //_ = AddColumn(new PlaybackSpeedColumn(
                 //    FrameSelector,
@@ -36,10 +36,8 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
 
             }
         }
-        private IReadableAudioSource<float, SampleFormat> source;
-        private SampleToPcm16Converter converter;
-        private float[] srcBuffer;
-        private short[] dstBuffer;
+        private float[]? srcBuffer;
+        private short[]? dstBuffer;
         private const int SampleRate = 192000;
 
         [Params(/*2047, */4095, Priority = -990)]
@@ -69,8 +67,6 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
         [GlobalCleanup]
         public void Cleanup()
         {
-            converter?.Dispose();
-            source?.Dispose();
             dstBuffer = null;
         }
 

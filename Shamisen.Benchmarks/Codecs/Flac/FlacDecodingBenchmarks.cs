@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 
 using BenchmarkDotNet.Attributes;
@@ -17,9 +18,9 @@ namespace Shamisen.Benchmarks
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class FlacDecodingBenchmarks
     {
-        private MemoryStream ms;
-        private StreamDataSource src;
-        private byte[] buf;
+        private MemoryStream? ms;
+        private StreamDataSource? src;
+        private byte[]? buf;
         private class Config : ManualConfig
         {
             public Config()
@@ -38,12 +39,13 @@ namespace Shamisen.Benchmarks
         [IterationCleanup]
         public void IterationCleanup()
         {
-            ms.Position = 0;
+            ms?.Position = 0;
         }
 
         [Benchmark]
         public void Decode()
         {
+            ObjectDisposedException.ThrowIf(src is null, this);
             using (var decoder = new FlacParser(src))
             {
                 _ = decoder.Read(buf);
@@ -56,6 +58,7 @@ namespace Shamisen.Benchmarks
             var ms = new MemoryStream();
             using (var stream = lib.GetManifestResourceStream($"Shamisen.Benchmarks.TestSounds.{name}"))
             {
+                if (stream is null) throw new InvalidOperationException("Cannot find the data for the benchmark!");
                 stream.CopyTo(ms);
             }
             ms.Seek(0, SeekOrigin.Begin);

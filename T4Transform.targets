@@ -1,0 +1,43 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <TextTemplateCommonFile Include="./**/Common.t4" />
+    <TextTemplateCommonFile Include="./**/*.Common.t4" />
+    <TextTemplateCommonFile Update="@(TextTemplateCommonFile)">
+      <Outputs>$([System.IO.Directory]::GetFiles($([System.IO.Path]::GetDirectoryName("%(FullPath)")),
+        "*.tt", System.IO.SearchOption.AllDirectories))</Outputs>
+    </TextTemplateCommonFile>
+    <TextTemplate Include="./**/*.tt" />
+    <Compile Update="@(TextTemplate->'%(RelativeDir)%(Filename).cs')">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>%(Filename).tt</DependentUpon>
+    </Compile>
+    <None Include="@(TextTemplate)">
+      <LastGenOutput>%(Filename).cs</LastGenOutput>
+    </None>
+    <UpToDateCheckBuilt Include="@(TextTemplate->'%(RelativeDir)%(Filename).cs')"
+      Original="@(TextTemplate)" />
+  </ItemGroup>
+  <Target Name="TextTemplateFindDependency" BeforeTargets="TextTemplateTransform"
+    Inputs="@(TextTemplateCommonFile)" Outputs="%(Outputs)">
+    <ItemGroup>
+      <T4ToBeGenerated Include="%(TextTemplateCommonFile.Outputs)" />
+    </ItemGroup>
+    <Touch Files="@(T4ToBeGenerated)" />
+  </Target>
+  <Target Name="TextTemplateTransform" BeforeTargets="BeforeBuild" Inputs="@(TextTemplate)"
+    Outputs="%(RelativeDir)%(Filename).cs">
+    <ItemGroup>
+      <T4GFirstBuild Include="@(TextTemplate->'%(RelativeDir)%(Filename).cs')" />
+      <T4Generated Include="@(T4GFirstBuild->'%(Identity)')" Condition="!Exists('%(FullPath)')" />
+      <Compile Include="@(T4GFirstBuild->'%(Identity)')" Condition="!Exists('%(FullPath)')">
+        <AutoGen>True</AutoGen>
+        <DependentUpon>%(Filename).tt</DependentUpon>
+      </Compile>
+    </ItemGroup>
+    <Exec WorkingDirectory="$(ProjectDir)"
+      Command="dotnet t4 -p:Configuration='$(Configuration)' @(TextTemplate)" />
+  </Target>
+  <Target Name="TextTemplateClean" AfterTargets="Clean">
+    <Delete Files="@(TextTemplate->'%(RelativeDir)%(Filename).cs')" />
+  </Target>
+</Project>

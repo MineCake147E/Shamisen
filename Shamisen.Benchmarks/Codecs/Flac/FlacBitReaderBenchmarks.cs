@@ -28,8 +28,14 @@ namespace Shamisen.Benchmarks.Codecs.Flac
             }
         }
 
-        private DummyDataSource<byte> source;
+        private DummyDataSource<byte> source = new();
         private FlacBitReader bitReader;
+
+        public FlacBitReaderBenchmarks()
+        {
+            bitReader = new FlacBitReader(source);
+        }
+
         [GlobalSetup]
         public void Setup()
         {

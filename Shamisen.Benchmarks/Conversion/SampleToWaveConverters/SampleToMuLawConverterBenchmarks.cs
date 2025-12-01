@@ -26,7 +26,7 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
         {
             public Config()
             {
-                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(FrameSelector));
                 //_ = AddColumn(new PlaybackSpeedColumn(
                 //    FrameSelector,
@@ -34,8 +34,8 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
 
             }
         }
-        private float[] srcBuffer;
-        private byte[] dstBuffer;
+        private float[]? srcBuffer;
+        private byte[]? dstBuffer;
         private const int SampleRate = 192000;
 
         [Params(/*2047, */4095, Priority = -990)]

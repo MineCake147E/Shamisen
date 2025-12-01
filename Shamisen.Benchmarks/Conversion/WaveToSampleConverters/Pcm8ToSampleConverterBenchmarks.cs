@@ -22,7 +22,7 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
     {
         private const int Frames = 4095;
 
-        private class Config : ManualConfig
+        internal sealed class Config : ManualConfig
         {
             public Config()
             {
@@ -30,7 +30,7 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
             }
         }
 
-        private float[] buffer;
+        private float[]? buffer;
         [Params(1)]
         public int Channels { get; set; }
 

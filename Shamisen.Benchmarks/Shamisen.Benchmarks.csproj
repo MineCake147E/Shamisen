@@ -11,12 +11,14 @@
         <DebugType>pdbonly</DebugType>
         <DebugSymbols>true</DebugSymbols>
         <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
+    <Import Project="../T4Transform.targets" />
     <ItemGroup>
-      <None Remove="TestSounds\PinkNoise_24bit_Lv8.flac" />
+        <None Remove="TestSounds\PinkNoise_24bit_Lv8.flac" />
     </ItemGroup>
     <ItemGroup>
-      <EmbeddedResource Include="TestSounds\PinkNoise_24bit_Lv8.flac" />
+        <EmbeddedResource Include="TestSounds\PinkNoise_24bit_Lv8.flac" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="BenchmarkDotNet" Version="0.15.6" />

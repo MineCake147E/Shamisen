@@ -19,11 +19,11 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
         {
             public Config()
             {
-                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(FrameSelector));
             }
         }
-        private float[] buffer;
+        private float[]? buffer;
         private const int SampleRate = 192000;
         [Params(1)]
         public int Channels { get; set; }

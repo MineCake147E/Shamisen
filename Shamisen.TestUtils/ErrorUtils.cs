@@ -1,15 +1,8 @@
-﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 using Shamisen.Data;
 using Shamisen.Utils;
@@ -285,7 +278,7 @@ namespace Shamisen.TestUtils
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static (uint maxat, uint maxdiff) FindMaximumError(ReadOnlySpan<uint> ulp)
         {
-            var v0_ns = VectorUtils.GetIndexVector().AsUInt32();
+            var v0_ns = Vector<uint>.Indices;
             var v15_ns = new Vector<uint>((uint)Vector<uint>.Count);
             var v1_ns = Vector<uint>.Zero;
             var v2_ns = Vector<uint>.Zero;
@@ -374,7 +367,7 @@ namespace Shamisen.TestUtils
         public static void GenerateIndexValuedArrayUInt32(Span<uint> dst, uint start)
         {
             var v0_ns = new Vector<uint>(start).AsInt32();
-            var v8_ns = VectorUtils.GetIndexVector();
+            var v8_ns = Vector<int>.Indices;
             v0_ns += v8_ns;
             v8_ns = new Vector<int>(Vector<int>.Count);
             var v1_ns = v0_ns + v8_ns;

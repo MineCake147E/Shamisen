@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -17,16 +18,17 @@ namespace Shamisen.Codecs.Flac.SubFrames
     {
         internal static partial class X86
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            internal static void RestoreSignalAvx2(int shiftsNeeded, int accumulatorBitsRequired, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static bool IsAvx2Supported => Avx2.IsSupported;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal static void RestoreSignalAvx2(in RestoreParameters parameters, [ConstantExpected] bool skipAvx512Check = false)
             {
-                switch (accumulatorBitsRequired)
+                switch (parameters.AccumulatorBitsRequired)
                 {
-                    case <= 32 when !Avx512F.IsSupported && !Avx10v1.IsSupported:
-                        RestoreSignal32Avx2(shiftsNeeded, residual, coeffs, output);
+                    case <= 32 when skipAvx512Check || !Avx512F.IsSupported && !Avx10v1.IsSupported:
+                        RestoreSignal32Avx2(in parameters);
                         return;
                     case <= 64:
-                        RestoreSignal64Avx2(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2(in parameters);
                         return;
                     default:
                         throw new FlacException("Invalid FLAC stream!");
@@ -34,113 +36,126 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
             
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            internal static void RestoreSignal32Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static void RestoreSignal32Avx2(in RestoreParameters parameters)
             {
-                var order = coeffs.Length;
-                switch (order)
+                switch (parameters.PredictorOrder)
                 {
                     case 1:
-                        if (RuntimeFeature.IsDynamicCodeCompiled && 32 <= Unsafe.SizeOf<nint>() * 8 && 32 <= Unsafe.SizeOf<nint>() * 8)
+                        if (Unsafe.SizeOf<nint>() == sizeof(long) || (RuntimeFeature.IsDynamicCodeCompiled && parameters.MultiplyBitsRequired <= Unsafe.SizeOf<nint>() * 8 && parameters.AccumulatorBitsRequired <= Unsafe.SizeOf<nint>() * 8))
                         {
-                            RestoreSignalNativeStandardOrder1(shiftsNeeded, residual, coeffs, output);
+                            RestoreSignalNativeStandardOrder1(in parameters);
                         }
                         else
                         {
-                            RestoreSignal64StandardOrder1(shiftsNeeded, residual, coeffs, output);
+                            RestoreSignal64StandardOrder1(in parameters);
                         }
                         return;
                     case 2:
-                        RestoreSignal64Avx2Order2(shiftsNeeded, residual, coeffs, output);
+                        if (Unsafe.SizeOf<nint>() == sizeof(long) || (RuntimeFeature.IsDynamicCodeCompiled && parameters.MultiplyBitsRequired <= Unsafe.SizeOf<nint>() * 8 && parameters.AccumulatorBitsRequired <= Unsafe.SizeOf<nint>() * 8))
+                        {
+                            RestoreSignalNativeStandardOrder2(in parameters);
+                        }
+                        else
+                        {
+                            RestoreSignal64StandardOrder2(in parameters);
+                        }
                         return;
                     case 3:
-                        RestoreSignal64Avx2Order3(shiftsNeeded, residual, coeffs, output);
+                        if (Unsafe.SizeOf<nint>() == sizeof(long) || (RuntimeFeature.IsDynamicCodeCompiled && parameters.MultiplyBitsRequired <= Unsafe.SizeOf<nint>() * 8 && parameters.AccumulatorBitsRequired <= Unsafe.SizeOf<nint>() * 8))
+                        {
+                            RestoreSignalNativeStandardOrder3(in parameters);
+                        }
+                        else
+                        {
+                            RestoreSignal64StandardOrder3(in parameters);
+                        }
                         return;
                     case 4:
-                        RestoreSignal64Avx2Order4(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order4(in parameters);
                         return;
                     case 5:
-                        RestoreSignal64Avx2Order5(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order5(in parameters);
                         return;
                     case 6:
-                        RestoreSignal64Avx2Order6(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order6(in parameters);
                         return;
                     case 7:
-                        RestoreSignal64Avx2Order7(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order7(in parameters);
                         return;
                     case 8:
-                        RestoreSignal64Avx2Order8(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order8(in parameters);
                         return;
                     case 9:
-                        RestoreSignal64Avx2Order9(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order9(in parameters);
                         return;
                     case 10:
-                        RestoreSignal64Avx2Order10(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order10(in parameters);
                         return;
                     case 11:
-                        RestoreSignal64Avx2Order11(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order11(in parameters);
                         return;
                     case 12:
-                        RestoreSignal64Avx2Order12(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order12(in parameters);
                         return;
                     case 13:
-                        RestoreSignal64Avx2Order13(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order13(in parameters);
                         return;
                     case 14:
-                        RestoreSignal64Avx2Order14(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order14(in parameters);
                         return;
                     case 15:
-                        RestoreSignal64Avx2Order15(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order15(in parameters);
                         return;
                     case 16:
-                        RestoreSignal64Avx2Order16(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order16(in parameters);
                         return;
                     case 17:
-                        RestoreSignal64Avx2Order17(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order17(in parameters);
                         return;
                     case 18:
-                        RestoreSignal64Avx2Order18(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order18(in parameters);
                         return;
                     case 19:
-                        RestoreSignal64Avx2Order19(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order19(in parameters);
                         return;
                     case 20:
-                        RestoreSignal64Avx2Order20(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order20(in parameters);
                         return;
                     case 21:
-                        RestoreSignal32Avx2Order21(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order21(in parameters);
                         return;
                     case 22:
-                        RestoreSignal32Avx2Order22(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order22(in parameters);
                         return;
                     case 23:
-                        RestoreSignal32Avx2Order23(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Avx2Order23(in parameters);
                         return;
                     case 24:
-                        RestoreSignal32Avx2Order24(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Avx2Order24(in parameters);
                         return;
                     case 25:
-                        RestoreSignal32Avx2Order25(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Avx2Order25(in parameters);
                         return;
                     case 26:
-                        RestoreSignal32Avx2Order26(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Avx2Order26(in parameters);
                         return;
                     case 27:
-                        RestoreSignal32Avx2Order27(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Avx2Order27(in parameters);
                         return;
                     case 28:
-                        RestoreSignal32Avx2Order28(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Avx2Order28(in parameters);
                         return;
                     case 29:
-                        RestoreSignal32Avx2Order29(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Avx2Order29(in parameters);
                         return;
                     case 30:
-                        RestoreSignal32Avx2Order30(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Avx2Order30(in parameters);
                         return;
                     case 31:
-                        RestoreSignal32Avx2Order31(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Avx2Order31(in parameters);
                         return;
                     case 32:
-                        RestoreSignal32Avx2Order32(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Avx2Order32(in parameters);
                         return;
                     default:
                         throw new FlacException("Invalid FLAC stream!");
@@ -148,3671 +163,3907 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
             
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            internal static void RestoreSignal64Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static void RestoreSignal64Avx2(in RestoreParameters parameters)
             {
-                var order = coeffs.Length;
-                switch (order)
+                switch (parameters.PredictorOrder)
                 {
                     case 1:
-                        if (RuntimeFeature.IsDynamicCodeCompiled && 64 <= Unsafe.SizeOf<nint>() * 8 && 64 <= Unsafe.SizeOf<nint>() * 8)
+                        if (Unsafe.SizeOf<nint>() == sizeof(long) || (RuntimeFeature.IsDynamicCodeCompiled && parameters.MultiplyBitsRequired <= Unsafe.SizeOf<nint>() * 8 && parameters.AccumulatorBitsRequired <= Unsafe.SizeOf<nint>() * 8))
                         {
-                            RestoreSignalNativeStandardOrder1(shiftsNeeded, residual, coeffs, output);
+                            RestoreSignalNativeStandardOrder1(in parameters);
                         }
                         else
                         {
-                            RestoreSignal64StandardOrder1(shiftsNeeded, residual, coeffs, output);
+                            RestoreSignal64StandardOrder1(in parameters);
                         }
                         return;
                     case 2:
-                        RestoreSignal64Avx2Order2(shiftsNeeded, residual, coeffs, output);
+                        if (Unsafe.SizeOf<nint>() == sizeof(long) || (RuntimeFeature.IsDynamicCodeCompiled && parameters.MultiplyBitsRequired <= Unsafe.SizeOf<nint>() * 8 && parameters.AccumulatorBitsRequired <= Unsafe.SizeOf<nint>() * 8))
+                        {
+                            RestoreSignalNativeStandardOrder2(in parameters);
+                        }
+                        else
+                        {
+                            RestoreSignal64StandardOrder2(in parameters);
+                        }
                         return;
                     case 3:
-                        RestoreSignal64Avx2Order3(shiftsNeeded, residual, coeffs, output);
+                        if (Unsafe.SizeOf<nint>() == sizeof(long) || (RuntimeFeature.IsDynamicCodeCompiled && parameters.MultiplyBitsRequired <= Unsafe.SizeOf<nint>() * 8 && parameters.AccumulatorBitsRequired <= Unsafe.SizeOf<nint>() * 8))
+                        {
+                            RestoreSignalNativeStandardOrder3(in parameters);
+                        }
+                        else
+                        {
+                            RestoreSignal64StandardOrder3(in parameters);
+                        }
                         return;
                     case 4:
-                        RestoreSignal64Avx2Order4(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order4(in parameters);
                         return;
                     case 5:
-                        RestoreSignal64Avx2Order5(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order5(in parameters);
                         return;
                     case 6:
-                        RestoreSignal64Avx2Order6(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order6(in parameters);
                         return;
                     case 7:
-                        RestoreSignal64Avx2Order7(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order7(in parameters);
                         return;
                     case 8:
-                        RestoreSignal64Avx2Order8(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order8(in parameters);
                         return;
                     case 9:
-                        RestoreSignal64Avx2Order9(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order9(in parameters);
                         return;
                     case 10:
-                        RestoreSignal64Avx2Order10(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order10(in parameters);
                         return;
                     case 11:
-                        RestoreSignal64Avx2Order11(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order11(in parameters);
                         return;
                     case 12:
-                        RestoreSignal64Avx2Order12(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order12(in parameters);
                         return;
                     case 13:
-                        RestoreSignal64Avx2Order13(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order13(in parameters);
                         return;
                     case 14:
-                        RestoreSignal64Avx2Order14(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order14(in parameters);
                         return;
                     case 15:
-                        RestoreSignal64Avx2Order15(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order15(in parameters);
                         return;
                     case 16:
-                        RestoreSignal64Avx2Order16(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order16(in parameters);
                         return;
                     case 17:
-                        RestoreSignal64Avx2Order17(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order17(in parameters);
                         return;
                     case 18:
-                        RestoreSignal64Avx2Order18(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order18(in parameters);
                         return;
                     case 19:
-                        RestoreSignal64Avx2Order19(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order19(in parameters);
                         return;
                     case 20:
-                        RestoreSignal64Avx2Order20(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order20(in parameters);
                         return;
                     case 21:
-                        RestoreSignal64Avx2Order21(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order21(in parameters);
                         return;
                     case 22:
-                        RestoreSignal64Avx2Order22(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order22(in parameters);
                         return;
                     case 23:
-                        RestoreSignal64Avx2Order23(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order23(in parameters);
                         return;
                     case 24:
-                        RestoreSignal64Avx2Order24(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order24(in parameters);
                         return;
                     case 25:
-                        RestoreSignal64Avx2Order25(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order25(in parameters);
                         return;
                     case 26:
-                        RestoreSignal64Avx2Order26(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order26(in parameters);
                         return;
                     case 27:
-                        RestoreSignal64Avx2Order27(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order27(in parameters);
                         return;
                     case 28:
-                        RestoreSignal64Avx2Order28(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order28(in parameters);
                         return;
                     case 29:
-                        RestoreSignal64Avx2Order29(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order29(in parameters);
                         return;
                     case 30:
-                        RestoreSignal64Avx2Order30(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order30(in parameters);
                         return;
                     case 31:
-                        RestoreSignal64Avx2Order31(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order31(in parameters);
                         return;
                     case 32:
-                        RestoreSignal64Avx2Order32(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2Order32(in parameters);
                         return;
                     default:
                         throw new FlacException("Invalid FLAC stream!");
                 }
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe delegate* managed<int, ReadOnlySpan<int>, ReadOnlySpan<int>, Span<int>, void> GetRestoreSignalFunctionPointerAvx2(int order) => order switch
-            {
-                1 => &RestoreSignalNativeStandardOrder1,
-                2 => &RestoreSignal64Avx2Order2,
-                3 => &RestoreSignal64Avx2Order3,
-                4 => &RestoreSignal64Avx2Order4,
-                5 => &RestoreSignal64Avx2Order5,
-                6 => &RestoreSignal64Avx2Order6,
-                7 => &RestoreSignal64Avx2Order7,
-                8 => &RestoreSignal64Avx2Order8,
-                9 => &RestoreSignal64Avx2Order9,
-                10 => &RestoreSignal64Avx2Order10,
-                11 => &RestoreSignal64Avx2Order11,
-                12 => &RestoreSignal64Avx2Order12,
-                13 => &RestoreSignal64Avx2Order13,
-                14 => &RestoreSignal64Avx2Order14,
-                15 => &RestoreSignal64Avx2Order15,
-                16 => &RestoreSignal64Avx2Order16,
-                17 => &RestoreSignal64Avx2Order17,
-                18 => &RestoreSignal64Avx2Order18,
-                19 => &RestoreSignal64Avx2Order19,
-                20 => &RestoreSignal64Avx2Order20,
-                21 => &RestoreSignal32Avx2Order21,
-                22 => &RestoreSignal32Avx2Order22,
-                23 => &RestoreSignal32Avx2Order23,
-                24 => &RestoreSignal32Avx2Order24,
-                25 => &RestoreSignal32Avx2Order25,
-                26 => &RestoreSignal32Avx2Order26,
-                27 => &RestoreSignal32Avx2Order27,
-                28 => &RestoreSignal32Avx2Order28,
-                29 => &RestoreSignal32Avx2Order29,
-                30 => &RestoreSignal32Avx2Order30,
-                31 => &RestoreSignal32Avx2Order31,
-                32 => &RestoreSignal32Avx2Order32,
-                _ => null
-            };
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal32Avx2Order23(in RestoreParameters parameters)
             {
-                const int Order = 2;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default;
+                const int Order = 23;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                const byte PermShift = 0b00_11_10_01;
-                Vector256<long> prod = default;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).ToVector256Unsafe().AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum0 = Avx2.Multiply(vcoeff0, vlast);
+                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                int sum0 = 0, sum1 = 0;
+                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 10));
+                var v2TempLoadM = Vector256<int>.Indices - Vector256.Create(5 - 4);
+                var v1TempLoadM = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - 4)).ToVector256Unsafe();
+                var v0TempLoadM = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18)).ToVector256Unsafe();
+                v1TempLoadM = Avx2.PermuteVar8x32(v1TempLoadM, v2TempLoadM);
+                var vcoeff2 = Avx.Blend(v0TempLoadM.AsDouble(), v1TempLoadM.AsDouble(), 0b1100).AsInt32();
+                Vector256<int> prodHigh = default, prodLow = default;
+                Vector256<int> vsum0 = default, vsum1 = default, vsum2 = default;
+                int nlast = 0;
+                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
+                vsum2 = Avx2.MultiplyLow(vcoeff2, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum0 = Avx.Blend(sum0.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.Blend(vsum2, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var eax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum0 = Avx.Blend(sum0.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.Blend(vsum2, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order3(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal32Avx2Order24(in RestoreParameters parameters)
             {
-                const int Order = 3;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default;
+                const int Order = 24;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                const byte PermShift = 0b00_11_10_01;
-                Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Sse2.Shuffle(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, -1)), 0b00_11_10_01)).AsInt32();
-                vcoeff0 = Avx.Blend(vcoeff0.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum0 = Avx2.Multiply(vcoeff0, vlast);
+                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                int sum0 = 0, sum1 = 0;
+                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 10));
+                var v2TempLoadM = Vector256<int>.Indices - Vector256.Create(6 - 4);
+                var v1TempLoadM = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - 4)).ToVector256Unsafe();
+                var v0TempLoadM = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18)).ToVector256Unsafe();
+                v1TempLoadM = Avx2.PermuteVar8x32(v1TempLoadM, v2TempLoadM);
+                var vcoeff2 = Avx.Blend(v0TempLoadM.AsDouble(), v1TempLoadM.AsDouble(), 0b1100).AsInt32();
+                Vector256<int> prodHigh = default, prodLow = default;
+                Vector256<int> vsum0 = default, vsum1 = default, vsum2 = default;
+                int nlast = 0;
+                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
+                vsum2 = Avx2.MultiplyLow(vcoeff2, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum0 = Avx.Blend(sum0.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.Blend(vsum2, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var eax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum0 = Avx.Blend(sum0.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.Blend(vsum2, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order4(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal32Avx2Order25(in RestoreParameters parameters)
             {
-                const int Order = 4;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default;
+                const int Order = 25;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                const byte PermShift = 0b00_11_10_01;
-                Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum0 = Avx2.Multiply(vcoeff0, vlast);
+                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                int sum0 = 0, sum1 = 0;
+                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 10));
+                var v2TempLoadM = Vector256<int>.Indices - Vector256.Create(7 - 4);
+                var v1TempLoadM = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - 4)).ToVector256Unsafe();
+                var v0TempLoadM = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18)).ToVector256Unsafe();
+                v1TempLoadM = Avx2.PermuteVar8x32(v1TempLoadM, v2TempLoadM);
+                var vcoeff2 = Avx.Blend(v0TempLoadM.AsDouble(), v1TempLoadM.AsDouble(), 0b1100).AsInt32();
+                Vector256<int> prodHigh = default, prodLow = default;
+                Vector256<int> vsum0 = default, vsum1 = default, vsum2 = default;
+                int nlast = 0;
+                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
+                vsum2 = Avx2.MultiplyLow(vcoeff2, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum0 = Avx.Blend(sum0.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.Blend(vsum2, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var eax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum0 = Avx.Blend(sum0.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.Blend(vsum2, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order5(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal32Avx2Order26(in RestoreParameters parameters)
             {
-                const int Order = 5;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default;
+                const int Order = 26;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                const byte PermShift = 0b00_11_10_01;
-                Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Vector256.CreateScalarUnsafe((ulong)(uint)Unsafe.Add(ref c, 4)).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum1 = Avx2.Multiply(vcoeff1, vlast);
+                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                int sum0 = 0, sum1 = 0;
+                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 18));
+                Vector256<int> prodHigh = default, prodLow = default;
+                Vector256<int> vsum0 = default, vsum1 = default, vsum2 = default;
+                int nlast = 0;
+                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
+                vsum2 = Avx2.MultiplyLow(vcoeff2, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum1 = Avx.Blend(sum1.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.Blend(vsum2, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var eax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
-                    prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum1 = Avx.Blend(sum1.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.Blend(vsum2, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order6(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal32Avx2Order27(in RestoreParameters parameters)
             {
-                const int Order = 6;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default;
+                const int Order = 27;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                const byte PermShift = 0b00_11_10_01;
-                Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).ToVector256Unsafe().AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum1 = Avx2.Multiply(vcoeff1, vlast);
+                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                int sum0 = 0, sum1 = 0;
+                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 18));
+                var vcoeff3 = Vector256.CreateScalarUnsafe(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                Vector256<int> prodHigh = default, prodLow = default;
+                Vector256<int> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default;
+                int nlast = 0;
+                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
+                vsum3 = Avx2.MultiplyLow(vcoeff3, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum1 = Avx.Blend(sum1.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.PermuteVar8x32(vsum3, permShift);
+                    vsum2 = Avx2.Blend(vsum2, vsum3, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
+                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
+                    vsum3 = prodLow;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var eax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
-                    prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum1 = Avx.Blend(sum1.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.PermuteVar8x32(vsum3, permShift);
+                    vsum2 = Avx2.Blend(vsum2, vsum3, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
+                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
+                    vsum3 = prodLow;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order7(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal32Avx2Order28(in RestoreParameters parameters)
             {
-                const int Order = 7;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default;
+                const int Order = 28;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                const byte PermShift = 0b00_11_10_01;
-                Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Sse2.Shuffle(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 3)), 0b00_11_10_01)).AsInt32();
-                vcoeff1 = Avx.Blend(vcoeff1.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum1 = Avx2.Multiply(vcoeff1, vlast);
+                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                int sum0 = 0, sum1 = 0;
+                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 18));
+                var vcoeff3 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).ToVector256Unsafe().AsInt32();
+                Vector256<int> prodHigh = default, prodLow = default;
+                Vector256<int> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default;
+                int nlast = 0;
+                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
+                vsum3 = Avx2.MultiplyLow(vcoeff3, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum1 = Avx.Blend(sum1.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.PermuteVar8x32(vsum3, permShift);
+                    vsum2 = Avx2.Blend(vsum2, vsum3, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.Blend(vsum3, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum3 += prodLow;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var eax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
-                    prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum1 = Avx.Blend(sum1.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.PermuteVar8x32(vsum3, permShift);
+                    vsum2 = Avx2.Blend(vsum2, vsum3, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.Blend(vsum3, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum3 += prodLow;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order8(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal32Avx2Order29(in RestoreParameters parameters)
             {
-                const int Order = 8;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default;
+                const int Order = 29;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                const byte PermShift = 0b00_11_10_01;
-                Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum1 = Avx2.Multiply(vcoeff1, vlast);
+                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                int sum0 = 0, sum1 = 0;
+                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 18));
+                var v0TempLoad3 = Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 25)).AsInt32();
+                var vcoeff3 = Ssse3.AlignRight(vzero256.GetLower().AsInt32(), v0TempLoad3, 4).ToVector256Unsafe();
+                Vector256<int> prodHigh = default, prodLow = default;
+                Vector256<int> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default;
+                int nlast = 0;
+                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
+                vsum3 = Avx2.MultiplyLow(vcoeff3, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum1 = Avx.Blend(sum1.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.PermuteVar8x32(vsum3, permShift);
+                    vsum2 = Avx2.Blend(vsum2, vsum3, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.Blend(vsum3, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum3 += prodLow;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var eax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
-                    prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum1 = Avx.Blend(sum1.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.PermuteVar8x32(vsum3, permShift);
+                    vsum2 = Avx2.Blend(vsum2, vsum3, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.Blend(vsum3, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum3 += prodLow;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order9(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal32Avx2Order30(in RestoreParameters parameters)
             {
-                const int Order = 9;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default;
+                const int Order = 30;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                const byte PermShift = 0b00_11_10_01;
-                Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Vector256.CreateScalarUnsafe((ulong)(uint)Unsafe.Add(ref c, 8)).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum2 = Avx2.Multiply(vcoeff2, vlast);
+                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                int sum0 = 0, sum1 = 0;
+                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 18));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 26)).ToVector256Unsafe();
+                Vector256<int> prodHigh = default, prodLow = default;
+                Vector256<int> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default;
+                int nlast = 0;
+                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
+                vsum3 = Avx2.MultiplyLow(vcoeff3, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
-                    prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum2 = Avx.Blend(sum2.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.PermuteVar8x32(vsum3, permShift);
+                    vsum2 = Avx2.Blend(vsum2, vsum3, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.Blend(vsum3, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum3 += prodLow;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var eax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
-                    prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
-                    prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
-                    prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum2 = Avx.Blend(sum2.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.PermuteVar8x32(vsum3, permShift);
+                    vsum2 = Avx2.Blend(vsum2, vsum3, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.Blend(vsum3, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum3 += prodLow;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order10(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal32Avx2Order31(in RestoreParameters parameters)
+            {
+                const int Order = 31;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                int sum0 = 0, sum1 = 0;
+                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 18));
+                var v2TempLoadM = Vector256<int>.Indices - Vector256.Create(5 - 4);
+                var v1TempLoadM = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - 4)).ToVector256Unsafe();
+                var v0TempLoadM = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 26)).ToVector256Unsafe();
+                v1TempLoadM = Avx2.PermuteVar8x32(v1TempLoadM, v2TempLoadM);
+                var vcoeff3 = Avx.Blend(v0TempLoadM.AsDouble(), v1TempLoadM.AsDouble(), 0b1100).AsInt32();
+                Vector256<int> prodHigh = default, prodLow = default;
+                Vector256<int> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default;
+                int nlast = 0;
+                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
+                vsum3 = Avx2.MultiplyLow(vcoeff3, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.PermuteVar8x32(vsum3, permShift);
+                    vsum2 = Avx2.Blend(vsum2, vsum3, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.Blend(vsum3, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum3 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.PermuteVar8x32(vsum3, permShift);
+                    vsum2 = Avx2.Blend(vsum2, vsum3, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.Blend(vsum3, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum3 += prodLow;
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Avx2Order32(in RestoreParameters parameters)
+            {
+                const int Order = 32;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                int sum0 = 0, sum1 = 0;
+                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 18));
+                var v2TempLoadM = Vector256<int>.Indices - Vector256.Create(6 - 4);
+                var v1TempLoadM = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - 4)).ToVector256Unsafe();
+                var v0TempLoadM = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 26)).ToVector256Unsafe();
+                v1TempLoadM = Avx2.PermuteVar8x32(v1TempLoadM, v2TempLoadM);
+                var vcoeff3 = Avx.Blend(v0TempLoadM.AsDouble(), v1TempLoadM.AsDouble(), 0b1100).AsInt32();
+                Vector256<int> prodHigh = default, prodLow = default;
+                Vector256<int> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default;
+                int nlast = 0;
+                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
+                vsum3 = Avx2.MultiplyLow(vcoeff3, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.PermuteVar8x32(vsum3, permShift);
+                    vsum2 = Avx2.Blend(vsum2, vsum3, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.Blend(vsum3, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum3 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
+                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Avx2.PermuteVar8x32(vsum1, permShift);
+                    vsum0 = Avx2.Blend(vsum0, vsum1, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Avx2.PermuteVar8x32(vsum2, permShift);
+                    vsum1 = Avx2.Blend(vsum1, vsum2, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum1 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.PermuteVar8x32(vsum3, permShift);
+                    vsum2 = Avx2.Blend(vsum2, vsum3, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum2 += prodLow;
+                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Avx2.Blend(vsum3, vzero256, 0b1000_0000);
+                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
+                    vsum3 += prodLow;
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal64Avx2Order10(in RestoreParameters parameters)
             {
                 const int Order = 10;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).ToVector256Unsafe().AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum2 = Avx2.Multiply(vcoeff2, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum1 = Avx2.Multiply(vcoeff1, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
-                    prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum2 = Avx.Blend(sum2.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
-                    prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum2 = Avx.Blend(sum2.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order11(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order11(in RestoreParameters parameters)
             {
                 const int Order = 11;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Sse2.Shuffle(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 7)), 0b00_11_10_01)).AsInt32();
-                vcoeff2 = Avx.Blend(vcoeff2.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum2 = Avx2.Multiply(vcoeff2, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2Low = vzero;
+                if (coeffs.Length - 10 >= Vector128<int>.Count)
+                {
+                    vcoeff2Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 1)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff2Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 10;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff2Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff2Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff2Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff2 = Avx2.ConvertToVector256Int64(vcoeff2Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum2 = Avx2.Multiply(vcoeff2, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum2 = Avx.Blend(sum2.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum2 = prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum2 = Avx.Blend(sum2.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum2 = prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order12(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order12(in RestoreParameters parameters)
             {
                 const int Order = 12;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum2 = Avx2.Multiply(vcoeff2, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2Low = vzero;
+                if (coeffs.Length - 10 >= Vector128<int>.Count)
+                {
+                    vcoeff2Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 2)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff2Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 10;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff2Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff2Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff2Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff2 = Avx2.ConvertToVector256Int64(vcoeff2Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum2 = Avx2.Multiply(vcoeff2, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum2 = Avx.Blend(sum2.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum2 = Avx.Blend(sum2.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order13(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order13(in RestoreParameters parameters)
             {
                 const int Order = 13;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Vector256.CreateScalarUnsafe((ulong)(uint)Unsafe.Add(ref c, 12)).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum3 = Avx2.Multiply(vcoeff3, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2Low = vzero;
+                if (coeffs.Length - 10 >= Vector128<int>.Count)
+                {
+                    vcoeff2Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 3)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff2Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 10;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff2Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff2Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff2Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff2 = Avx2.ConvertToVector256Int64(vcoeff2Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum2 = Avx2.Multiply(vcoeff2, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
-                    prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum3 = Avx.Blend(sum3.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
-                    prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum3 = Avx.Blend(sum3.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order14(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order14(in RestoreParameters parameters)
             {
                 const int Order = 14;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).ToVector256Unsafe().AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum3 = Avx2.Multiply(vcoeff3, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum2 = Avx2.Multiply(vcoeff2, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
-                    prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum3 = Avx.Blend(sum3.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
-                    prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum3 = Avx.Blend(sum3.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order15(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order15(in RestoreParameters parameters)
             {
                 const int Order = 15;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Sse2.Shuffle(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 11)), 0b00_11_10_01)).AsInt32();
-                vcoeff3 = Avx.Blend(vcoeff3.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum3 = Avx2.Multiply(vcoeff3, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3Low = vzero;
+                if (coeffs.Length - 14 >= Vector128<int>.Count)
+                {
+                    vcoeff3Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 1)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff3Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 14;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff3Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff3Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff3Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff3 = Avx2.ConvertToVector256Int64(vcoeff3Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum3 = Avx2.Multiply(vcoeff3, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum3 = Avx.Blend(sum3.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum3 = prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum3 = Avx.Blend(sum3.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum3 = prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order16(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order16(in RestoreParameters parameters)
             {
                 const int Order = 16;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum3 = Avx2.Multiply(vcoeff3, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3Low = vzero;
+                if (coeffs.Length - 14 >= Vector128<int>.Count)
+                {
+                    vcoeff3Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 2)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff3Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 14;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff3Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff3Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff3Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff3 = Avx2.ConvertToVector256Int64(vcoeff3Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum3 = Avx2.Multiply(vcoeff3, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum3 = Avx.Blend(sum3.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum3 = Avx.Blend(sum3.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order17(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order17(in RestoreParameters parameters)
             {
                 const int Order = 17;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Vector256.CreateScalarUnsafe((ulong)(uint)Unsafe.Add(ref c, 16)).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum4 = Avx2.Multiply(vcoeff4, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3Low = vzero;
+                if (coeffs.Length - 14 >= Vector128<int>.Count)
+                {
+                    vcoeff3Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 3)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff3Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 14;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff3Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff3Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff3Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff3 = Avx2.ConvertToVector256Int64(vcoeff3Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum3 = Avx2.Multiply(vcoeff3, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
-                    prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum4 = Avx.Blend(sum4.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
-                    prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum4 = Avx.Blend(sum4.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order18(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order18(in RestoreParameters parameters)
             {
                 const int Order = 18;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).ToVector256Unsafe().AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum4 = Avx2.Multiply(vcoeff4, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum3 = Avx2.Multiply(vcoeff3, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
-                    prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum4 = Avx.Blend(sum4.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
-                    prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum4 = Avx.Blend(sum4.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order19(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order19(in RestoreParameters parameters)
             {
                 const int Order = 19;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Avx2.ConvertToVector256Int64(Sse2.Shuffle(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 15)), 0b00_11_10_01)).AsInt32();
-                vcoeff4 = Avx.Blend(vcoeff4.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum4 = Avx2.Multiply(vcoeff4, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                var vcoeff4Low = vzero;
+                if (coeffs.Length - 18 >= Vector128<int>.Count)
+                {
+                    vcoeff4Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 1)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff4Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 18;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff4Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff4Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff4Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff4 = Avx2.ConvertToVector256Int64(vcoeff4Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum4 = Avx2.Multiply(vcoeff4, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum4 = Avx.Blend(sum4.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum4 = prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum4 = Avx.Blend(sum4.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum4 = prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order20(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order20(in RestoreParameters parameters)
             {
                 const int Order = 20;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 16))).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum4 = Avx2.Multiply(vcoeff4, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                var vcoeff4Low = vzero;
+                if (coeffs.Length - 18 >= Vector128<int>.Count)
+                {
+                    vcoeff4Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 2)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff4Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 18;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff4Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff4Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff4Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff4 = Avx2.ConvertToVector256Int64(vcoeff4Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum4 = Avx2.Multiply(vcoeff4, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum4 = Avx.Blend(sum4.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum4 = Avx.Blend(sum4.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Avx2Order21(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order21(in RestoreParameters parameters)
             {
                 const int Order = 21;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<int> sum0 = default, sum1 = default, sum2 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
-                Vector256<int> prodHigh = default, prodLow = default;
-                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff2 = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 13)), Vector256.Create(3,4,5,6,7,0,1,2)), vzero256, 0b1110_0000);
-                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
-                sum2 = Avx2.MultiplyLow(vcoeff2, vlast.AsInt32());
-                //sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                for (var i = 1; i < Order; i++)
-                {
-                    vlast = Vector256.Create((uint)Unsafe.Add(ref o, i));
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.Blend(sum2, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                }
-                var xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                for (nint i = 0; i < dataLength; i++)
-                {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0).AsUInt32();
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.Blend(sum2, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order21(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 21;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
                 var vzero = Vector128<int>.Zero;
                 var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default, sum5 = default;
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 16))).AsInt32();
-                var vcoeff5 = Vector256.CreateScalarUnsafe((ulong)(uint)Unsafe.Add(ref c, 20)).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum5 = Avx2.Multiply(vcoeff5, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                var vcoeff4Low = vzero;
+                if (coeffs.Length - 18 >= Vector128<int>.Count)
+                {
+                    vcoeff4Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 3)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff4Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 18;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff4Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff4Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff4Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff4 = Avx2.ConvertToVector256Int64(vcoeff4Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum4 = Avx2.Multiply(vcoeff4, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
-                    prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum5 = Avx.Blend(sum5.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
-                    prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum5 = Avx.Blend(sum5.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Avx2Order22(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order22(in RestoreParameters parameters)
             {
                 const int Order = 22;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<int> sum0 = default, sum1 = default, sum2 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
-                Vector256<int> prodHigh = default, prodLow = default;
-                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff2 = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 14)), Vector256.Create(2,3,4,5,6,7,0,1)), vzero256, 0b1100_0000);
-                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
-                sum2 = Avx2.MultiplyLow(vcoeff2, vlast.AsInt32());
-                //sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                for (var i = 1; i < Order; i++)
-                {
-                    vlast = Vector256.Create((uint)Unsafe.Add(ref o, i));
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.Blend(sum2, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                }
-                var xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                for (nint i = 0; i < dataLength; i++)
-                {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0).AsUInt32();
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.Blend(sum2, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order22(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 22;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
                 var vzero = Vector128<int>.Zero;
                 var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default, sum5 = default;
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 16))).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).ToVector256Unsafe().AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum5 = Avx2.Multiply(vcoeff5, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum4 = Avx2.Multiply(vcoeff4, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
-                    prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum5 = Avx.Blend(sum5.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
-                    prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum5 = Avx.Blend(sum5.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Avx2Order23(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order23(in RestoreParameters parameters)
             {
                 const int Order = 23;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<int> sum0 = default, sum1 = default, sum2 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
-                Vector256<int> prodHigh = default, prodLow = default;
-                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff2 = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 15)), Vector256.Create(1,2,3,4,5,6,7,0)), vzero256, 0b1000_0000);
-                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
-                sum2 = Avx2.MultiplyLow(vcoeff2, vlast.AsInt32());
-                //sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                for (var i = 1; i < Order; i++)
-                {
-                    vlast = Vector256.Create((uint)Unsafe.Add(ref o, i));
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.Blend(sum2, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                }
-                var xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                for (nint i = 0; i < dataLength; i++)
-                {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0).AsUInt32();
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.Blend(sum2, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order23(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 23;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
                 var vzero = Vector128<int>.Zero;
                 var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default, sum5 = default;
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 16))).AsInt32();
-                var vcoeff5 = Avx2.ConvertToVector256Int64(Sse2.Shuffle(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 19)), 0b00_11_10_01)).AsInt32();
-                vcoeff5 = Avx.Blend(vcoeff5.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum5 = Avx2.Multiply(vcoeff5, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                var vcoeff5Low = vzero;
+                if (coeffs.Length - 22 >= Vector128<int>.Count)
+                {
+                    vcoeff5Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 1)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff5Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 22;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff5Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff5Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff5Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff5 = Avx2.ConvertToVector256Int64(vcoeff5Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum5 = Avx2.Multiply(vcoeff5, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum5 = Avx.Blend(sum5.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum5 = prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum5 = Avx.Blend(sum5.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum5 = prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Avx2Order24(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order24(in RestoreParameters parameters)
             {
                 const int Order = 24;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<int> sum0 = default, sum1 = default, sum2 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
-                Vector256<int> prodHigh = default, prodLow = default;
-                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
-                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
-                sum2 = Avx2.MultiplyLow(vcoeff2, vlast.AsInt32());
-                //sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                for (var i = 1; i < Order; i++)
-                {
-                    vlast = Vector256.Create((uint)Unsafe.Add(ref o, i));
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.Blend(sum2, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                }
-                var xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                for (nint i = 0; i < dataLength; i++)
-                {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0).AsUInt32();
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.Blend(sum2, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order24(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 24;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
                 var vzero = Vector128<int>.Zero;
                 var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default, sum5 = default;
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 16))).AsInt32();
-                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 20))).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum5 = Avx2.Multiply(vcoeff5, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                var vcoeff5Low = vzero;
+                if (coeffs.Length - 22 >= Vector128<int>.Count)
+                {
+                    vcoeff5Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 2)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff5Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 22;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff5Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff5Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff5Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff5 = Avx2.ConvertToVector256Int64(vcoeff5Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum5 = Avx2.Multiply(vcoeff5, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum5 = Avx.Blend(sum5.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum5 = Avx.Blend(sum5.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Avx2Order25(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order25(in RestoreParameters parameters)
             {
                 const int Order = 25;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<int> sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
-                Vector256<int> prodHigh = default, prodLow = default;
-                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff3 = Vector256.CreateScalar(Unsafe.Add(ref c, 24));
-                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
-                sum3 = Avx2.MultiplyLow(vcoeff3, vlast.AsInt32());
-                //sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                for (var i = 1; i < Order; i++)
-                {
-                    vlast = Vector256.Create((uint)Unsafe.Add(ref o, i));
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-                var xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                for (nint i = 0; i < dataLength; i++)
-                {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0).AsUInt32();
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order25(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 25;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
                 var vzero = Vector128<int>.Zero;
                 var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default, sum5 = default, sum6 = default;
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 16))).AsInt32();
-                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 20))).AsInt32();
-                var vcoeff6 = Vector256.CreateScalarUnsafe((ulong)(uint)Unsafe.Add(ref c, 24)).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum6 = Avx2.Multiply(vcoeff6, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                var vcoeff5Low = vzero;
+                if (coeffs.Length - 22 >= Vector128<int>.Count)
+                {
+                    vcoeff5Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 3)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff5Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 22;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff5Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff5Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff5Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff5 = Avx2.ConvertToVector256Int64(vcoeff5Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum5 = Avx2.Multiply(vcoeff5, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
-                    prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum6 = Avx.Blend(sum6.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
-                    prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum6 = Avx.Blend(sum6.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Avx2Order26(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order26(in RestoreParameters parameters)
             {
                 const int Order = 26;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<int> sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
-                Vector256<int> prodHigh = default, prodLow = default;
-                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff3 = Vector256.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsInt32();
-                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
-                sum3 = Avx2.MultiplyLow(vcoeff3, vlast.AsInt32());
-                //sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                for (var i = 1; i < Order; i++)
-                {
-                    vlast = Vector256.Create((uint)Unsafe.Add(ref o, i));
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-                var xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                for (nint i = 0; i < dataLength; i++)
-                {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0).AsUInt32();
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order26(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 26;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
                 var vzero = Vector128<int>.Zero;
                 var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default, sum5 = default, sum6 = default;
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 16))).AsInt32();
-                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 20))).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).ToVector256Unsafe().AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum6 = Avx2.Multiply(vcoeff6, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22))).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum5 = Avx2.Multiply(vcoeff5, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
-                    prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum6 = Avx.Blend(sum6.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
-                    prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum6 = Avx.Blend(sum6.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Avx2Order27(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order27(in RestoreParameters parameters)
             {
                 const int Order = 27;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<int> sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
-                Vector256<int> prodHigh = default, prodLow = default;
-                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff3 = Sse2.ShiftRightLogical128BitLane(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 23)), 4).ToVector256Unsafe();
-                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
-                sum3 = Avx2.MultiplyLow(vcoeff3, vlast.AsInt32());
-                //sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                for (var i = 1; i < Order; i++)
-                {
-                    vlast = Vector256.Create((uint)Unsafe.Add(ref o, i));
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-                var xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                for (nint i = 0; i < dataLength; i++)
-                {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0).AsUInt32();
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order27(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 27;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
                 var vzero = Vector128<int>.Zero;
                 var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default, sum5 = default, sum6 = default;
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 16))).AsInt32();
-                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 20))).AsInt32();
-                var vcoeff6 = Avx2.ConvertToVector256Int64(Sse2.Shuffle(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 23)), 0b00_11_10_01)).AsInt32();
-                vcoeff6 = Avx.Blend(vcoeff6.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum6 = Avx2.Multiply(vcoeff6, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22))).AsInt32();
+                var vcoeff6Low = vzero;
+                if (coeffs.Length - 26 >= Vector128<int>.Count)
+                {
+                    vcoeff6Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 26));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 1)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff6Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 26;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff6Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff6Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff6Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff6 = Avx2.ConvertToVector256Int64(vcoeff6Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum6 = Avx2.Multiply(vcoeff6, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum6 = Avx2.Permute4x64(vsum6, PermShift);
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vsum6.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                     prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum6 = Avx.Blend(sum6.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
+                    vsum6 = prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum6 = Avx2.Permute4x64(vsum6, PermShift);
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vsum6.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                     prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum6 = Avx.Blend(sum6.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
+                    vsum6 = prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Avx2Order28(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order28(in RestoreParameters parameters)
             {
                 const int Order = 28;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<int> sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
-                Vector256<int> prodHigh = default, prodLow = default;
-                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 24)).ToVector256Unsafe();
-                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
-                sum3 = Avx2.MultiplyLow(vcoeff3, vlast.AsInt32());
-                //sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                for (var i = 1; i < Order; i++)
-                {
-                    vlast = Vector256.Create((uint)Unsafe.Add(ref o, i));
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-                var xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                for (nint i = 0; i < dataLength; i++)
-                {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0).AsUInt32();
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order28(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 28;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
                 var vzero = Vector128<int>.Zero;
                 var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default, sum5 = default, sum6 = default;
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 16))).AsInt32();
-                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 20))).AsInt32();
-                var vcoeff6 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 24))).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum6 = Avx2.Multiply(vcoeff6, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22))).AsInt32();
+                var vcoeff6Low = vzero;
+                if (coeffs.Length - 26 >= Vector128<int>.Count)
+                {
+                    vcoeff6Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 26));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 2)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff6Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 26;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff6Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff6Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff6Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff6 = Avx2.ConvertToVector256Int64(vcoeff6Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum6 = Avx2.Multiply(vcoeff6, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum6 = Avx2.Permute4x64(vsum6, PermShift);
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vsum6.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                     prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum6 = Avx.Blend(sum6.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
+                    vsum6 = Avx.Blend(vsum6.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum6 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum6 = Avx2.Permute4x64(vsum6, PermShift);
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vsum6.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                     prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum6 = Avx.Blend(sum6.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
+                    vsum6 = Avx.Blend(vsum6.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum6 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Avx2Order29(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order29(in RestoreParameters parameters)
             {
                 const int Order = 29;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<int> sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
-                Vector256<int> prodHigh = default, prodLow = default;
-                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff3 = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 21)), Vector256.Create(3,4,5,6,7,0,1,2)), vzero256, 0b1110_0000);
-                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
-                sum3 = Avx2.MultiplyLow(vcoeff3, vlast.AsInt32());
-                //sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                for (var i = 1; i < Order; i++)
-                {
-                    vlast = Vector256.Create((uint)Unsafe.Add(ref o, i));
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-                var xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                for (nint i = 0; i < dataLength; i++)
-                {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0).AsUInt32();
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order29(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 29;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
                 var vzero = Vector128<int>.Zero;
                 var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default, sum5 = default, sum6 = default, sum7 = default;
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 16))).AsInt32();
-                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 20))).AsInt32();
-                var vcoeff6 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 24))).AsInt32();
-                var vcoeff7 = Vector256.CreateScalarUnsafe((ulong)(uint)Unsafe.Add(ref c, 28)).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum7 = Avx2.Multiply(vcoeff7, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22))).AsInt32();
+                var vcoeff6Low = vzero;
+                if (coeffs.Length - 26 >= Vector128<int>.Count)
+                {
+                    vcoeff6Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 26));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 3)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff6Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 26;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff6Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff6Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff6Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff6 = Avx2.ConvertToVector256Int64(vcoeff6Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum6 = Avx2.Multiply(vcoeff6, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum6 = Avx2.Permute4x64(vsum6, PermShift);
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vsum6.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                     prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum7 = Avx2.Permute4x64(sum7, PermShift);
-                    sum6 = Avx.Blend(sum6.AsDouble(), sum7.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
-                    prod = Avx2.Multiply(vcoeff7, vlast);
-                    sum7 = Avx.Blend(sum7.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum7 += prod;
+                    vsum6 = Avx.Blend(vsum6.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum6 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum6 = Avx2.Permute4x64(vsum6, PermShift);
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vsum6.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                     prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum7 = Avx2.Permute4x64(sum7, PermShift);
-                    sum6 = Avx.Blend(sum6.AsDouble(), sum7.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
-                    prod = Avx2.Multiply(vcoeff7, vlast);
-                    sum7 = Avx.Blend(sum7.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum7 += prod;
+                    vsum6 = Avx.Blend(vsum6.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum6 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Avx2Order30(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order30(in RestoreParameters parameters)
             {
                 const int Order = 30;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<int> sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
-                Vector256<int> prodHigh = default, prodLow = default;
-                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff3 = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 22)), Vector256.Create(2,3,4,5,6,7,0,1)), vzero256, 0b1100_0000);
-                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
-                sum3 = Avx2.MultiplyLow(vcoeff3, vlast.AsInt32());
-                //sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                for (var i = 1; i < Order; i++)
-                {
-                    vlast = Vector256.Create((uint)Unsafe.Add(ref o, i));
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-                var xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                for (nint i = 0; i < dataLength; i++)
-                {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0).AsUInt32();
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order30(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 30;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
                 var vzero = Vector128<int>.Zero;
                 var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default, sum5 = default, sum6 = default, sum7 = default;
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 16))).AsInt32();
-                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 20))).AsInt32();
-                var vcoeff6 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 24))).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 28))).AsUInt32()).ToVector256Unsafe().AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum7 = Avx2.Multiply(vcoeff7, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22))).AsInt32();
+                var vcoeff6 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 26))).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum6 = Avx2.Multiply(vcoeff6, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum6 = Avx2.Permute4x64(vsum6, PermShift);
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vsum6.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                     prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum7 = Avx2.Permute4x64(sum7, PermShift);
-                    sum6 = Avx.Blend(sum6.AsDouble(), sum7.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
-                    prod = Avx2.Multiply(vcoeff7, vlast);
-                    sum7 = Avx.Blend(sum7.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum7 += prod;
+                    vsum6 = Avx.Blend(vsum6.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum6 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum6 = Avx2.Permute4x64(vsum6, PermShift);
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vsum6.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                     prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum7 = Avx2.Permute4x64(sum7, PermShift);
-                    sum6 = Avx.Blend(sum6.AsDouble(), sum7.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
-                    prod = Avx2.Multiply(vcoeff7, vlast);
-                    sum7 = Avx.Blend(sum7.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum7 += prod;
+                    vsum6 = Avx.Blend(vsum6.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum6 += prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Avx2Order31(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order31(in RestoreParameters parameters)
             {
                 const int Order = 31;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<int> sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
-                Vector256<int> prodHigh = default, prodLow = default;
-                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff3 = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 23)), Vector256.Create(1,2,3,4,5,6,7,0)), vzero256, 0b1000_0000);
-                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
-                sum3 = Avx2.MultiplyLow(vcoeff3, vlast.AsInt32());
-                //sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                for (var i = 1; i < Order; i++)
-                {
-                    vlast = Vector256.Create((uint)Unsafe.Add(ref o, i));
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-                var xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                for (nint i = 0; i < dataLength; i++)
-                {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0).AsUInt32();
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order31(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 31;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
                 var vzero = Vector128<int>.Zero;
                 var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default, sum5 = default, sum6 = default, sum7 = default;
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 16))).AsInt32();
-                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 20))).AsInt32();
-                var vcoeff6 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 24))).AsInt32();
-                var vcoeff7 = Avx2.ConvertToVector256Int64(Sse2.Shuffle(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 27)), 0b00_11_10_01)).AsInt32();
-                vcoeff7 = Avx.Blend(vcoeff7.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum7 = Avx2.Multiply(vcoeff7, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22))).AsInt32();
+                var vcoeff6 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 26))).AsInt32();
+                var vcoeff7Low = vzero;
+                if (coeffs.Length - 30 >= Vector128<int>.Count)
+                {
+                    vcoeff7Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 30));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 1)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff7Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 30;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff7Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 30))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff7Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff7Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff7 = Avx2.ConvertToVector256Int64(vcoeff7Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum7 = Avx2.Multiply(vcoeff7, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum6 = Avx2.Permute4x64(vsum6, PermShift);
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vsum6.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                     prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum7 = Avx2.Permute4x64(sum7, PermShift);
-                    sum6 = Avx.Blend(sum6.AsDouble(), sum7.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
+                    vsum7 = Avx2.Permute4x64(vsum7, PermShift);
+                    vsum6 = Avx.Blend(vsum6.AsDouble(), vsum7.AsDouble(), 0b1000).AsInt64();
+                    vsum6 += prod;
                     prod = Avx2.Multiply(vcoeff7, vlast);
-                    sum7 = Avx.Blend(sum7.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum7 += prod;
+                    vsum7 = prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum6 = Avx2.Permute4x64(vsum6, PermShift);
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vsum6.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                     prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum7 = Avx2.Permute4x64(sum7, PermShift);
-                    sum6 = Avx.Blend(sum6.AsDouble(), sum7.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
+                    vsum7 = Avx2.Permute4x64(vsum7, PermShift);
+                    vsum6 = Avx.Blend(vsum6.AsDouble(), vsum7.AsDouble(), 0b1000).AsInt64();
+                    vsum6 += prod;
                     prod = Avx2.Multiply(vcoeff7, vlast);
-                    sum7 = Avx.Blend(sum7.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum7 += prod;
+                    vsum7 = prod;
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Avx2Order32(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order32(in RestoreParameters parameters)
             {
                 const int Order = 32;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<int> sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
-                Vector256<int> prodHigh = default, prodLow = default;
-                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff3 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 24));
-                var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
-                sum3 = Avx2.MultiplyLow(vcoeff3, vlast.AsInt32());
-                //sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                for (var i = 1; i < Order; i++)
-                {
-                    vlast = Vector256.Create((uint)Unsafe.Add(ref o, i));
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-                var xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                for (nint i = 0; i < dataLength; i++)
-                {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0).AsUInt32();
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
-                    prodHigh = Avx2.Shuffle(vcoeff0, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff0.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum1 = Avx2.PermuteVar8x32(sum1, permShift);
-                    sum0 = Avx2.Blend(sum0, sum1, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum0 += prodLow;
-                    xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
-                    prodHigh = Avx2.Shuffle(vcoeff1, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff1.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum2 = Avx2.PermuteVar8x32(sum2, permShift);
-                    sum1 = Avx2.Blend(sum1, sum2, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum1 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff2, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff2.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.PermuteVar8x32(sum3, permShift);
-                    sum2 = Avx2.Blend(sum2, sum3, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum2 += prodLow;
-                    prodHigh = Avx2.Shuffle(vcoeff3, 0b11_11_01_01);
-                    prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
-                    prodLow = Avx2.Multiply(vcoeff3.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-                    sum3 = Avx2.Blend(sum3, vzero256, 0b1000_0000);
-                    prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum3 += prodLow;
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order32(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 32;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
                 var vzero = Vector128<int>.Zero;
                 var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default, sum5 = default, sum6 = default, sum7 = default;
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 0))).AsInt32();
-                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 4))).AsInt32();
-                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 16))).AsInt32();
-                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 20))).AsInt32();
-                var vcoeff6 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 24))).AsInt32();
-                var vcoeff7 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, 28))).AsInt32();
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum7 = Avx2.Multiply(vcoeff7, vlast);
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2))).AsInt32();
+                var vcoeff1 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6))).AsInt32();
+                var vcoeff2 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                var vcoeff3 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                var vcoeff4 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                var vcoeff5 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22))).AsInt32();
+                var vcoeff6 = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 26))).AsInt32();
+                var vcoeff7Low = vzero;
+                if (coeffs.Length - 30 >= Vector128<int>.Count)
+                {
+                    vcoeff7Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 30));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 2)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff7Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 30;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff7Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 30))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff7Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff7Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff7 = Avx2.ConvertToVector256Int64(vcoeff7Low).AsInt32();
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum7 = Avx2.Multiply(vcoeff7, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum6 = Avx2.Permute4x64(vsum6, PermShift);
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vsum6.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                     prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum7 = Avx2.Permute4x64(sum7, PermShift);
-                    sum6 = Avx.Blend(sum6.AsDouble(), sum7.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
+                    vsum7 = Avx2.Permute4x64(vsum7, PermShift);
+                    vsum6 = Avx.Blend(vsum6.AsDouble(), vsum7.AsDouble(), 0b1000).AsInt64();
+                    vsum6 += prod;
                     prod = Avx2.Multiply(vcoeff7, vlast);
-                    sum7 = Avx.Blend(sum7.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum7 += prod;
+                    vsum7 = Avx.Blend(vsum7.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum7 += prod;
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
                     prod = Avx2.Multiply(vcoeff0, vlast);
-                    sum1 = Avx2.Permute4x64(sum1, PermShift);
-                    sum0 = Avx.Blend(sum0.AsDouble(), sum1.AsDouble(), 0b1000).AsInt64();
-                    sum0 += prod;
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                    vsum1 = Avx2.Permute4x64(vsum1, PermShift);
+                    vsum0 = Avx.Blend(vsum0.AsDouble(), vsum1.AsDouble(), 0b1000).AsInt64();
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                     prod = Avx2.Multiply(vcoeff1, vlast);
-                    sum2 = Avx2.Permute4x64(sum2, PermShift);
-                    sum1 = Avx.Blend(sum1.AsDouble(), sum2.AsDouble(), 0b1000).AsInt64();
-                    sum1 += prod;
+                    vsum2 = Avx2.Permute4x64(vsum2, PermShift);
+                    vsum1 = Avx.Blend(vsum1.AsDouble(), vsum2.AsDouble(), 0b1000).AsInt64();
+                    vsum1 += prod;
                     prod = Avx2.Multiply(vcoeff2, vlast);
-                    sum3 = Avx2.Permute4x64(sum3, PermShift);
-                    sum2 = Avx.Blend(sum2.AsDouble(), sum3.AsDouble(), 0b1000).AsInt64();
-                    sum2 += prod;
+                    vsum3 = Avx2.Permute4x64(vsum3, PermShift);
+                    vsum2 = Avx.Blend(vsum2.AsDouble(), vsum3.AsDouble(), 0b1000).AsInt64();
+                    vsum2 += prod;
                     prod = Avx2.Multiply(vcoeff3, vlast);
-                    sum4 = Avx2.Permute4x64(sum4, PermShift);
-                    sum3 = Avx.Blend(sum3.AsDouble(), sum4.AsDouble(), 0b1000).AsInt64();
-                    sum3 += prod;
+                    vsum4 = Avx2.Permute4x64(vsum4, PermShift);
+                    vsum3 = Avx.Blend(vsum3.AsDouble(), vsum4.AsDouble(), 0b1000).AsInt64();
+                    vsum3 += prod;
                     prod = Avx2.Multiply(vcoeff4, vlast);
-                    sum5 = Avx2.Permute4x64(sum5, PermShift);
-                    sum4 = Avx.Blend(sum4.AsDouble(), sum5.AsDouble(), 0b1000).AsInt64();
-                    sum4 += prod;
+                    vsum5 = Avx2.Permute4x64(vsum5, PermShift);
+                    vsum4 = Avx.Blend(vsum4.AsDouble(), vsum5.AsDouble(), 0b1000).AsInt64();
+                    vsum4 += prod;
                     prod = Avx2.Multiply(vcoeff5, vlast);
-                    sum6 = Avx2.Permute4x64(sum6, PermShift);
-                    sum5 = Avx.Blend(sum5.AsDouble(), sum6.AsDouble(), 0b1000).AsInt64();
-                    sum5 += prod;
+                    vsum6 = Avx2.Permute4x64(vsum6, PermShift);
+                    vsum5 = Avx.Blend(vsum5.AsDouble(), vsum6.AsDouble(), 0b1000).AsInt64();
+                    vsum5 += prod;
                     prod = Avx2.Multiply(vcoeff6, vlast);
-                    sum7 = Avx2.Permute4x64(sum7, PermShift);
-                    sum6 = Avx.Blend(sum6.AsDouble(), sum7.AsDouble(), 0b1000).AsInt64();
-                    sum6 += prod;
+                    vsum7 = Avx2.Permute4x64(vsum7, PermShift);
+                    vsum6 = Avx.Blend(vsum6.AsDouble(), vsum7.AsDouble(), 0b1000).AsInt64();
+                    vsum6 += prod;
                     prod = Avx2.Multiply(vcoeff7, vlast);
-                    sum7 = Avx.Blend(sum7.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
-                    sum7 += prod;
+                    vsum7 = Avx.Blend(vsum7.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum7 += prod;
                 }
             }
         }

@@ -4,16 +4,23 @@
     {
         internal readonly ref struct RestoreParameters
         {
-            public readonly int PredictorOrder;
+            private readonly RestoreConfiguration configuration;
+            private readonly byte shiftsNeeded;
             public readonly Span<int> Coefficients;
             public readonly Span<int> Output;
-            public readonly Span<int> Residuals;
-            public RestoreParameters(int predictorOrder, Span<int> coefficients, Span<int> output, Span<int> residuals)
+
+            public byte PredictorOrder => configuration.PredictorOrder;
+            public byte MultiplyBitsRequired => configuration.MultiplyBitsRequired;
+            public byte AccumulatorBitsRequired => configuration.AccumulatorBitsRequired;
+            public int ShiftsNeeded => shiftsNeeded;
+
+            public RestoreParameters(RestoreConfiguration configuration, int shiftsNeeded, Span<int> coefficients, Span<int> output)
             {
-                PredictorOrder = predictorOrder;
+                this.configuration = configuration;
+                this.shiftsNeeded = (byte)shiftsNeeded;
                 Coefficients = coefficients;
                 Output = output;
-                Residuals = residuals;
+                ArgumentOutOfRangeException.ThrowIfLessThan(coefficients.Length, 32);
             }
         }
         internal readonly record struct RestoreConfiguration(byte PredictorOrder, byte MultiplyBitsRequired, byte AccumulatorBitsRequired);

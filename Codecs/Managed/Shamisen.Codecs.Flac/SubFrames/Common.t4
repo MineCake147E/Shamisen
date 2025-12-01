@@ -17,13 +17,13 @@
 
     static IEnumerable<string> GenerateStandardVariableWriteCalls(string requiredMultiplyBits, string requiredAccumulatorBits, int order)
     {
-        yield return $"if (RuntimeFeature.IsDynamicCodeCompiled && {requiredMultiplyBits} <= Unsafe.SizeOf<nint>() * 8 && {requiredAccumulatorBits} <= Unsafe.SizeOf<nint>() * 8)";
+        yield return $"if (Unsafe.SizeOf<nint>() == sizeof(long) || (RuntimeFeature.IsDynamicCodeCompiled && {requiredMultiplyBits} <= Unsafe.SizeOf<nint>() * 8 && {requiredAccumulatorBits} <= Unsafe.SizeOf<nint>() * 8))";
         yield return $"{{";
-        yield return $"    RestoreSignalNativeStandardOrder{order}(shiftsNeeded, residual, coeffs, output);";
+        yield return $"    RestoreSignalNativeStandardOrder{order}(in parameters);";
         yield return $"}}";
         yield return "else";
         yield return $"{{";
-        yield return $"    RestoreSignal64StandardOrder{order}(shiftsNeeded, residual, coeffs, output);";
+        yield return $"    RestoreSignal64StandardOrder{order}(in parameters);";
         yield return $"}}";
     }
 
@@ -34,11 +34,14 @@
     public readonly record struct FlacLinearPredictionVariantInfo(ulong VariantId, string Name)
     {
         public Func<string, string, int, IEnumerable<string>>? WriteDispatchFunc { get; init; }
+        public Func<int, int>? OrderOverrideFunc { get; init; }
         public bool IsVariable => (VariantId >> VariantIdAccumulatorShift) == ushort.MaxValue;
         public byte MultiplyBitsRequired => (byte)((VariantId & VariantIdMultiplierBits) >> VariantIdMultiplierShift);
         public byte AccumulatorBitsRequired => (byte)((VariantId & VariantIdAccumulatorBits) >> VariantIdAccumulatorShift);
+
         public IEnumerable<string> WriteCall(string requiredMultiplyBits, string requiredAccumulatorBits, int order)
         {
+            order = GetOrderOverride(order);
             if (IsVariable && WriteDispatchFunc is not null)
             {
                 return WriteDispatchFunc(requiredMultiplyBits, requiredAccumulatorBits, order);
@@ -47,11 +50,13 @@
             {
                 return DefaultWriteCall(order, Name);
             }
+        }
 
-            static IEnumerable<string> DefaultWriteCall(int order, string name)
-            {
-                yield return $"RestoreSignal{name}Order{order}(shiftsNeeded, residual, coeffs, output);";
-            }
+        public int GetOrderOverride(int order) => OrderOverrideFunc is null ? order : OrderOverrideFunc(order);
+
+        static IEnumerable<string> DefaultWriteCall(int order, string name)
+        {
+            yield return $"RestoreSignal{name}Order{order}(in parameters);";
         }
 
         #region VariantId Bit Masks and Shifts

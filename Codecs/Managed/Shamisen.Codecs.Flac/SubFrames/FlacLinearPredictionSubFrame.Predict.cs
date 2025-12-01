@@ -50,148 +50,129 @@ namespace Shamisen.Codecs.Flac.SubFrames
 {
     public sealed partial class FlacLinearPredictionSubFrame
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalDefault(int shiftsNeeded, int accumulatorBitsRequired, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal(in RestoreParameters parameters)
         {
             if (X86.IsSupported)
             {
-                X86.RestoreSignal(shiftsNeeded, accumulatorBitsRequired, residual, coeffs, output);
-                return;
-            }   
-            RestoreSignalStandard(shiftsNeeded, accumulatorBitsRequired, residual, coeffs, output);
-        }
-        
-        // Benchmark purpose only
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalDefaultWide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-        {
-            if (coeffs.Length < 2)
-            {
-                RestoreSignal64StandardOrder1(shiftsNeeded, residual, coeffs, output);
+                X86.RestoreSignal(in parameters);
                 return;
             }
-            if (X86.IsSupported)
-            {
-                X86.RestoreSignalWide(shiftsNeeded, residual, coeffs, output);
-                return;
-            }
-            RestoreSignal64Standard(shiftsNeeded, residual, coeffs, output);
+            RestoreSignalStandard(in parameters);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalStandard(int shiftsNeeded, int accumulatorBitsRequired, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static unsafe void RestoreSignalStandard(in RestoreParameters parameters)
         {
-            if (accumulatorBitsRequired <= Unsafe.SizeOf<nint>() * 8)
+            if (Unsafe.SizeOf<nint>() == sizeof(long) || parameters.AccumulatorBitsRequired <= Unsafe.SizeOf<nint>() * 8)
             {
-                RestoreSignalNativeStandard(shiftsNeeded, residual, coeffs, output);
+                RestoreSignalNativeStandard(in parameters);
             }
             else
             {
-                RestoreSignal64Standard(shiftsNeeded, residual, coeffs, output);
+                RestoreSignal64Standard(in parameters);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandard(in RestoreParameters parameters)
         {
-            var order = coeffs.Length;
-            switch (order)
+            switch (parameters.PredictorOrder)
             {
                 case 1:
-                    RestoreSignalNativeStandardOrder1(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder1(in parameters);
                     return;
                 case 2:
-                    RestoreSignalNativeStandardOrder2(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder2(in parameters);
                     return;
                 case 3:
-                    RestoreSignalNativeStandardOrder3(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder3(in parameters);
                     return;
                 case 4:
-                    RestoreSignalNativeStandardOrder4(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder4(in parameters);
                     return;
                 case 5:
-                    RestoreSignalNativeStandardOrder5(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder5(in parameters);
                     return;
                 case 6:
-                    RestoreSignalNativeStandardOrder6(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder6(in parameters);
                     return;
                 case 7:
-                    RestoreSignalNativeStandardOrder7(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder7(in parameters);
                     return;
                 case 8:
-                    RestoreSignalNativeStandardOrder8(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder8(in parameters);
                     return;
                 case 9:
-                    RestoreSignalNativeStandardOrder9(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder9(in parameters);
                     return;
                 case 10:
-                    RestoreSignalNativeStandardOrder10(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder10(in parameters);
                     return;
                 case 11:
-                    RestoreSignalNativeStandardOrder11(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder11(in parameters);
                     return;
                 case 12:
-                    RestoreSignalNativeStandardOrder12(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder12(in parameters);
                     return;
                 case 13:
-                    RestoreSignalNativeStandardOrder13(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder13(in parameters);
                     return;
                 case 14:
-                    RestoreSignalNativeStandardOrder14(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder14(in parameters);
                     return;
                 case 15:
-                    RestoreSignalNativeStandardOrder15(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder15(in parameters);
                     return;
                 case 16:
-                    RestoreSignalNativeStandardOrder16(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder16(in parameters);
                     return;
                 case 17:
-                    RestoreSignalNativeStandardOrder17(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder17(in parameters);
                     return;
                 case 18:
-                    RestoreSignalNativeStandardOrder18(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder18(in parameters);
                     return;
                 case 19:
-                    RestoreSignalNativeStandardOrder19(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder19(in parameters);
                     return;
                 case 20:
-                    RestoreSignalNativeStandardOrder20(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder20(in parameters);
                     return;
                 case 21:
-                    RestoreSignalNativeStandardOrder21(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder21(in parameters);
                     return;
                 case 22:
-                    RestoreSignalNativeStandardOrder22(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder22(in parameters);
                     return;
                 case 23:
-                    RestoreSignalNativeStandardOrder23(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder23(in parameters);
                     return;
                 case 24:
-                    RestoreSignalNativeStandardOrder24(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder24(in parameters);
                     return;
                 case 25:
-                    RestoreSignalNativeStandardOrder25(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder25(in parameters);
                     return;
                 case 26:
-                    RestoreSignalNativeStandardOrder26(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder26(in parameters);
                     return;
                 case 27:
-                    RestoreSignalNativeStandardOrder27(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder27(in parameters);
                     return;
                 case 28:
-                    RestoreSignalNativeStandardOrder28(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder28(in parameters);
                     return;
                 case 29:
-                    RestoreSignalNativeStandardOrder29(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder29(in parameters);
                     return;
                 case 30:
-                    RestoreSignalNativeStandardOrder30(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder30(in parameters);
                     return;
                 case 31:
-                    RestoreSignalNativeStandardOrder31(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder31(in parameters);
                     return;
                 case 32:
-                    RestoreSignalNativeStandardOrder32(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalNativeStandardOrder32(in parameters);
                     return;
                 default:
                     throw new FlacException("Invalid FLAC stream!");
@@ -199,106 +180,105 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64Standard(in RestoreParameters parameters)
         {
-            var order = coeffs.Length;
-            switch (order)
+            switch (parameters.PredictorOrder)
             {
                 case 1:
-                    RestoreSignal64StandardOrder1(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder1(in parameters);
                     return;
                 case 2:
-                    RestoreSignal64StandardOrder2(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder2(in parameters);
                     return;
                 case 3:
-                    RestoreSignal64StandardOrder3(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder3(in parameters);
                     return;
                 case 4:
-                    RestoreSignal64StandardOrder4(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder4(in parameters);
                     return;
                 case 5:
-                    RestoreSignal64StandardOrder5(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder5(in parameters);
                     return;
                 case 6:
-                    RestoreSignal64StandardOrder6(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder6(in parameters);
                     return;
                 case 7:
-                    RestoreSignal64StandardOrder7(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder7(in parameters);
                     return;
                 case 8:
-                    RestoreSignal64StandardOrder8(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder8(in parameters);
                     return;
                 case 9:
-                    RestoreSignal64StandardOrder9(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder9(in parameters);
                     return;
                 case 10:
-                    RestoreSignal64StandardOrder10(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder10(in parameters);
                     return;
                 case 11:
-                    RestoreSignal64StandardOrder11(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder11(in parameters);
                     return;
                 case 12:
-                    RestoreSignal64StandardOrder12(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder12(in parameters);
                     return;
                 case 13:
-                    RestoreSignal64StandardOrder13(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder13(in parameters);
                     return;
                 case 14:
-                    RestoreSignal64StandardOrder14(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder14(in parameters);
                     return;
                 case 15:
-                    RestoreSignal64StandardOrder15(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder15(in parameters);
                     return;
                 case 16:
-                    RestoreSignal64StandardOrder16(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder16(in parameters);
                     return;
                 case 17:
-                    RestoreSignal64StandardOrder17(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder17(in parameters);
                     return;
                 case 18:
-                    RestoreSignal64StandardOrder18(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder18(in parameters);
                     return;
                 case 19:
-                    RestoreSignal64StandardOrder19(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder19(in parameters);
                     return;
                 case 20:
-                    RestoreSignal64StandardOrder20(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder20(in parameters);
                     return;
                 case 21:
-                    RestoreSignal64StandardOrder21(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder21(in parameters);
                     return;
                 case 22:
-                    RestoreSignal64StandardOrder22(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder22(in parameters);
                     return;
                 case 23:
-                    RestoreSignal64StandardOrder23(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder23(in parameters);
                     return;
                 case 24:
-                    RestoreSignal64StandardOrder24(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder24(in parameters);
                     return;
                 case 25:
-                    RestoreSignal64StandardOrder25(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder25(in parameters);
                     return;
                 case 26:
-                    RestoreSignal64StandardOrder26(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder26(in parameters);
                     return;
                 case 27:
-                    RestoreSignal64StandardOrder27(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder27(in parameters);
                     return;
                 case 28:
-                    RestoreSignal64StandardOrder28(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder28(in parameters);
                     return;
                 case 29:
-                    RestoreSignal64StandardOrder29(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder29(in parameters);
                     return;
                 case 30:
-                    RestoreSignal64StandardOrder30(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder30(in parameters);
                     return;
                 case 31:
-                    RestoreSignal64StandardOrder31(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder31(in parameters);
                     return;
                 case 32:
-                    RestoreSignal64StandardOrder32(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignal64StandardOrder32(in parameters);
                     return;
                 default:
                     throw new FlacException("Invalid FLAC stream!");
@@ -306,2400 +286,4324 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder1(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder1(in RestoreParameters parameters)
         {
-            const int Order = 1;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            nint prev0 = output[0];
-            nint coeff0 = coeffs[0];
-            nint sum;
+            byte order = (byte)1;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)1);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default;
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            sum0 = nlast * coeff0;
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += coeff0 * prev0;
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
-                prev0 = sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = (nint)0 + nlast * coeff0;
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = (nint)0 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder2(in RestoreParameters parameters)
         {
-            const int Order = 2;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            nint coeff0 = coeffs[0];
-            nint coeff1 = coeffs[1];
-            nint sum;
+            byte order = (byte)2;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)2);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default;
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            sum1 = nlast * coeff1;
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += coeff1 * Unsafe.Add(ref o, i + 0);
-                sum += coeff0 * Unsafe.Add(ref o, i + 1);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = (nint)0 + nlast * coeff1;
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = (nint)0 + nlast * coeff1;
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder3(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder3(in RestoreParameters parameters)
         {
-            const int Order = 3;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            nint coeff0 = coeffs[0];
-            nint coeff1 = coeffs[1];
-            nint coeff2 = coeffs[2];
-            nint sum;
+            byte order = (byte)3;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)3);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default;
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            sum2 = nlast * coeff2;
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += coeff2 * Unsafe.Add(ref o, i + 0);
-                sum += coeff1 * Unsafe.Add(ref o, i + 1);
-                sum += coeff0 * Unsafe.Add(ref o, i + 2);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = (nint)0 + nlast * coeff2;
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = (nint)0 + nlast * coeff2;
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder4(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder4(in RestoreParameters parameters)
         {
-            const int Order = 4;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            nint coeff0 = coeffs[0];
-            nint coeff1 = coeffs[1];
-            nint coeff2 = coeffs[2];
-            nint coeff3 = coeffs[3];
-            nint sum;
+            byte order = (byte)4;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)4);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            sum3 = nlast * coeff3;
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += coeff3 * Unsafe.Add(ref o, i + 0);
-                sum += coeff2 * Unsafe.Add(ref o, i + 1);
-                sum += coeff1 * Unsafe.Add(ref o, i + 2);
-                sum += coeff0 * Unsafe.Add(ref o, i + 3);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = (nint)0 + nlast * coeff3;
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = (nint)0 + nlast * coeff3;
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder5(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder5(in RestoreParameters parameters)
         {
-            const int Order = 5;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            nint coeff0 = coeffs[0];
-            nint coeff1 = coeffs[1];
-            nint coeff2 = coeffs[2];
-            nint coeff3 = coeffs[3];
-            nint coeff4 = coeffs[4];
-            nint sum;
+            byte order = (byte)5;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)5);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default;
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            sum4 = nlast * Unsafe.Add(ref coeffs, 4);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += coeff4 * Unsafe.Add(ref o, i + 0);
-                sum += coeff3 * Unsafe.Add(ref o, i + 1);
-                sum += coeff2 * Unsafe.Add(ref o, i + 2);
-                sum += coeff1 * Unsafe.Add(ref o, i + 3);
-                sum += coeff0 * Unsafe.Add(ref o, i + 4);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = sum4 + nlast * coeff3;
+                sum4 = (nint)0 + nlast * Unsafe.Add(ref coeffs, 4);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = sum4 + nlast * coeff3;
+                sum4 = (nint)0 + nlast * Unsafe.Add(ref coeffs, 4);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder6(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder6(in RestoreParameters parameters)
         {
-            const int Order = 6;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            nint coeff0 = coeffs[0];
-            nint coeff1 = coeffs[1];
-            nint coeff2 = coeffs[2];
-            nint coeff3 = coeffs[3];
-            nint coeff4 = coeffs[4];
-            nint coeff5 = coeffs[5];
-            nint sum;
+            byte order = (byte)6;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)6);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 1) = nlast * Unsafe.Add(ref coeffs, 5);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += coeff5 * Unsafe.Add(ref o, i + 0);
-                sum += coeff4 * Unsafe.Add(ref o, i + 1);
-                sum += coeff3 * Unsafe.Add(ref o, i + 2);
-                sum += coeff2 * Unsafe.Add(ref o, i + 3);
-                sum += coeff1 * Unsafe.Add(ref o, i + 4);
-                sum += coeff0 * Unsafe.Add(ref o, i + 5);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 5);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 5);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder7(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder7(in RestoreParameters parameters)
         {
-            const int Order = 7;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            nint coeff0 = coeffs[0];
-            nint coeff1 = coeffs[1];
-            nint coeff2 = coeffs[2];
-            nint coeff3 = coeffs[3];
-            nint coeff4 = coeffs[4];
-            nint coeff5 = coeffs[5];
-            nint coeff6 = coeffs[6];
-            nint sum;
+            byte order = (byte)7;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)7);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 2) = nlast * Unsafe.Add(ref coeffs, 6);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += coeff6 * Unsafe.Add(ref o, i + 0);
-                sum += coeff5 * Unsafe.Add(ref o, i + 1);
-                sum += coeff4 * Unsafe.Add(ref o, i + 2);
-                sum += coeff3 * Unsafe.Add(ref o, i + 3);
-                sum += coeff2 * Unsafe.Add(ref o, i + 4);
-                sum += coeff1 * Unsafe.Add(ref o, i + 5);
-                sum += coeff0 * Unsafe.Add(ref o, i + 6);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 6);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 6);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder8(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder8(in RestoreParameters parameters)
         {
-            const int Order = 8;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            nint coeff0 = coeffs[0];
-            nint coeff1 = coeffs[1];
-            nint coeff2 = coeffs[2];
-            nint coeff3 = coeffs[3];
-            nint coeff4 = coeffs[4];
-            nint coeff5 = coeffs[5];
-            nint coeff6 = coeffs[6];
-            nint coeff7 = coeffs[7];
-            nint sum;
+            byte order = (byte)8;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)8);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 3) = nlast * Unsafe.Add(ref coeffs, 7);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += coeff7 * Unsafe.Add(ref o, i + 0);
-                sum += coeff6 * Unsafe.Add(ref o, i + 1);
-                sum += coeff5 * Unsafe.Add(ref o, i + 2);
-                sum += coeff4 * Unsafe.Add(ref o, i + 3);
-                sum += coeff3 * Unsafe.Add(ref o, i + 4);
-                sum += coeff2 * Unsafe.Add(ref o, i + 5);
-                sum += coeff1 * Unsafe.Add(ref o, i + 6);
-                sum += coeff0 * Unsafe.Add(ref o, i + 7);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 7);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 7);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder9(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder9(in RestoreParameters parameters)
         {
-            const int Order = 9;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)9;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)9);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 4) = nlast * Unsafe.Add(ref coeffs, 8);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 8);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 8);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 8);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder10(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder10(in RestoreParameters parameters)
         {
-            const int Order = 10;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)10;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)10);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 5) = nlast * Unsafe.Add(ref coeffs, 9);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 9);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 9);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 9);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder11(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder11(in RestoreParameters parameters)
         {
-            const int Order = 11;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)11;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)11);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 6) = nlast * Unsafe.Add(ref coeffs, 10);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 10);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 10);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 10);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder12(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder12(in RestoreParameters parameters)
         {
-            const int Order = 12;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)12;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)12);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 7) = nlast * Unsafe.Add(ref coeffs, 11);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 11);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 11);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 11);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder13(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder13(in RestoreParameters parameters)
         {
-            const int Order = 13;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)13;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)13);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 8) = nlast * Unsafe.Add(ref coeffs, 12);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 12);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 12);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 12);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder14(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder14(in RestoreParameters parameters)
         {
-            const int Order = 14;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)14;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)14);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 9) = nlast * Unsafe.Add(ref coeffs, 13);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 13);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 13);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 13);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder15(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder15(in RestoreParameters parameters)
         {
-            const int Order = 15;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)15;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)15);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 10) = nlast * Unsafe.Add(ref coeffs, 14);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 14);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 14);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 14);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder16(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder16(in RestoreParameters parameters)
         {
-            const int Order = 16;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)16;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)16);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 11) = nlast * Unsafe.Add(ref coeffs, 15);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 15);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 15);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 15);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder17(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder17(in RestoreParameters parameters)
         {
-            const int Order = 17;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)17;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)17);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 12) = nlast * Unsafe.Add(ref coeffs, 16);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 16);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 16);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 16);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder18(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder18(in RestoreParameters parameters)
         {
-            const int Order = 18;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)18;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)18);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 13) = nlast * Unsafe.Add(ref coeffs, 17);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 16);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 17);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 17);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 17);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder19(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder19(in RestoreParameters parameters)
         {
-            const int Order = 19;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)19;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)19);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 14) = nlast * Unsafe.Add(ref coeffs, 18);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 16);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 17);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 18);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 18);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 18);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder20(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder20(in RestoreParameters parameters)
         {
-            const int Order = 20;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)20;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)20);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 15) = nlast * Unsafe.Add(ref coeffs, 19);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 16);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 17);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 18);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 19);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 19);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 19);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder21(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder21(in RestoreParameters parameters)
         {
-            const int Order = 21;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)21;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)21);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 16) = nlast * Unsafe.Add(ref coeffs, 20);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 16);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 17);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 18);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 19);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 20);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 20);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 20);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder22(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder22(in RestoreParameters parameters)
         {
-            const int Order = 22;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)22;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)22);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 17) = nlast * Unsafe.Add(ref coeffs, 21);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 16);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 17);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 18);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 19);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 20);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 21);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 21);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 21);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder23(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder23(in RestoreParameters parameters)
         {
-            const int Order = 23;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)23;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)23);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 18) = nlast * Unsafe.Add(ref coeffs, 22);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 16);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 17);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 18);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 19);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 20);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 21);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 22);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 22);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 22);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder24(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder24(in RestoreParameters parameters)
         {
-            const int Order = 24;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)24;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)24);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 19) = nlast * Unsafe.Add(ref coeffs, 23);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 16);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 17);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 18);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 19);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 20);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 21);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 22);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 23);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 23);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 23);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder25(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder25(in RestoreParameters parameters)
         {
-            const int Order = 25;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)25;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)25);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 20) = nlast * Unsafe.Add(ref coeffs, 24);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 16);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 17);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 18);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 19);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 20);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 21);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 22);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 23);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 24);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 24);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 24);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder26(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder26(in RestoreParameters parameters)
         {
-            const int Order = 26;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)26;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)26);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 21) = nlast * Unsafe.Add(ref coeffs, 25);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 25) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 16);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 17);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 18);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 19);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 20);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 21);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 22);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 23);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 24);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 25);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 25);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 25);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder27(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder27(in RestoreParameters parameters)
         {
-            const int Order = 27;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)27;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)27);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 22) = nlast * Unsafe.Add(ref coeffs, 26);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 26) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 25) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 16);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 17);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 18);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 19);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 20);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 21);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 22);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 23);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 24);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 25);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 26);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 26);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 26);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder28(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder28(in RestoreParameters parameters)
         {
-            const int Order = 28;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)28;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)28);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 23) = nlast * Unsafe.Add(ref coeffs, 27);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 27) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 26) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 25) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 16);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 17);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 18);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 19);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 20);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 21);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 22);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 23);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 24);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 25);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 26);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 27);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 27);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 27);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder29(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder29(in RestoreParameters parameters)
         {
-            const int Order = 29;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)29;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)29);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 24) = nlast * Unsafe.Add(ref coeffs, 28);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 28) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 27) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 26) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 25) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 16);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 17);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 18);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 19);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 20);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 21);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 22);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 23);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 24);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 25);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 26);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 27);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 28);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 28);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 28);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder30(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder30(in RestoreParameters parameters)
         {
-            const int Order = 30;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)30;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)30);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 25) = nlast * Unsafe.Add(ref coeffs, 29);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 29) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 28) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 27) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 26) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 25) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 16);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 17);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 18);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 19);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 20);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 21);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 22);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 23);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 24);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 25);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 26);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 27);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 28);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 29);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = Unsafe.Add(ref sum, 25) + nlast * Unsafe.Add(ref coeffs, 28);
+                Unsafe.Add(ref sum, 25) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 29);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = Unsafe.Add(ref sum, 25) + nlast * Unsafe.Add(ref coeffs, 28);
+                Unsafe.Add(ref sum, 25) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 29);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder31(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder31(in RestoreParameters parameters)
         {
-            const int Order = 31;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)31;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)31);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 26) = nlast * Unsafe.Add(ref coeffs, 30);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 30) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 29) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 28) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 27) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 26) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 25) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 16);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 17);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 18);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 19);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 20);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 21);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 22);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 23);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 24);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 25);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 26);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 27);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 28);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 29);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 30);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = Unsafe.Add(ref sum, 25) + nlast * Unsafe.Add(ref coeffs, 28);
+                Unsafe.Add(ref sum, 25) = Unsafe.Add(ref sum, 26) + nlast * Unsafe.Add(ref coeffs, 29);
+                Unsafe.Add(ref sum, 26) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 30);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = Unsafe.Add(ref sum, 25) + nlast * Unsafe.Add(ref coeffs, 28);
+                Unsafe.Add(ref sum, 25) = Unsafe.Add(ref sum, 26) + nlast * Unsafe.Add(ref coeffs, 29);
+                Unsafe.Add(ref sum, 26) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 30);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalNativeStandardOrder32(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalNativeStandardOrder32(in RestoreParameters parameters)
         {
-            const int Order = 32;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            nint sum;
+            byte order = (byte)32;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)32);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            nint sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<nint> sums = stackalloc nint[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            nint coeff0 = Unsafe.Add(ref coeffs, 0);
+            nint coeff1 = Unsafe.Add(ref coeffs, 1);
+            nint coeff2 = Unsafe.Add(ref coeffs, 2);
+            nint coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (nint)o;
+            Unsafe.Add(ref sum, 27) = nlast * Unsafe.Add(ref coeffs, 31);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-                sum += (nint)Unsafe.Add(ref c, 31) * Unsafe.Add(ref o, i + 0);
-                sum += (nint)Unsafe.Add(ref c, 30) * Unsafe.Add(ref o, i + 1);
-                sum += (nint)Unsafe.Add(ref c, 29) * Unsafe.Add(ref o, i + 2);
-                sum += (nint)Unsafe.Add(ref c, 28) * Unsafe.Add(ref o, i + 3);
-                sum += (nint)Unsafe.Add(ref c, 27) * Unsafe.Add(ref o, i + 4);
-                sum += (nint)Unsafe.Add(ref c, 26) * Unsafe.Add(ref o, i + 5);
-                sum += (nint)Unsafe.Add(ref c, 25) * Unsafe.Add(ref o, i + 6);
-                sum += (nint)Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 7);
-                sum += (nint)Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 8);
-                sum += (nint)Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 9);
-                sum += (nint)Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 10);
-                sum += (nint)Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 11);
-                sum += (nint)Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 12);
-                sum += (nint)Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 13);
-                sum += (nint)Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 14);
-                sum += (nint)Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 15);
-                sum += (nint)Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 16);
-                sum += (nint)Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 17);
-                sum += (nint)Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 18);
-                sum += (nint)Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 19);
-                sum += (nint)Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 20);
-                sum += (nint)Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 21);
-                sum += (nint)Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 22);
-                sum += (nint)Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 23);
-                sum += (nint)Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 24);
-                sum += (nint)Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 25);
-                sum += (nint)Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 26);
-                sum += (nint)Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 27);
-                sum += (nint)Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 28);
-                sum += (nint)Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 29);
-                sum += (nint)Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 30);
-                sum += (nint)Unsafe.Add(ref c, 0) * Unsafe.Add(ref o, i + 31);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = Unsafe.Add(ref sum, 25) + nlast * Unsafe.Add(ref coeffs, 28);
+                Unsafe.Add(ref sum, 25) = Unsafe.Add(ref sum, 26) + nlast * Unsafe.Add(ref coeffs, 29);
+                Unsafe.Add(ref sum, 26) = Unsafe.Add(ref sum, 27) + nlast * Unsafe.Add(ref coeffs, 30);
+                Unsafe.Add(ref sum, 27) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 31);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (nint)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = Unsafe.Add(ref sum, 25) + nlast * Unsafe.Add(ref coeffs, 28);
+                Unsafe.Add(ref sum, 25) = Unsafe.Add(ref sum, 26) + nlast * Unsafe.Add(ref coeffs, 29);
+                Unsafe.Add(ref sum, 26) = Unsafe.Add(ref sum, 27) + nlast * Unsafe.Add(ref coeffs, 30);
+                Unsafe.Add(ref sum, 27) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 31);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder1(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder1(in RestoreParameters parameters)
         {
-            const int Order = 1;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-			var prev0 = output[0];
-			long coeff0 = coeffs[0];
-            long sum;
+            byte order = (byte)1;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)1);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default;
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            sum0 = nlast * coeff0;
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += coeff0 * prev0;
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
-                prev0 = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = (nint)0 + nlast * coeff0;
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = (nint)0 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder2(in RestoreParameters parameters)
         {
-            const int Order = 2;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-			long coeff0 = coeffs[0];
-			long coeff1 = coeffs[1];
-            long sum;
+            byte order = (byte)2;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)2);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default;
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            sum1 = nlast * coeff1;
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += coeff1 * Unsafe.Add(ref o, i + 0);
-				sum += coeff0 * Unsafe.Add(ref o, i + 1);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = (nint)0 + nlast * coeff1;
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = (nint)0 + nlast * coeff1;
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder3(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder3(in RestoreParameters parameters)
         {
-            const int Order = 3;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-			long coeff0 = coeffs[0];
-			long coeff1 = coeffs[1];
-			long coeff2 = coeffs[2];
-            long sum;
+            byte order = (byte)3;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)3);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default;
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            sum2 = nlast * coeff2;
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += coeff2 * Unsafe.Add(ref o, i + 0);
-				sum += coeff1 * Unsafe.Add(ref o, i + 1);
-				sum += coeff0 * Unsafe.Add(ref o, i + 2);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = (nint)0 + nlast * coeff2;
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = (nint)0 + nlast * coeff2;
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder4(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder4(in RestoreParameters parameters)
         {
-            const int Order = 4;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-			long coeff0 = coeffs[0];
-			long coeff1 = coeffs[1];
-			long coeff2 = coeffs[2];
-			long coeff3 = coeffs[3];
-            long sum;
+            byte order = (byte)4;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)4);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            sum3 = nlast * coeff3;
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += coeff3 * Unsafe.Add(ref o, i + 0);
-				sum += coeff2 * Unsafe.Add(ref o, i + 1);
-				sum += coeff1 * Unsafe.Add(ref o, i + 2);
-				sum += coeff0 * Unsafe.Add(ref o, i + 3);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = (nint)0 + nlast * coeff3;
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = (nint)0 + nlast * coeff3;
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder5(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder5(in RestoreParameters parameters)
         {
-            const int Order = 5;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-			long coeff0 = coeffs[0];
-			long coeff1 = coeffs[1];
-			long coeff2 = coeffs[2];
-			long coeff3 = coeffs[3];
-			long coeff4 = coeffs[4];
-            long sum;
+            byte order = (byte)5;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)5);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default, sum4 = default;
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            sum4 = nlast * Unsafe.Add(ref coeffs, 4);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += coeff4 * Unsafe.Add(ref o, i + 0);
-				sum += coeff3 * Unsafe.Add(ref o, i + 1);
-				sum += coeff2 * Unsafe.Add(ref o, i + 2);
-				sum += coeff1 * Unsafe.Add(ref o, i + 3);
-				sum += coeff0 * Unsafe.Add(ref o, i + 4);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = sum4 + nlast * coeff3;
+                sum4 = (nint)0 + nlast * Unsafe.Add(ref coeffs, 4);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = sum4 + nlast * coeff3;
+                sum4 = (nint)0 + nlast * Unsafe.Add(ref coeffs, 4);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder6(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder6(in RestoreParameters parameters)
         {
-            const int Order = 6;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-			long coeff0 = coeffs[0];
-			long coeff1 = coeffs[1];
-			long coeff2 = coeffs[2];
-			long coeff3 = coeffs[3];
-			long coeff4 = coeffs[4];
-			long coeff5 = coeffs[5];
-            long sum;
+            byte order = (byte)6;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)6);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 1) = nlast * Unsafe.Add(ref coeffs, 5);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += coeff5 * Unsafe.Add(ref o, i + 0);
-				sum += coeff4 * Unsafe.Add(ref o, i + 1);
-				sum += coeff3 * Unsafe.Add(ref o, i + 2);
-				sum += coeff2 * Unsafe.Add(ref o, i + 3);
-				sum += coeff1 * Unsafe.Add(ref o, i + 4);
-				sum += coeff0 * Unsafe.Add(ref o, i + 5);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 5);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 5);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder7(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder7(in RestoreParameters parameters)
         {
-            const int Order = 7;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-			long coeff0 = coeffs[0];
-			long coeff1 = coeffs[1];
-			long coeff2 = coeffs[2];
-			long coeff3 = coeffs[3];
-			long coeff4 = coeffs[4];
-			long coeff5 = coeffs[5];
-			long coeff6 = coeffs[6];
-            long sum;
+            byte order = (byte)7;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)7);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 2) = nlast * Unsafe.Add(ref coeffs, 6);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += coeff6 * Unsafe.Add(ref o, i + 0);
-				sum += coeff5 * Unsafe.Add(ref o, i + 1);
-				sum += coeff4 * Unsafe.Add(ref o, i + 2);
-				sum += coeff3 * Unsafe.Add(ref o, i + 3);
-				sum += coeff2 * Unsafe.Add(ref o, i + 4);
-				sum += coeff1 * Unsafe.Add(ref o, i + 5);
-				sum += coeff0 * Unsafe.Add(ref o, i + 6);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 6);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 6);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder8(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder8(in RestoreParameters parameters)
         {
-            const int Order = 8;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-			long coeff0 = coeffs[0];
-			long coeff1 = coeffs[1];
-			long coeff2 = coeffs[2];
-			long coeff3 = coeffs[3];
-			long coeff4 = coeffs[4];
-			long coeff5 = coeffs[5];
-			long coeff6 = coeffs[6];
-			long coeff7 = coeffs[7];
-            long sum;
+            byte order = (byte)8;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)8);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 3) = nlast * Unsafe.Add(ref coeffs, 7);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += coeff7 * Unsafe.Add(ref o, i + 0);
-				sum += coeff6 * Unsafe.Add(ref o, i + 1);
-				sum += coeff5 * Unsafe.Add(ref o, i + 2);
-				sum += coeff4 * Unsafe.Add(ref o, i + 3);
-				sum += coeff3 * Unsafe.Add(ref o, i + 4);
-				sum += coeff2 * Unsafe.Add(ref o, i + 5);
-				sum += coeff1 * Unsafe.Add(ref o, i + 6);
-				sum += coeff0 * Unsafe.Add(ref o, i + 7);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 7);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 7);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder9(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder9(in RestoreParameters parameters)
         {
-            const int Order = 9;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)9;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)9);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 4) = nlast * Unsafe.Add(ref coeffs, 8);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 7);
-				sum += c * (long)Unsafe.Add(ref o, i + 8);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 8);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 8);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder10(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder10(in RestoreParameters parameters)
         {
-            const int Order = 10;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)10;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)10);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 5) = nlast * Unsafe.Add(ref coeffs, 9);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 8);
-				sum += c * (long)Unsafe.Add(ref o, i + 9);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 9);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 9);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder11(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder11(in RestoreParameters parameters)
         {
-            const int Order = 11;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)11;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)11);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 6) = nlast * Unsafe.Add(ref coeffs, 10);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 9);
-				sum += c * (long)Unsafe.Add(ref o, i + 10);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 10);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 10);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder12(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder12(in RestoreParameters parameters)
         {
-            const int Order = 12;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)12;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)12);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 7) = nlast * Unsafe.Add(ref coeffs, 11);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 10);
-				sum += c * (long)Unsafe.Add(ref o, i + 11);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 11);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 11);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder13(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder13(in RestoreParameters parameters)
         {
-            const int Order = 13;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)13;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)13);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 8) = nlast * Unsafe.Add(ref coeffs, 12);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 11);
-				sum += c * (long)Unsafe.Add(ref o, i + 12);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 12);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 12);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder14(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder14(in RestoreParameters parameters)
         {
-            const int Order = 14;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)14;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)14);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 9) = nlast * Unsafe.Add(ref coeffs, 13);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 12);
-				sum += c * (long)Unsafe.Add(ref o, i + 13);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 13);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 13);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder15(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder15(in RestoreParameters parameters)
         {
-            const int Order = 15;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)15;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)15);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 10) = nlast * Unsafe.Add(ref coeffs, 14);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 13);
-				sum += c * (long)Unsafe.Add(ref o, i + 14);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 14);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 14);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder16(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder16(in RestoreParameters parameters)
         {
-            const int Order = 16;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)16;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)16);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 11) = nlast * Unsafe.Add(ref coeffs, 15);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 14);
-				sum += c * (long)Unsafe.Add(ref o, i + 15);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 15);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 15);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder17(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder17(in RestoreParameters parameters)
         {
-            const int Order = 17;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)17;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)17);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 12) = nlast * Unsafe.Add(ref coeffs, 16);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 15);
-				sum += c * (long)Unsafe.Add(ref o, i + 16);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 16);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 16);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder18(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder18(in RestoreParameters parameters)
         {
-            const int Order = 18;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)18;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)18);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 13) = nlast * Unsafe.Add(ref coeffs, 17);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 15);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 16);
-				sum += c * (long)Unsafe.Add(ref o, i + 17);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 17);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 17);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder19(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder19(in RestoreParameters parameters)
         {
-            const int Order = 19;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)19;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)19);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 14) = nlast * Unsafe.Add(ref coeffs, 18);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 15);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 16);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 17);
-				sum += c * (long)Unsafe.Add(ref o, i + 18);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 18);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 18);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder20(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder20(in RestoreParameters parameters)
         {
-            const int Order = 20;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)20;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)20);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 15) = nlast * Unsafe.Add(ref coeffs, 19);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 15);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 16);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 17);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 18);
-				sum += c * (long)Unsafe.Add(ref o, i + 19);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 19);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 19);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder21(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder21(in RestoreParameters parameters)
         {
-            const int Order = 21;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)21;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)21);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 16) = nlast * Unsafe.Add(ref coeffs, 20);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 15);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 16);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 17);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 18);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 19);
-				sum += c * (long)Unsafe.Add(ref o, i + 20);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 20);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 20);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder22(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder22(in RestoreParameters parameters)
         {
-            const int Order = 22;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)22;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)22);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 17) = nlast * Unsafe.Add(ref coeffs, 21);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 15);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 16);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 17);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 18);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 19);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 20);
-				sum += c * (long)Unsafe.Add(ref o, i + 21);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 21);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 21);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder23(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder23(in RestoreParameters parameters)
         {
-            const int Order = 23;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)23;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)23);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 18) = nlast * Unsafe.Add(ref coeffs, 22);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 15);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 16);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 17);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 18);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 19);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 20);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 21);
-				sum += c * (long)Unsafe.Add(ref o, i + 22);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 22);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 22);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder24(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder24(in RestoreParameters parameters)
         {
-            const int Order = 24;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)24;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)24);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 19) = nlast * Unsafe.Add(ref coeffs, 23);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 15);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 16);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 17);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 18);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 19);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 20);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 21);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 22);
-				sum += c * (long)Unsafe.Add(ref o, i + 23);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 23);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 23);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder25(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder25(in RestoreParameters parameters)
         {
-            const int Order = 25;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)25;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)25);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 20) = nlast * Unsafe.Add(ref coeffs, 24);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 15);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 16);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 17);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 18);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 19);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 20);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 21);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 22);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 23);
-				sum += c * (long)Unsafe.Add(ref o, i + 24);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 24);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 24);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder26(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder26(in RestoreParameters parameters)
         {
-            const int Order = 26;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)26;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)26);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 21) = nlast * Unsafe.Add(ref coeffs, 25);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 25) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 15);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 16);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 17);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 18);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 19);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 20);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 21);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 22);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 23);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 24);
-				sum += c * (long)Unsafe.Add(ref o, i + 25);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 25);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 25);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder27(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder27(in RestoreParameters parameters)
         {
-            const int Order = 27;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)27;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)27);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 22) = nlast * Unsafe.Add(ref coeffs, 26);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 26) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 25) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 15);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 16);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 17);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 18);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 19);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 20);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 21);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 22);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 23);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 24);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 25);
-				sum += c * (long)Unsafe.Add(ref o, i + 26);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 26);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 26);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder28(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder28(in RestoreParameters parameters)
         {
-            const int Order = 28;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)28;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)28);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 23) = nlast * Unsafe.Add(ref coeffs, 27);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 27) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 26) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 25) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 15);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 16);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 17);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 18);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 19);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 20);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 21);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 22);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 23);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 24);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 25);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 26);
-				sum += c * (long)Unsafe.Add(ref o, i + 27);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 27);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 27);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder29(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder29(in RestoreParameters parameters)
         {
-            const int Order = 29;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)29;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)29);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 24) = nlast * Unsafe.Add(ref coeffs, 28);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 28) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 27) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 26) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 25) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 15);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 16);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 17);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 18);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 19);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 20);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 21);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 22);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 23);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 24);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 25);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 26);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 27);
-				sum += c * (long)Unsafe.Add(ref o, i + 28);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 28);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 28);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder30(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder30(in RestoreParameters parameters)
         {
-            const int Order = 30;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)30;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)30);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 25) = nlast * Unsafe.Add(ref coeffs, 29);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 29) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 28) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 27) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 26) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 25) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 15);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 16);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 17);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 18);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 19);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 20);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 21);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 22);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 23);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 24);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 25);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 26);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 27);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 28);
-				sum += c * (long)Unsafe.Add(ref o, i + 29);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = Unsafe.Add(ref sum, 25) + nlast * Unsafe.Add(ref coeffs, 28);
+                Unsafe.Add(ref sum, 25) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 29);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = Unsafe.Add(ref sum, 25) + nlast * Unsafe.Add(ref coeffs, 28);
+                Unsafe.Add(ref sum, 25) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 29);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder31(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder31(in RestoreParameters parameters)
         {
-            const int Order = 31;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)31;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)31);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 26) = nlast * Unsafe.Add(ref coeffs, 30);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 30) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 29) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 28) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 27) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 26) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 25) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 15);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 16);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 17);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 18);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 19);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 20);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 21);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 22);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 23);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 24);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 25);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 26);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 27);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 28);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 29);
-				sum += c * (long)Unsafe.Add(ref o, i + 30);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = Unsafe.Add(ref sum, 25) + nlast * Unsafe.Add(ref coeffs, 28);
+                Unsafe.Add(ref sum, 25) = Unsafe.Add(ref sum, 26) + nlast * Unsafe.Add(ref coeffs, 29);
+                Unsafe.Add(ref sum, 26) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 30);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = Unsafe.Add(ref sum, 25) + nlast * Unsafe.Add(ref coeffs, 28);
+                Unsafe.Add(ref sum, 25) = Unsafe.Add(ref sum, 26) + nlast * Unsafe.Add(ref coeffs, 29);
+                Unsafe.Add(ref sum, 26) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 30);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal64StandardOrder32(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64StandardOrder32(in RestoreParameters parameters)
         {
-            const int Order = 32;
-            if (coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-            ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum;
+            byte order = (byte)32;
+            ArgumentOutOfRangeException.ThrowIfLessThan(parameters.PredictorOrder, (byte)32);
+            ref var coeffs = ref MemoryMarshal.GetReference(parameters.Coefficients);
+            _ = parameters.Coefficients[order - 1];
+            var shiftsNeeded = parameters.ShiftsNeeded;
+            var output = parameters.Output;
+            long sum0 = default, sum1 = default, sum2 = default, sum3 = default;
+            Span<long> sums = stackalloc long[order - 4];
+            ref var sum = ref MemoryMarshal.GetReference(sums);
+            long coeff0 = Unsafe.Add(ref coeffs, 0);
+            long coeff1 = Unsafe.Add(ref coeffs, 1);
+            long coeff2 = Unsafe.Add(ref coeffs, 2);
+            long coeff3 = Unsafe.Add(ref coeffs, 3);
             ref var o = ref MemoryMarshal.GetReference(output);
-            ref var d = ref Unsafe.Add(ref o, Order);
-            int dataLength = output.Length - Order;
-            ref var r = ref MemoryMarshal.GetReference(residual);
-            for (int i = 0; i < dataLength; i++)
+            ref var d = ref Unsafe.Add(ref o, order);
+            var nlast = (long)o;
+            Unsafe.Add(ref sum, 27) = nlast * Unsafe.Add(ref coeffs, 31);
+            for (var i = 0; i < order; i++)
             {
-                sum = 0;
-				sum += Unsafe.Add(ref c, 31) * (long)Unsafe.Add(ref o, i + 0);
-				sum += Unsafe.Add(ref c, 30) * (long)Unsafe.Add(ref o, i + 1);
-				sum += Unsafe.Add(ref c, 29) * (long)Unsafe.Add(ref o, i + 2);
-				sum += Unsafe.Add(ref c, 28) * (long)Unsafe.Add(ref o, i + 3);
-				sum += Unsafe.Add(ref c, 27) * (long)Unsafe.Add(ref o, i + 4);
-				sum += Unsafe.Add(ref c, 26) * (long)Unsafe.Add(ref o, i + 5);
-				sum += Unsafe.Add(ref c, 25) * (long)Unsafe.Add(ref o, i + 6);
-				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 7);
-				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 8);
-				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 9);
-				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 10);
-				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 11);
-				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 12);
-				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 13);
-				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 14);
-				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 15);
-				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 16);
-				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 17);
-				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 18);
-				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 19);
-				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 20);
-				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 21);
-				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 22);
-				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 23);
-				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 24);
-				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 25);
-				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 26);
-				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 27);
-				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 28);
-				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 29);
-				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 30);
-				sum += c * (long)Unsafe.Add(ref o, i + 31);
-                sum >>= shiftsNeeded;
-                sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = (int)sum;
+                nlast = (nint)Unsafe.Add(ref o, i);
+                sum0 = sum1 + nlast * coeff0;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = Unsafe.Add(ref sum, 25) + nlast * Unsafe.Add(ref coeffs, 28);
+                Unsafe.Add(ref sum, 25) = Unsafe.Add(ref sum, 26) + nlast * Unsafe.Add(ref coeffs, 29);
+                Unsafe.Add(ref sum, 26) = Unsafe.Add(ref sum, 27) + nlast * Unsafe.Add(ref coeffs, 30);
+                Unsafe.Add(ref sum, 27) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 31);
+            }
+            sum0 >>= shiftsNeeded;
+            nint dataLength = output.Length - order;
+            for (nint i = 0; i < dataLength; i++)
+            {
+                var residual = (long)Unsafe.Add(ref d, i);
+                sum0 += residual;
+                nlast = sum0;
+                Unsafe.Add(ref d, i) = (int)nlast;
+                sum0 = sum1 + nlast * coeff0;
+                sum0 >>= shiftsNeeded;
+                sum1 = sum2 + nlast * coeff1;
+                sum2 = sum3 + nlast * coeff2;
+                sum3 = Unsafe.Add(ref sum, 0) + nlast * coeff3;
+                Unsafe.Add(ref sum, 0) = Unsafe.Add(ref sum, 1) + nlast * Unsafe.Add(ref coeffs, 4);
+                Unsafe.Add(ref sum, 1) = Unsafe.Add(ref sum, 2) + nlast * Unsafe.Add(ref coeffs, 5);
+                Unsafe.Add(ref sum, 2) = Unsafe.Add(ref sum, 3) + nlast * Unsafe.Add(ref coeffs, 6);
+                Unsafe.Add(ref sum, 3) = Unsafe.Add(ref sum, 4) + nlast * Unsafe.Add(ref coeffs, 7);
+                Unsafe.Add(ref sum, 4) = Unsafe.Add(ref sum, 5) + nlast * Unsafe.Add(ref coeffs, 8);
+                Unsafe.Add(ref sum, 5) = Unsafe.Add(ref sum, 6) + nlast * Unsafe.Add(ref coeffs, 9);
+                Unsafe.Add(ref sum, 6) = Unsafe.Add(ref sum, 7) + nlast * Unsafe.Add(ref coeffs, 10);
+                Unsafe.Add(ref sum, 7) = Unsafe.Add(ref sum, 8) + nlast * Unsafe.Add(ref coeffs, 11);
+                Unsafe.Add(ref sum, 8) = Unsafe.Add(ref sum, 9) + nlast * Unsafe.Add(ref coeffs, 12);
+                Unsafe.Add(ref sum, 9) = Unsafe.Add(ref sum, 10) + nlast * Unsafe.Add(ref coeffs, 13);
+                Unsafe.Add(ref sum, 10) = Unsafe.Add(ref sum, 11) + nlast * Unsafe.Add(ref coeffs, 14);
+                Unsafe.Add(ref sum, 11) = Unsafe.Add(ref sum, 12) + nlast * Unsafe.Add(ref coeffs, 15);
+                Unsafe.Add(ref sum, 12) = Unsafe.Add(ref sum, 13) + nlast * Unsafe.Add(ref coeffs, 16);
+                Unsafe.Add(ref sum, 13) = Unsafe.Add(ref sum, 14) + nlast * Unsafe.Add(ref coeffs, 17);
+                Unsafe.Add(ref sum, 14) = Unsafe.Add(ref sum, 15) + nlast * Unsafe.Add(ref coeffs, 18);
+                Unsafe.Add(ref sum, 15) = Unsafe.Add(ref sum, 16) + nlast * Unsafe.Add(ref coeffs, 19);
+                Unsafe.Add(ref sum, 16) = Unsafe.Add(ref sum, 17) + nlast * Unsafe.Add(ref coeffs, 20);
+                Unsafe.Add(ref sum, 17) = Unsafe.Add(ref sum, 18) + nlast * Unsafe.Add(ref coeffs, 21);
+                Unsafe.Add(ref sum, 18) = Unsafe.Add(ref sum, 19) + nlast * Unsafe.Add(ref coeffs, 22);
+                Unsafe.Add(ref sum, 19) = Unsafe.Add(ref sum, 20) + nlast * Unsafe.Add(ref coeffs, 23);
+                Unsafe.Add(ref sum, 20) = Unsafe.Add(ref sum, 21) + nlast * Unsafe.Add(ref coeffs, 24);
+                Unsafe.Add(ref sum, 21) = Unsafe.Add(ref sum, 22) + nlast * Unsafe.Add(ref coeffs, 25);
+                Unsafe.Add(ref sum, 22) = Unsafe.Add(ref sum, 23) + nlast * Unsafe.Add(ref coeffs, 26);
+                Unsafe.Add(ref sum, 23) = Unsafe.Add(ref sum, 24) + nlast * Unsafe.Add(ref coeffs, 27);
+                Unsafe.Add(ref sum, 24) = Unsafe.Add(ref sum, 25) + nlast * Unsafe.Add(ref coeffs, 28);
+                Unsafe.Add(ref sum, 25) = Unsafe.Add(ref sum, 26) + nlast * Unsafe.Add(ref coeffs, 29);
+                Unsafe.Add(ref sum, 26) = Unsafe.Add(ref sum, 27) + nlast * Unsafe.Add(ref coeffs, 30);
+                Unsafe.Add(ref sum, 27) = (nint)0 + nlast * Unsafe.Add(ref coeffs, 31);
             }
         }
     }

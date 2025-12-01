@@ -6843,12 +6843,6 @@
             <param name="dest">The start position of destination.</param>
             <param name="value">The values to store.</param>
         </member>
-        <member name="M:Shamisen.Utils.VectorUtils.GetIndexVector">
-            <summary>
-            Returns a <see cref="T:System.Numerics.Vector`1"/> value with its value set to their position.
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:Shamisen.Utils.VectorUtils.AsVector128(Shamisen.ComplexF@)">
             <summary>
             Reinterprets a <see cref="T:Shamisen.ComplexF"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.

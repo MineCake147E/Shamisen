@@ -2,13 +2,10 @@
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
-using Shamisen.Utils.Intrinsics;
-
 #endif
 #if NET5_0_OR_GREATER
 using System.Runtime.Intrinsics.Arm;
 #endif
-using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -29,7 +26,7 @@ namespace Shamisen.Utils
         /// <param name="vector0">The value to multiply.</param>
         /// <param name="vector1">The value to multiply.</param>
         /// <returns>The dot product of two vectors.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float FastDotProduct(Vector4 vector0, Vector4 vector1)
         {
             unchecked
@@ -168,7 +165,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="vector">The vector.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float MaxAcross(Vector<float> vector)
         {
             unchecked
@@ -232,7 +229,7 @@ namespace Shamisen.Utils
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static float MaxAcrossFallback(Vector<float> vector)
         {
             unchecked
@@ -288,7 +285,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="vector">The vector.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float MinAcross(Vector<float> vector)
         {
             unchecked
@@ -352,7 +349,7 @@ namespace Shamisen.Utils
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static float MinAcrossFallback(Vector<float> vector)
         {
             unchecked
@@ -439,7 +436,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="value">The value to reverse elements.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 ReverseElements(Vector4 value)
         {
             unchecked
@@ -448,7 +445,7 @@ namespace Shamisen.Utils
                 {
                     var v0_4s = value.AsVector128();
                     v0_4s = AdvSimd.ReverseElement32(v0_4s.AsUInt64()).AsSingle();
-                    v0_4s = AdvSimd.ExtractVector128(v0_4s, v0_4s, 8);
+                    v0_4s = AdvSimd.ExtractVector128(v0_4s, v0_4s, 2);
                     return v0_4s.AsVector4();
                 }
                 if (Avx.IsSupported)
@@ -474,7 +471,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="value">The value to reverse elements.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 ReverseElements(Vector2 value)
         {
             unchecked
@@ -517,7 +514,7 @@ namespace Shamisen.Utils
         /// <param name="head">The location of frames to read.</param>
         /// <param name="coeffs">The coefficients to multiply.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 FastDotMultiple2Channels(ref Vector2 head, Vector4 coeffs)
         {
             unchecked
@@ -635,7 +632,7 @@ namespace Shamisen.Utils
         /// <param name="head">The location of frames to read.</param>
         /// <param name="coeffs">The coefficents to multiply.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 FastDotMultiple3Channels(ref Vector3 head, Vector4 coeffs)
         {
             unchecked
@@ -755,7 +752,7 @@ namespace Shamisen.Utils
         }
 #endif
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Vector3 FastDotMultiple3ChannelsStandard(ref Vector3 head, Vector4 coeffs)
         {
             var v0_4s = head;
@@ -779,7 +776,7 @@ namespace Shamisen.Utils
         /// <param name="head">The location of frames to read.</param>
         /// <param name="coeffs">The coefficents to multiply.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 FastDotMultiple4Channels(ref Vector4 head, Vector4 coeffs)
         {
             unchecked
@@ -823,7 +820,7 @@ namespace Shamisen.Utils
         }
 #endif
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Vector4 FastDotMultiple4ChannelsStandard(ref Vector4 head, Vector4 coeffs)
         {
             var v0_4s = head * coeffs.X;
@@ -846,7 +843,7 @@ namespace Shamisen.Utils
         /// <param name="left">The default value.</param>
         /// <param name="right">The values that is used when <paramref name="condition"/> is negative.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector<float> Blend(Vector<int> condition, Vector<float> left, Vector<float> right)
         {
             unchecked
@@ -892,7 +889,7 @@ namespace Shamisen.Utils
         /// <param name="left">The default value.</param>
         /// <param name="right">The values that is used when <paramref name="condition"/> is negative.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector<int> Blend(Vector<int> condition, Vector<int> left, Vector<int> right)
         {
             unchecked
@@ -938,7 +935,7 @@ namespace Shamisen.Utils
         /// <param name="left">The default value.</param>
         /// <param name="right">The values that is used when <paramref name="condition"/> is negative.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector<uint> Blend(Vector<uint> condition, Vector<uint> left, Vector<uint> right) => Blend(condition.AsInt32(), left.AsInt32(), right.AsInt32()).AsUInt32();
         #endregion
         #region Round
@@ -950,7 +947,7 @@ namespace Shamisen.Utils
         /// <returns>The integer <see cref="Vector{T}"/> nearest <paramref name="values"/>. If the fractional component of <paramref name="values"/> is halfway between two
         /// integers, one of which is even and the other odd, then the even number is returned.
         /// Note that this method returns a floating-point <see cref="Vector{T}"/> instead of an integral <see cref="Vector{T}"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector<float> Round(Vector<float> values)
         {
             unchecked
@@ -1110,7 +1107,7 @@ namespace Shamisen.Utils
         /// <returns>The integer <see cref="Vector{T}"/> nearest <paramref name="values"/>. If the fractional component of <paramref name="values"/> is halfway between two
         /// integers, one of which is even and the other odd, then the even number is returned.
         /// Note that this method returns a floating-point <see cref="Vector{T}"/> instead of an integral <see cref="Vector{T}"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector<float> RoundInLoop(Vector<float> values, Vector<float> sign, Vector<float> reciprocalEpsilon)
         {
             unchecked
@@ -1145,7 +1142,7 @@ namespace Shamisen.Utils
         /// <param name="right">The second vector to be negated.</param>
         /// <param name="left">The first vector.</param>
         /// <inheritdoc cref="Vector.AndNot{T}(Vector{T}, Vector{T})"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector<T> AndNot<T>(Vector<T> right, Vector<T> left) where T : struct => Vector.AndNot(left, right);
         #endregion
         #region ShiftLeft
@@ -1155,7 +1152,7 @@ namespace Shamisen.Utils
         /// <param name="value">The values to shift left.</param>
         /// <param name="shift">The amounts to shift <paramref name="value"/>.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector<int> ShiftLeftVariable(Vector<int> value, Vector<uint> shift)
         {
             unchecked
@@ -1216,7 +1213,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="shift">The amount to shift elements left.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector<int> PrepareConstantShiftLeftInt32(byte shift)
         {
             unchecked
@@ -1248,7 +1245,7 @@ namespace Shamisen.Utils
         /// <param name="value">The values to shift right.</param>
         /// <param name="shift">The amounts to shift <paramref name="value"/>.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector<int> ShiftRightLogicalVariable(Vector<int> value, Vector<uint> shift)
         {
             unchecked
@@ -1413,7 +1410,7 @@ namespace Shamisen.Utils
         /// <param name="left">The first value to add.</param>
         /// <param name="right">The second value to add.</param>
         /// <returns>The added value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 AddAsInt32(Vector4 left, Vector4 right)
         {
 #if NET5_0_OR_GREATER
@@ -1435,7 +1432,7 @@ namespace Shamisen.Utils
         #endregion
         #region CreateVector4
         /// <inheritdoc cref="Vector4(float, float, float, float)"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 CreateVector4(float x, float y, float z, float w)
         {
             unchecked
@@ -1464,7 +1461,7 @@ namespace Shamisen.Utils
         /// <param name="z">The value to assign to the <see cref="Vector4.Z"/> field.</param>
         /// <param name="w">The value to assign to the <see cref="Vector4.W"/> field.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 ConvertAndCreateVector4(int x, int y, int z, int w)
         {
             unchecked
@@ -1493,7 +1490,7 @@ namespace Shamisen.Utils
         /// <typeparam name="T">The type of <see cref="Vector{T}"/>.</typeparam>
         /// <param name="dest">The start position of destination.</param>
         /// <param name="value">The values to store.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void StoreLowerHalf<T>(ref T dest, Vector<T> value) where T : struct
         {
             switch (Vector<int>.Count)
@@ -1524,49 +1521,6 @@ namespace Shamisen.Utils
                     }
                     break;
             }
-        }
-        #endregion
-        #region GenerateVectorWithSequence
-        /// <summary>
-        /// Returns a <see cref="Vector{T}"/> value with its value set to their position.
-        /// </summary>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Vector<int> GetIndexVector() => Vector<int>.Count switch
-        {
-            4 => Vector128.Create(0, 1, 2, 3).AsVector(),
-            8 => Vector256.Create(0, 1, 2, 3, 4, 5, 6, 7).AsVector(),
-            _ => GenerateIndexVectorFallback(),
-        };
-
-        private static unsafe Vector<int> GenerateIndexVectorFallback()
-        {
-            switch (Vector<int>.Count)
-            {
-                case 4:
-                    {
-                        var g = new Vector4(0.0f, float.Epsilon, 3E-45f, 4E-45f);
-                        return Unsafe.As<Vector4, Vector<int>>(ref g);
-                    }
-                case <= 16:
-                    {
-                        var h = stackalloc int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-                        return *(Vector<int>*)h;
-                    }
-                default:
-                    return GenerateIndexVectorFallback2();
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static unsafe Vector<int> GenerateIndexVectorFallback2()
-        {
-            var span = stackalloc int[Vector<int>.Count];
-            for (var k = 0; k < Vector<int>.Count; k++)
-            {
-                span[k] = k;
-            }
-            return *(Vector<int>*)span;
         }
         #endregion
         #region AsVector128Unsafe

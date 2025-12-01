@@ -34,14 +34,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 using Shamisen.Codecs.Flac.Parsing;
 using Shamisen.Data;
@@ -140,7 +134,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             var output = data.Span;
             warmup.CopyTo(output);
             RestoreSignal(resiSpan, order, output);
-            FlacUtils.ShiftLeft(output, wastedBits);
+            FlacUtils.ShiftLeftLogical(output, wastedBits);
             length = blockSize;
         }
 

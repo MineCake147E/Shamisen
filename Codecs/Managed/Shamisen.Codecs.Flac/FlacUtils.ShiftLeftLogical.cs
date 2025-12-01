@@ -1,185 +1,31 @@
-﻿#region License
-/*
- * Ported to C#.
- *
- * libFLAC - Free Lossless Audio Codec library
- * Copyright (C) 2000-2009  Josh Coalson
- * Copyright (C) 2011-2018  Xiph.Org Foundation
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * - Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * - Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * - Neither the name of the Xiph.org Foundation nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-#endregion
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Numerics;
-
-#if NET5_0_OR_GREATER
-
-using System.Runtime.Intrinsics.Arm;
-
-#endif
-#if NETCOREAPP3_1_OR_GREATER
-
-using System.Runtime.Intrinsics.X86;
 using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.Arm;
+using System.Runtime.Intrinsics.X86;
 
-#endif
-
-using Shamisen.Codecs.Flac.Parsing;
-
-namespace Shamisen.Codecs.Flac.SubFrames
+namespace Shamisen.Codecs.Flac
 {
-    /// <summary>
-    /// Contains some utility functions about manipulating FLAC audio samples.
-    /// </summary>
-    public static class FlacUtils
+    public static partial class FlacUtils
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static int MultiplyNoFlagsIfPossible(int a, int b)
-        {
-#if NETCOREAPP3_1_OR_GREATER
-            if (Bmi2.IsSupported) return (int)Bmi2.MultiplyNoFlags((uint)a, (uint)b);
-#endif
-            return a * b;
-        }
-
-        /// <summary>
-        /// Reads the rice encoded residual.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <param name="bitReader">The bit reader.</param>
-        /// <param name="predictorOrder">The predictor order.</param>
-        /// <param name="partitionOrder">The partition order.</param>
-        /// <param name="blockSize">Size of the block.</param>
-        /// <param name="isRice2">if set to <c>true</c> [is rice2].</param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static bool ReadRiceEncodedResidual(Span<int> buffer, FlacBitReader bitReader, int predictorOrder, int partitionOrder, int blockSize, bool isRice2)
-        {
-            //Modified for C# use.
-
-            #region License notice
-
-            /* libFLAC - Free Lossless Audio Codec library
-             * Copyright (C) 2000-2009  Josh Coalson
-             * Copyright (C) 2011-2018  Xiph.Org Foundation
-             *
-             * Redistribution and use in source and binary forms, with or without
-             * modification, are permitted provided that the following conditions
-             * are met:
-             *
-             * - Redistributions of source code must retain the above copyright
-             * notice, this list of conditions and the following disclaimer.
-             *
-             * - Redistributions in binary form must reproduce the above copyright
-             * notice, this list of conditions and the following disclaimer in the
-             * documentation and/or other materials provided with the distribution.
-             *
-             * - Neither the name of the Xiph.org Foundation nor the names of its
-             * contributors may be used to endorse or promote products derived from
-             * this software without specific prior written permission.
-             *
-             * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-             * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-             * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-             * A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
-             * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-             * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-             * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-             * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-             * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-             * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-             * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-             */
-
-            #endregion License notice
-
-            var partitions = 1u << partitionOrder;
-            var partitionSamples = blockSize >> partitionOrder;
-            var encodingParameterLength = (byte)(isRice2 ? 5 : 4);
-            var parameterEscape = isRice2 ? 0b11111 : 0b1111;
-            Debug.Assert(partitionOrder > 0 ? partitionSamples >= predictorOrder : blockSize >= predictorOrder);
-            var sample = 0;
-            var bH = buffer;
-            for (var partition = 0; partition < partitions; partition++)
-            {
-                if (!bitReader.ReadBitsUInt32(encodingParameterLength, out var t)) return false;
-                var riceParameter = (int)t;
-                if (riceParameter < parameterEscape)
-                {
-                    var u = partition == 0 ? partitionSamples - predictorOrder : partitionSamples;
-                    if (!bitReader.ReadRiceCodes(bH.SliceWhile(u), riceParameter)) return false;
-                    bH = bH.Slice(u);
-                }
-                else
-                {
-                    if (!bitReader.ReadBitsUInt32(5, out t)) return false;
-                    var bits = (byte)t;
-                    var u = partition == 0 ? partitionSamples - predictorOrder : partitionSamples;
-                    for (var i = 0; i < u; i++)
-                    {
-                        if (!bitReader.ReadBitsUInt32(bits, out t)) return false;
-                        bH[i] = (int)t;
-                    }
-                    bH = bH.Slice(u);
-                }
-            }
-            return true;
-        }
-
         /// <summary>
         /// Shifts the values in specified <paramref name="span"/> left with specified <paramref name="shift"/>.
         /// </summary>
         /// <param name="span">The span.</param>
         /// <param name="shift">The shift.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static void ShiftLeft(Span<int> span, int shift)
+        public static void ShiftLeftLogical(Span<int> span, int shift)
         {
-#if NET5_0_OR_GREATER
-            if (ShiftLeftArm(span, shift)) return;
-#endif
-#if NETCOREAPP3_1_OR_GREATER
-            if (ShiftLeftX86(span, shift)) return;
-#endif
+            if ((shift & 31) == 0 || span.IsEmpty) return;
+            if (ShiftLeftLogicalArm(span, shift)) return;
+            if (ShiftLeftLogicalX86(span, shift)) return;
             //fallback
-            if (ShiftLeftStandard(shift, span)) return;
-            ShiftLeftSimple(shift, span);
+            if (ShiftLeftLogicalStandard(shift, span)) return;
+            ShiftLeftLogicalSimple(shift, span);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static bool ShiftLeftStandard(int shift, Span<int> span)
+        internal static bool ShiftLeftLogicalStandard(int shift, Span<int> span)
         {
             unsafe
             {
@@ -213,7 +59,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static void ShiftLeftSimple(int shift, Span<int> span)
+        internal static void ShiftLeftLogicalSimple(int shift, Span<int> span)
         {
             for (var i = 0; i < span.Length; i++)
             {
@@ -224,7 +70,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #if NET5_0_OR_GREATER
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static bool ShiftLeftArm(Span<int> span, int shift)
+        internal static bool ShiftLeftLogicalArm(Span<int> span, int shift)
         {
             if (!AdvSimd.IsSupported) return false;
             unsafe
@@ -291,23 +137,23 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #if NETCOREAPP3_1_OR_GREATER
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static bool ShiftLeftX86(Span<int> span, int shift)
+        internal static bool ShiftLeftLogicalX86(Span<int> span, int shift)
         {
             if (Avx2.IsSupported)
             {
-                ShiftLeftAvx2(span, shift);
+                ShiftLeftLogicalAvx2(span, shift);
                 return true;
             }
             if (Sse2.IsSupported)
             {
-                ShiftLeftSse2(span, shift);
+                ShiftLeftLogicalSse2(span, shift);
                 return true;
             }
             return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static void ShiftLeftAvx2(Span<int> span, int shift)
+        internal static void ShiftLeftLogicalAvx2(Span<int> span, int shift)
         {
             unsafe
             {
@@ -369,7 +215,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static void ShiftLeftSse2(Span<int> span, int shift)
+        internal static void ShiftLeftLogicalSse2(Span<int> span, int shift)
         {
             unsafe
             {

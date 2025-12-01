@@ -23,7 +23,7 @@ namespace Shamisen.Benchmarks.Analysis.FastFourierTransformationBenchmarks
             {
                 static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a)
                 {
-                    var n = (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                    var n = (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                     return 5 * n * MathI.LogBase2((uint)n);
                 }
                 _ = AddColumn(new FrameThroughputColumn(FrameSelector) { ColumnName = "FFT Throughput [FLOPS]", Legend = "FLOPs processed per second" });
@@ -32,8 +32,8 @@ namespace Shamisen.Benchmarks.Analysis.FastFourierTransformationBenchmarks
         }
         [Params(/*131072, 65536, 32768, 16384, */8192, 4096, 2048, 1024)]
         public int Frames { get; set; }
-        private ComplexF[] x;
-        private FixedSizeCooleyTukeyFftSingle fftp;
+        private ComplexF[]? x;
+        private FixedSizeCooleyTukeyFftSingle? fftp;
 
         [GlobalSetup]
         public void Setup()
@@ -45,6 +45,6 @@ namespace Shamisen.Benchmarks.Analysis.FastFourierTransformationBenchmarks
         //[Benchmark]
         //public void PerformForward() => FastFourierTransformation.FFT(x, FftMode.Forward);
         [Benchmark]
-        public void PerformBackward() => fftp.PerformFft(x);
+        public void PerformBackward() => fftp?.PerformFft(x);
     }
 }

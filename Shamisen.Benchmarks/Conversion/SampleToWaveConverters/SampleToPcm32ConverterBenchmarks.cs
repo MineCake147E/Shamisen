@@ -23,14 +23,14 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
         {
             public Config()
             {
-                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(FrameSelector));
             }
         }
 
-        private IReadableAudioSource<float, SampleFormat> source;
-        private SampleToPcm32Converter converter;
-        private byte[] buffer;
+        private IReadableAudioSource<float, SampleFormat>? source;
+        private SampleToPcm32Converter? converter;
+        private byte[]? buffer;
         private const int SampleRate = 192000;
 
         [Params(1)]
@@ -59,8 +59,9 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
         [Benchmark]
         public void SampleToPcm32()
         {
+            // TODO: Per-Intrinsics Benchmarks
             var span = buffer.AsSpan();
-            _ = converter.Read(span);
+            _ = converter?.Read(span);
         }
 
         [GlobalCleanup]

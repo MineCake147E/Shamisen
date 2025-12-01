@@ -10,8 +10,8 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 
-using Shamisen.Conversion.WaveToSampleConverters;
 using Shamisen.Analysis;
+using Shamisen.Conversion.WaveToSampleConverters;
 
 namespace Shamisen.Benchmarks.Analysis
 {
@@ -35,7 +35,7 @@ namespace Shamisen.Benchmarks.Analysis
         }
         [Params(131072, 65536, 32768, 16384, 8192, 4096, 2048, 1024)]
         public int Frames { get; set; }
-        private ComplexF[] x;
+        private ComplexF[]? x;
 
         [GlobalSetup]
         public void Setup() => x = new ComplexF[Frames];//RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(x.AsSpan()));//Pcm32ToSampleConverter.ProcessNormal(MemoryMarshal.Cast<ComplexF, float>(x.AsSpan()));

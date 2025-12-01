@@ -53,39 +53,35 @@ namespace Shamisen.Codecs.Flac.SubFrames
     {
         internal static partial class X86
         {
-            internal static bool IsSupported => Avx2.IsSupported || Sse41.IsSupported;
+            internal static bool IsSupported => (Avx512F.IsSupported && Avx512F.VL.IsSupported) || Avx2.IsSupported || Sse41.IsSupported;
+            internal static bool IsSse41Supported => Sse41.IsSupported;
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            internal static void RestoreSignal(int shiftsNeeded, int accumulatorBitsRequired, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal static void RestoreSignal(in RestoreParameters parameters)
             {
-                if (Avx2.IsSupported)
+                if (Avx512F.IsSupported && Avx512F.VL.IsSupported)
                 {
-                    RestoreSignalAvx2(shiftsNeeded, accumulatorBitsRequired, residual, coeffs, output);
+                    RestoreSignalAvx512FVL(in parameters);
                     return;
                 }
-                RestoreSignalSse41(shiftsNeeded, accumulatorBitsRequired, residual, coeffs, output);
-            }
-/*
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe delegate* managed<int, ReadOnlySpan<int>, ReadOnlySpan<int>, Span<int>, void> GetRestoreSignalFunctionPointer(int order)
-            {
                 if (Avx2.IsSupported)
                 {
-                    return GetRestoreSignalFunctionPointerAvx2(order);
+                    RestoreSignalAvx2(in parameters);
+                    return;
                 }
-                return GetRestoreSignalFunctionPointerSse41(order);
+                RestoreSignalSse41(in parameters);
             }
-*/
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            internal static void RestoreSignalSse41(int shiftsNeeded, int accumulatorBitsRequired, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal static void RestoreSignalSse41(in RestoreParameters parameters)
             {
-                switch (accumulatorBitsRequired)
+                switch (parameters.AccumulatorBitsRequired)
                 {
                     case <= 32:
-                        RestoreSignal32Sse41(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41(in parameters);
                         return;
                     case <= 64:
-                        RestoreSignal64Sse41(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41(in parameters);
                         return;
                     default:
                         throw new FlacException("Invalid FLAC stream!");
@@ -93,3613 +89,6590 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            internal static void RestoreSignal32Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static void RestoreSignal32Sse41(in RestoreParameters parameters)
             {
-                var order = coeffs.Length;
-                switch (order)
+                switch (parameters.PredictorOrder)
                 {
                     case 1:
-                        if (RuntimeFeature.IsDynamicCodeCompiled && 32 <= Unsafe.SizeOf<nint>() * 8 && 32 <= Unsafe.SizeOf<nint>() * 8)
+                        if (Unsafe.SizeOf<nint>() == sizeof(long) || (RuntimeFeature.IsDynamicCodeCompiled && parameters.MultiplyBitsRequired <= Unsafe.SizeOf<nint>() * 8 && parameters.AccumulatorBitsRequired <= Unsafe.SizeOf<nint>() * 8))
                         {
-                            RestoreSignalNativeStandardOrder1(shiftsNeeded, residual, coeffs, output);
+                            RestoreSignalNativeStandardOrder1(in parameters);
                         }
                         else
                         {
-                            RestoreSignal64StandardOrder1(shiftsNeeded, residual, coeffs, output);
+                            RestoreSignal64StandardOrder1(in parameters);
                         }
                         return;
                     case 2:
-                        RestoreSignal64Sse41Order2(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 3:
-                        RestoreSignal64Sse41Order3(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 4:
-                        RestoreSignal64Sse41Order4(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 5:
-                        RestoreSignal64Sse41Order5(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 6:
-                        RestoreSignal64Sse41Order6(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 7:
-                        RestoreSignal64Sse41Order7(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 8:
-                        RestoreSignal64Sse41Order8(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 9:
-                        RestoreSignal32Sse41Order9(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 10:
-                        RestoreSignal32Sse41Order10(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 11:
-                        RestoreSignal32Sse41Order11(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 12:
-                        RestoreSignal32Sse41Order12(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 13:
-                        RestoreSignal32Sse41Order13(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 14:
-                        RestoreSignal32Sse41Order14(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 15:
-                        RestoreSignal32Sse41Order15(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 16:
-                        RestoreSignal32Sse41Order16(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 17:
-                        RestoreSignal32Sse41Order17(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 18:
-                        RestoreSignal32Sse41Order18(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 19:
-                        RestoreSignal32Sse41Order19(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 20:
-                        RestoreSignal32Sse41Order20(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 21:
-                        RestoreSignal32Sse41Order21(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 22:
-                        RestoreSignal32Sse41Order22(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 23:
-                        RestoreSignal32Sse41Order23(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 24:
-                        RestoreSignal32Sse41Order24(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 25:
-                        RestoreSignal32Sse41Order25(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 26:
-                        RestoreSignal32Sse41Order26(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 27:
-                        RestoreSignal32Sse41Order27(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 28:
-                        RestoreSignal32Sse41Order28(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 29:
-                        RestoreSignal32Sse41Order29(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 30:
-                        RestoreSignal32Sse41Order30(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 31:
-                        RestoreSignal32Sse41Order31(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 32:
-                        RestoreSignal32Sse41Order32(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    default:
-                        throw new FlacException("Invalid FLAC stream!");
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            internal static void RestoreSignal64Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                var order = coeffs.Length;
-                switch (order)
-                {
-                    case 1:
-                        if (RuntimeFeature.IsDynamicCodeCompiled && 64 <= Unsafe.SizeOf<nint>() * 8 && 64 <= Unsafe.SizeOf<nint>() * 8)
+                        if (Unsafe.SizeOf<nint>() == sizeof(long) || (RuntimeFeature.IsDynamicCodeCompiled && parameters.MultiplyBitsRequired <= Unsafe.SizeOf<nint>() * 8 && parameters.AccumulatorBitsRequired <= Unsafe.SizeOf<nint>() * 8))
                         {
-                            RestoreSignalNativeStandardOrder1(shiftsNeeded, residual, coeffs, output);
+                            RestoreSignalNativeStandardOrder2(in parameters);
                         }
                         else
                         {
-                            RestoreSignal64StandardOrder1(shiftsNeeded, residual, coeffs, output);
+                            RestoreSignal64StandardOrder2(in parameters);
                         }
                         return;
-                    case 2:
-                        RestoreSignal64Sse41Order2(shiftsNeeded, residual, coeffs, output);
-                        return;
                     case 3:
-                        RestoreSignal64Sse41Order3(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 4:
-                        RestoreSignal64Sse41Order4(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 5:
-                        RestoreSignal64Sse41Order5(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 6:
-                        RestoreSignal64Sse41Order6(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 7:
-                        RestoreSignal64Sse41Order7(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 8:
-                        RestoreSignal64Sse41Order8(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 9:
-                        RestoreSignal64Sse41Order9(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 10:
-                        RestoreSignal64Sse41Order10(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 11:
-                        RestoreSignal64Sse41Order11(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 12:
-                        RestoreSignal64Sse41Order12(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 13:
-                        RestoreSignal64Sse41Order13(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 14:
-                        RestoreSignal64Sse41Order14(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 15:
-                        RestoreSignal64Sse41Order15(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 16:
-                        RestoreSignal64Sse41Order16(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 17:
-                        RestoreSignal64Sse41Order17(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 18:
-                        RestoreSignal64Sse41Order18(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 19:
-                        RestoreSignal64Sse41Order19(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 20:
-                        RestoreSignal64Sse41Order20(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 21:
-                        RestoreSignal64Sse41Order21(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 22:
-                        RestoreSignal64Sse41Order22(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 23:
-                        RestoreSignal64Sse41Order23(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 24:
-                        RestoreSignal64Sse41Order24(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 25:
-                        RestoreSignal64Sse41Order25(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 26:
-                        RestoreSignal64Sse41Order26(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 27:
-                        RestoreSignal64Sse41Order27(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 28:
-                        RestoreSignal64Sse41Order28(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 29:
-                        RestoreSignal64Sse41Order29(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 30:
-                        RestoreSignal64Sse41Order30(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 31:
-                        RestoreSignal64Sse41Order31(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 32:
-                        RestoreSignal64Sse41Order32(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    default:
-                        throw new FlacException("Invalid FLAC stream!");
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            internal static void RestoreSignalWide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                if (Avx2.IsSupported)
-                {
-                    RestoreSignalWideAvx2(shiftsNeeded, residual, coeffs, output);
-                    return;
-                }
-                RestoreSignal64Sse41(shiftsNeeded, residual, coeffs, output);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            internal static void RestoreSignalWideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                var order = coeffs.Length;
-                switch (order)
-                {
-                    case 1:
-                        if (RuntimeFeature.IsDynamicCodeCompiled && 64 <= Unsafe.SizeOf<nint>() * 8 && 64 <= Unsafe.SizeOf<nint>() * 8)
+                        if (Unsafe.SizeOf<nint>() == sizeof(long) || (RuntimeFeature.IsDynamicCodeCompiled && parameters.MultiplyBitsRequired <= Unsafe.SizeOf<nint>() * 8 && parameters.AccumulatorBitsRequired <= Unsafe.SizeOf<nint>() * 8))
                         {
-                            RestoreSignalNativeStandardOrder1(shiftsNeeded, residual, coeffs, output);
+                            RestoreSignalNativeStandardOrder3(in parameters);
                         }
                         else
                         {
-                            RestoreSignal64StandardOrder1(shiftsNeeded, residual, coeffs, output);
+                            RestoreSignal64StandardOrder3(in parameters);
                         }
                         return;
-                    case 2:
-                        RestoreSignal64Sse41Order2(shiftsNeeded, residual, coeffs, output);
-                        return;
-                    case 3:
-                        RestoreSignal64Sse41Order3(shiftsNeeded, residual, coeffs, output);
-                        return;
                     case 4:
-                        RestoreSignal64Sse41Order4(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order4(in parameters);
                         return;
                     case 5:
-                        RestoreSignal64Sse41Order5(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order5(in parameters);
                         return;
                     case 6:
-                        RestoreSignal64Sse41Order6(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order6(in parameters);
                         return;
                     case 7:
-                        RestoreSignal64Sse41Order7(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order7(in parameters);
                         return;
                     case 8:
-                        RestoreSignal64Sse41Order8(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order8(in parameters);
                         return;
                     case 9:
-                        RestoreSignal64Sse41Order9(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order9(in parameters);
                         return;
                     case 10:
-                        RestoreSignal64Sse41Order10(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Sse41Order10(in parameters);
                         return;
                     case 11:
-                        RestoreSignal64Sse41Order11(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order11(in parameters);
                         return;
                     case 12:
-                        RestoreSignal64Sse41Order12(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order12(in parameters);
                         return;
                     case 13:
-                        RestoreSignal64Sse41Order13(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order13(in parameters);
                         return;
                     case 14:
-                        RestoreSignal64Sse41Order14(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order14(in parameters);
                         return;
                     case 15:
-                        RestoreSignal64Sse41Order15(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order15(in parameters);
                         return;
                     case 16:
-                        RestoreSignal64Sse41Order16(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order16(in parameters);
                         return;
                     case 17:
-                        RestoreSignal64Sse41Order17(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order17(in parameters);
                         return;
                     case 18:
-                        RestoreSignal64Sse41Order18(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order18(in parameters);
                         return;
                     case 19:
-                        RestoreSignal64Sse41Order19(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order19(in parameters);
                         return;
                     case 20:
-                        RestoreSignal64Sse41Order20(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order20(in parameters);
                         return;
                     case 21:
-                        RestoreSignal64Sse41Order21(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order21(in parameters);
                         return;
                     case 22:
-                        RestoreSignal64Sse41Order22(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order22(in parameters);
                         return;
                     case 23:
-                        RestoreSignal64Sse41Order23(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order23(in parameters);
                         return;
                     case 24:
-                        RestoreSignal64Sse41Order24(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order24(in parameters);
                         return;
                     case 25:
-                        RestoreSignal64Sse41Order25(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order25(in parameters);
                         return;
                     case 26:
-                        RestoreSignal64Sse41Order26(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order26(in parameters);
                         return;
                     case 27:
-                        RestoreSignal64Sse41Order27(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order27(in parameters);
                         return;
                     case 28:
-                        RestoreSignal64Sse41Order28(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order28(in parameters);
                         return;
                     case 29:
-                        RestoreSignal64Sse41Order29(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order29(in parameters);
                         return;
                     case 30:
-                        RestoreSignal64Sse41Order30(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order30(in parameters);
                         return;
                     case 31:
-                        RestoreSignal64Sse41Order31(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order31(in parameters);
                         return;
                     case 32:
-                        RestoreSignal64Sse41Order32(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal32Sse41Order32(in parameters);
                         return;
                     default:
                         throw new FlacException("Invalid FLAC stream!");
                 }
             }
 
-#region Order1
-#endregion Order1
-#region Order2
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            internal static void RestoreSignal64Sse41(in RestoreParameters parameters)
+            {
+                switch (parameters.PredictorOrder)
+                {
+                    case 1:
+                        if (Unsafe.SizeOf<nint>() == sizeof(long) || (RuntimeFeature.IsDynamicCodeCompiled && parameters.MultiplyBitsRequired <= Unsafe.SizeOf<nint>() * 8 && parameters.AccumulatorBitsRequired <= Unsafe.SizeOf<nint>() * 8))
+                        {
+                            RestoreSignalNativeStandardOrder1(in parameters);
+                        }
+                        else
+                        {
+                            RestoreSignal64StandardOrder1(in parameters);
+                        }
+                        return;
+                    case 2:
+                        if (Unsafe.SizeOf<nint>() == sizeof(long) || (RuntimeFeature.IsDynamicCodeCompiled && parameters.MultiplyBitsRequired <= Unsafe.SizeOf<nint>() * 8 && parameters.AccumulatorBitsRequired <= Unsafe.SizeOf<nint>() * 8))
+                        {
+                            RestoreSignalNativeStandardOrder2(in parameters);
+                        }
+                        else
+                        {
+                            RestoreSignal64StandardOrder2(in parameters);
+                        }
+                        return;
+                    case 3:
+                        if (Unsafe.SizeOf<nint>() == sizeof(long) || (RuntimeFeature.IsDynamicCodeCompiled && parameters.MultiplyBitsRequired <= Unsafe.SizeOf<nint>() * 8 && parameters.AccumulatorBitsRequired <= Unsafe.SizeOf<nint>() * 8))
+                        {
+                            RestoreSignalNativeStandardOrder3(in parameters);
+                        }
+                        else
+                        {
+                            RestoreSignal64StandardOrder3(in parameters);
+                        }
+                        return;
+                    case 4:
+                        RestoreSignal64Sse41Order4(in parameters);
+                        return;
+                    case 5:
+                        RestoreSignal64Sse41Order5(in parameters);
+                        return;
+                    case 6:
+                        RestoreSignal64Sse41Order6(in parameters);
+                        return;
+                    case 7:
+                        RestoreSignal64Sse41Order7(in parameters);
+                        return;
+                    case 8:
+                        RestoreSignal64Sse41Order8(in parameters);
+                        return;
+                    case 9:
+                        RestoreSignal64Sse41Order9(in parameters);
+                        return;
+                    case 10:
+                        RestoreSignal64Sse41Order10(in parameters);
+                        return;
+                    case 11:
+                        RestoreSignal64Sse41Order11(in parameters);
+                        return;
+                    case 12:
+                        RestoreSignal64Sse41Order12(in parameters);
+                        return;
+                    case 13:
+                        RestoreSignal64Sse41Order13(in parameters);
+                        return;
+                    case 14:
+                        RestoreSignal64Sse41Order14(in parameters);
+                        return;
+                    case 15:
+                        RestoreSignal64Sse41Order15(in parameters);
+                        return;
+                    case 16:
+                        RestoreSignal64Sse41Order16(in parameters);
+                        return;
+                    case 17:
+                        RestoreSignal64Sse41Order17(in parameters);
+                        return;
+                    case 18:
+                        RestoreSignal64Sse41Order18(in parameters);
+                        return;
+                    case 19:
+                        RestoreSignal64Sse41Order19(in parameters);
+                        return;
+                    case 20:
+                        RestoreSignal64Sse41Order20(in parameters);
+                        return;
+                    case 21:
+                        RestoreSignal64Sse41Order21(in parameters);
+                        return;
+                    case 22:
+                        RestoreSignal64Sse41Order22(in parameters);
+                        return;
+                    case 23:
+                        RestoreSignal64Sse41Order23(in parameters);
+                        return;
+                    case 24:
+                        RestoreSignal64Sse41Order24(in parameters);
+                        return;
+                    case 25:
+                        RestoreSignal64Sse41Order25(in parameters);
+                        return;
+                    case 26:
+                        RestoreSignal64Sse41Order26(in parameters);
+                        return;
+                    case 27:
+                        RestoreSignal64Sse41Order27(in parameters);
+                        return;
+                    case 28:
+                        RestoreSignal64Sse41Order28(in parameters);
+                        return;
+                    case 29:
+                        RestoreSignal64Sse41Order29(in parameters);
+                        return;
+                    case 30:
+                        RestoreSignal64Sse41Order30(in parameters);
+                        return;
+                    case 31:
+                        RestoreSignal64Sse41Order31(in parameters);
+                        return;
+                    case 32:
+                        RestoreSignal64Sse41Order32(in parameters);
+                        return;
+                    default:
+                        throw new FlacException("Invalid FLAC stream!");
+                }
+            }
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal32Sse41Order11(in RestoreParameters parameters)
             {
-                const int Order = 2;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
+                const int Order = 11;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = vzero;
+                if (coeffs.Length - 10 >= Vector128<int>.Count)
                 {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
+                    vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 1)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff2 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 10;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff2 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff2.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff2 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum2 = Sse41.MultiplyLow(vcoeff2, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    vsum2 = prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    vsum2 = prodLow;
                 }
             }
-#endregion Order2
-#region Order3
+
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order3(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal32Sse41Order12(in RestoreParameters parameters)
             {
-                const int Order = 3;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
+                const int Order = 12;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 2)).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 1))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_00_11_00);
-                for(nint i = 0; i < dataLength;)
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = vzero;
+                if (coeffs.Length - 10 >= Vector128<int>.Count)
                 {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
+                    vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 2)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff2 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 10;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff2 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff2.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff2 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum2 = Sse41.MultiplyLow(vcoeff2, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vzero, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vzero, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
                 }
             }
-#endregion Order3
-#region Order4
+
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order4(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal32Sse41Order13(in RestoreParameters parameters)
+            {
+                const int Order = 13;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = vzero;
+                if (coeffs.Length - 10 >= Vector128<int>.Count)
+                {
+                    vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 3)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff2 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 10;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff2 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff2.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff2 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum2 = Sse41.MultiplyLow(vcoeff2, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vzero, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vzero, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order14(in RestoreParameters parameters)
+            {
+                const int Order = 14;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum2 = Sse41.MultiplyLow(vcoeff2, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vzero, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vzero, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order15(in RestoreParameters parameters)
+            {
+                const int Order = 15;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = vzero;
+                if (coeffs.Length - 14 >= Vector128<int>.Count)
+                {
+                    vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 1)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff3 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 14;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff3 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff3.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff3 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum3 = Sse41.MultiplyLow(vcoeff3, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    vsum3 = prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    vsum3 = prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order16(in RestoreParameters parameters)
+            {
+                const int Order = 16;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = vzero;
+                if (coeffs.Length - 14 >= Vector128<int>.Count)
+                {
+                    vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 2)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff3 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 14;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff3 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff3.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff3 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum3 = Sse41.MultiplyLow(vcoeff3, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vzero, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vzero, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order17(in RestoreParameters parameters)
+            {
+                const int Order = 17;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = vzero;
+                if (coeffs.Length - 14 >= Vector128<int>.Count)
+                {
+                    vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 3)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff3 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 14;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff3 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff3.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff3 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum3 = Sse41.MultiplyLow(vcoeff3, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vzero, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vzero, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order18(in RestoreParameters parameters)
+            {
+                const int Order = 18;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum3 = Sse41.MultiplyLow(vcoeff3, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vzero, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vzero, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order19(in RestoreParameters parameters)
+            {
+                const int Order = 19;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero, vsum4 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                var vcoeff4 = vzero;
+                if (coeffs.Length - 18 >= Vector128<int>.Count)
+                {
+                    vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 1)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff4 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 18;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff4 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff4.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff4 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum4 = Sse41.MultiplyLow(vcoeff4, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    vsum4 = prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    vsum4 = prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order20(in RestoreParameters parameters)
+            {
+                const int Order = 20;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero, vsum4 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                var vcoeff4 = vzero;
+                if (coeffs.Length - 18 >= Vector128<int>.Count)
+                {
+                    vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 2)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff4 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 18;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff4 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff4.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff4 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum4 = Sse41.MultiplyLow(vcoeff4, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vzero, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vzero, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order21(in RestoreParameters parameters)
+            {
+                const int Order = 21;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero, vsum4 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                var vcoeff4 = vzero;
+                if (coeffs.Length - 18 >= Vector128<int>.Count)
+                {
+                    vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 3)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff4 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 18;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff4 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff4.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff4 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum4 = Sse41.MultiplyLow(vcoeff4, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vzero, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vzero, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order22(in RestoreParameters parameters)
+            {
+                const int Order = 22;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero, vsum4 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum4 = Sse41.MultiplyLow(vcoeff4, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vzero, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vzero, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order23(in RestoreParameters parameters)
+            {
+                const int Order = 23;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero, vsum4 = vzero, vsum5 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                var vcoeff5 = vzero;
+                if (coeffs.Length - 22 >= Vector128<int>.Count)
+                {
+                    vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 1)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff5 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 22;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff5 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff5.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff5 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum5 = Sse41.MultiplyLow(vcoeff5, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    vsum5 = prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    vsum5 = prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order24(in RestoreParameters parameters)
+            {
+                const int Order = 24;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero, vsum4 = vzero, vsum5 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                var vcoeff5 = vzero;
+                if (coeffs.Length - 22 >= Vector128<int>.Count)
+                {
+                    vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 2)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff5 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 22;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff5 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff5.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff5 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum5 = Sse41.MultiplyLow(vcoeff5, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vzero, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vzero, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order25(in RestoreParameters parameters)
+            {
+                const int Order = 25;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero, vsum4 = vzero, vsum5 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                var vcoeff5 = vzero;
+                if (coeffs.Length - 22 >= Vector128<int>.Count)
+                {
+                    vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 3)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff5 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 22;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff5 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff5.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff5 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum5 = Sse41.MultiplyLow(vcoeff5, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vzero, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vzero, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order26(in RestoreParameters parameters)
+            {
+                const int Order = 26;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero, vsum4 = vzero, vsum5 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22));
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum5 = Sse41.MultiplyLow(vcoeff5, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vzero, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vzero, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order27(in RestoreParameters parameters)
+            {
+                const int Order = 27;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero, vsum4 = vzero, vsum5 = vzero, vsum6 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22));
+                var vcoeff6 = vzero;
+                if (coeffs.Length - 26 >= Vector128<int>.Count)
+                {
+                    vcoeff6 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 26));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 1)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff6 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 26;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff6 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff6.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff6 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum6 = Sse41.MultiplyLow(vcoeff6, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                    prodLow = Sse41.Multiply(vcoeff6.AsInt32(), vlast).AsInt32();
+                    vsum6 = prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                    prodLow = Sse41.Multiply(vcoeff6.AsInt32(), vlast).AsInt32();
+                    vsum6 = prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order28(in RestoreParameters parameters)
+            {
+                const int Order = 28;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero, vsum4 = vzero, vsum5 = vzero, vsum6 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22));
+                var vcoeff6 = vzero;
+                if (coeffs.Length - 26 >= Vector128<int>.Count)
+                {
+                    vcoeff6 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 26));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 2)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff6 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 26;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff6 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff6.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff6 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum6 = Sse41.MultiplyLow(vcoeff6, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff6, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff6.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum6 = Ssse3.AlignRight(vzero, vsum6, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum6 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff6, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff6.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum6 = Ssse3.AlignRight(vzero, vsum6, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum6 += prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order29(in RestoreParameters parameters)
+            {
+                const int Order = 29;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero, vsum4 = vzero, vsum5 = vzero, vsum6 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22));
+                var vcoeff6 = vzero;
+                if (coeffs.Length - 26 >= Vector128<int>.Count)
+                {
+                    vcoeff6 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 26));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 3)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff6 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 26;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff6 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff6.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff6 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum6 = Sse41.MultiplyLow(vcoeff6, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff6, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff6.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum6 = Ssse3.AlignRight(vzero, vsum6, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum6 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff6, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff6.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum6 = Ssse3.AlignRight(vzero, vsum6, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum6 += prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order30(in RestoreParameters parameters)
+            {
+                const int Order = 30;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero, vsum4 = vzero, vsum5 = vzero, vsum6 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22));
+                var vcoeff6 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 26));
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum6 = Sse41.MultiplyLow(vcoeff6, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff6, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff6.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum6 = Ssse3.AlignRight(vzero, vsum6, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum6 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff6, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff6.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum6 = Ssse3.AlignRight(vzero, vsum6, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum6 += prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order31(in RestoreParameters parameters)
+            {
+                const int Order = 31;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero, vsum4 = vzero, vsum5 = vzero, vsum6 = vzero, vsum7 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22));
+                var vcoeff6 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 26));
+                var vcoeff7 = vzero;
+                if (coeffs.Length - 30 >= Vector128<int>.Count)
+                {
+                    vcoeff7 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 30));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 1)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff7 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 30;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff7 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 30))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff7.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff7 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum7 = Sse41.MultiplyLow(vcoeff7, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff6, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff6.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum6 += prodLow;
+                    prodLow = Sse41.Multiply(vcoeff7.AsInt32(), vlast).AsInt32();
+                    vsum7 = prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff6, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff6.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum6 += prodLow;
+                    prodLow = Sse41.Multiply(vcoeff7.AsInt32(), vlast).AsInt32();
+                    vsum7 = prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal32Sse41Order32(in RestoreParameters parameters)
+            {
+                const int Order = 32;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                int sum0 = 0, sum1 = 0;
+                Vector128<int> vsum0 = vzero, vsum1 = vzero, vsum2 = vzero, vsum3 = vzero, vsum4 = vzero, vsum5 = vzero, vsum6 = vzero, vsum7 = vzero;
+                nint dataLength = output.Length - Order;
+                int coeff0 = Unsafe.Add(ref c, 0);
+                int coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 2));
+                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 6));
+                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 10));
+                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 14));
+                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 18));
+                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 22));
+                var vcoeff6 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 26));
+                var vcoeff7 = vzero;
+                if (coeffs.Length - 30 >= Vector128<int>.Count)
+                {
+                    vcoeff7 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 30));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - 2)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff7 = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - 30;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff7 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 30))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff7.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff7 = loadLow;
+                        }
+                    }
+                }
+
+                Vector128<int> prodHigh = vzero, prodLow = vzero;
+                int nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum7 = Sse41.MultiplyLow(vcoeff7, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast);
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff6, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff6.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum6 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff7, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff7.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum7 = Ssse3.AlignRight(vzero, vsum7, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum7 += prodLow;
+                }
+                var eax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prodHigh = Sse2.Shuffle(vcoeff0, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff0.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum0 += prodLow;
+                    sum2 = vsum0.GetElement(0);
+                    prodHigh = Sse2.Shuffle(vcoeff1, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff1.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum1 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff2, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff2.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum2 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff3, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff3.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum3 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff4, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff4.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum4 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff5, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff5.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum5 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff6, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff6.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum6 += prodLow;
+                    prodHigh = Sse2.Shuffle(vcoeff7, 0b11_11_01_01);
+                    prodHigh = Sse41.Multiply(prodHigh.AsInt32(), vlast).AsInt32();
+                    prodLow = Sse41.Multiply(vcoeff7.AsInt32(), vlast).AsInt32();
+                    prodHigh = Sse2.Shuffle(prodHigh, 0b10_11_00_01);
+                    vsum7 = Ssse3.AlignRight(vzero, vsum7, 4);
+                    prodLow = Sse41.Blend(prodLow.AsSingle(), prodHigh.AsSingle(), 0b1010).AsInt32();
+                    vsum7 += prodLow;
+                }
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+            internal static unsafe void RestoreSignal64Sse41Order4(in RestoreParameters parameters)
             {
                 const int Order = 4;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 2))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
+                Vector128<long> vsum0 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum0 = Sse41.Multiply(vcoeff0, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
                 {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vzero, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                }
+                var rax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vzero, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
                 }
             }
-#endregion Order4
-#region Order5
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order5(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order5(in RestoreParameters parameters)
             {
                 const int Order = 5;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 4)).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 3))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 1))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_00_11_00);
-                for(nint i = 0; i < dataLength;)
+                Vector128<long> vsum0 = default, vsum1 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = vzero.AsInt32();
+                if (coeffs.Length - 4 >= Vector128<long>.Count)
                 {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
+                    vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                }
+                else
+                {
+                    vcoeff1 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1));
+                }
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum1 = Sse41.Multiply(vcoeff1, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = prod;
                 }
             }
-#endregion Order5
-#region Order6
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order6(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order6(in RestoreParameters parameters)
             {
                 const int Order = 6;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 4))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 2))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
+                Vector128<long> vsum0 = default, vsum1 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum1 = Sse41.Multiply(vcoeff1, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
                 {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vzero, vsum1, 8);
+                    vsum1 += prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vzero, vsum1, 8);
+                    vsum1 += prod;
                 }
             }
-#endregion Order6
-#region Order7
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order7(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order7(in RestoreParameters parameters)
             {
                 const int Order = 7;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 6)).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 5))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 3))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 1))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_00_11_00);
-                for(nint i = 0; i < dataLength;)
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = vzero.AsInt32();
+                if (coeffs.Length - 6 >= Vector128<long>.Count)
                 {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
+                    vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                }
+                else
+                {
+                    vcoeff2 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1));
+                }
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum2 = Sse41.Multiply(vcoeff2, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = prod;
                 }
             }
-#endregion Order7
-#region Order8
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order8(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order8(in RestoreParameters parameters)
             {
                 const int Order = 8;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 6))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 4))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 2))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum2 = Sse41.Multiply(vcoeff2, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
                 {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vzero, vsum2, 8);
+                    vsum2 += prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vzero, vsum2, 8);
+                    vsum2 += prod;
                 }
             }
-#endregion Order8
-#region Order9
+
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order9(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order9(in RestoreParameters parameters)
             {
                 const int Order = 9;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 8));
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 5)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 1)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe((int)o), 0b11_11_11_00);
-                Vector128<int> sum0, sum1;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = vzero.AsInt32();
+                if (coeffs.Length - 8 >= Vector128<long>.Count)
+                {
+                    vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                }
+                else
+                {
+                    vcoeff3 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1));
+                }
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum3 = Sse41.Multiply(vcoeff3, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order9(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 9;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 8)).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 7))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 5))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 3))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 1))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_00_11_00);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order9
-#region Order10
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order10(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order10(in RestoreParameters parameters)
             {
                 const int Order = 10;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsInt32();
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 6)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 2)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_01_00_01);
-                Vector128<int> sum0, sum1;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum3 = Sse41.Multiply(vcoeff3, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vzero, vsum3, 8);
+                    vsum3 += prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vzero, vsum3, 8);
+                    vsum3 += prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order10(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 10;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 8))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 6))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 4))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 2))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order10
-#region Order11
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order11(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order11(in RestoreParameters parameters)
             {
                 const int Order = 11;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Sse2.ShiftRightLogical128BitLane(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 7)), 4);
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 7)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 3)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref o), 0b11_00_01_10);
-                Vector128<int> sum0, sum1;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = vzero.AsInt32();
+                if (coeffs.Length - 10 >= Vector128<long>.Count)
+                {
+                    vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                }
+                else
+                {
+                    vcoeff4 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1));
+                }
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum4 = Sse41.Multiply(vcoeff4, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order11(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 11;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 10)).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 9))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 7))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 5))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 3))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 1))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_00_11_00);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order11
-#region Order12
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order12(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order12(in RestoreParameters parameters)
             {
                 const int Order = 12;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 8)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 4)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 0)), 0b00_01_10_11);
-                Vector128<int> sum0, sum1;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum4 = Sse41.Multiply(vcoeff4, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vzero, vsum4, 8);
+                    vsum4 += prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vzero, vsum4, 8);
+                    vsum4 += prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order12(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 12;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 10))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 8))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 6))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 4))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 2))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order12
-#region Order13
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order13(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order13(in RestoreParameters parameters)
             {
                 const int Order = 13;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 12));
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 9)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 5)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 1)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe((int)o), 0b11_11_11_00);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = vzero.AsInt32();
+                if (coeffs.Length - 12 >= Vector128<long>.Count)
+                {
+                    vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                }
+                else
+                {
+                    vcoeff5 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1));
+                }
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum5 = Sse41.Multiply(vcoeff5, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order13(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 13;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 12)).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 11))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 9))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 7))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 5))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 3))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 1))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_00_11_00);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order13
-#region Order14
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order14(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order14(in RestoreParameters parameters)
             {
                 const int Order = 14;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsInt32();
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 10)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 6)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 2)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_01_00_01);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum5 = Sse41.Multiply(vcoeff5, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vzero, vsum5, 8);
+                    vsum5 += prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vzero, vsum5, 8);
+                    vsum5 += prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order14(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 14;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 12))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 10))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 8))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 6))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 4))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 2))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order14
-#region Order15
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order15(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order15(in RestoreParameters parameters)
             {
                 const int Order = 15;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Sse2.ShiftRightLogical128BitLane(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 11)), 4);
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 11)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 7)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 3)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref o), 0b11_00_01_10);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = vzero.AsInt32();
+                if (coeffs.Length - 14 >= Vector128<long>.Count)
+                {
+                    vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                }
+                else
+                {
+                    vcoeff6 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1));
+                }
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum6 = Sse41.Multiply(vcoeff6, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order15(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 15;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 14)).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 13))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 11))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 9))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 7))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 5))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 3))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 1))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_00_11_00);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order15
-#region Order16
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order16(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order16(in RestoreParameters parameters)
             {
                 const int Order = 16;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 12)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 8)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 4)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 0)), 0b00_01_10_11);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum6 = Sse41.Multiply(vcoeff6, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vzero, vsum6, 8);
+                    vsum6 += prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vzero, vsum6, 8);
+                    vsum6 += prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order16(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 16;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 14))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 12))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 10))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 8))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 6))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 4))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 2))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order16
-#region Order17
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order17(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order17(in RestoreParameters parameters)
             {
                 const int Order = 17;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 16));
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 13)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 9)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 5)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 1)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe((int)o), 0b11_11_11_00);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = vzero.AsInt32();
+                if (coeffs.Length - 16 >= Vector128<long>.Count)
+                {
+                    vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                }
+                else
+                {
+                    vcoeff7 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1));
+                }
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum7 = Sse41.Multiply(vcoeff7, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order17(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 17;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 16)).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 15))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 13))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 11))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 9))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 7))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 5))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 3))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 1))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_00_11_00);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order17
-#region Order18
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order18(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order18(in RestoreParameters parameters)
             {
                 const int Order = 18;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsInt32();
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 14)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 10)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 6)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 2)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_01_00_01);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum7 = Sse41.Multiply(vcoeff7, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vzero, vsum7, 8);
+                    vsum7 += prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vzero, vsum7, 8);
+                    vsum7 += prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order18(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 18;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 16))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 14))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 12))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 10))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 8))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 6))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 4))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 2))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order18
-#region Order19
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order19(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order19(in RestoreParameters parameters)
             {
                 const int Order = 19;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Sse2.ShiftRightLogical128BitLane(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 15)), 4);
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 15)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 11)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 7)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 3)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref o), 0b11_00_01_10);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default, vsum8 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                var vcoeff8 = vzero.AsInt32();
+                if (coeffs.Length - 18 >= Vector128<long>.Count)
+                {
+                    vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
+                }
+                else
+                {
+                    vcoeff8 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1));
+                }
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum8 = Sse41.Multiply(vcoeff8, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order19(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 19;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
-                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 18)).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 17))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 15))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 13))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 11))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 9))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 7))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 5))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 3))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 1))).AsInt32(), 0b11_00_11_01);
-                var vprev9 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_00_11_00);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff9, vprev9));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order19
-#region Order20
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order20(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order20(in RestoreParameters parameters)
             {
                 const int Order = 20;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 16));
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 16)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 12)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 8)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 4)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 0)), 0b00_01_10_11);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default, vsum8 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum8 = Sse41.Multiply(vcoeff8, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vzero, vsum8, 8);
+                    vsum8 += prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vzero, vsum8, 8);
+                    vsum8 += prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order20(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 20;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
-                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 18))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 16))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 14))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 12))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 10))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 8))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 6))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 4))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 2))).AsInt32(), 0b11_00_11_01);
-                var vprev9 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff9, vprev9));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order20
-#region Order21
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order21(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order21(in RestoreParameters parameters)
             {
                 const int Order = 21;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff5 = Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 20));
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 17)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 13)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 9)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 5)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 1)), 0b00_01_10_11);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe((int)o), 0b11_11_11_00);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default, vsum8 = default, vsum9 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
+                var vcoeff9 = vzero.AsInt32();
+                if (coeffs.Length - 20 >= Vector128<long>.Count)
+                {
+                    vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
+                }
+                else
+                {
+                    vcoeff9 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1));
+                }
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum9 = Sse41.Multiply(vcoeff9, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum2 = Sse41.MultiplyLow(vcoeff5, vprev5);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order21(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 21;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
-                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
-                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 20)).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 19))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 17))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 15))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 13))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 11))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 9))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 7))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 5))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 3))).AsInt32(), 0b11_00_11_01);
-                var vprev9 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 1))).AsInt32(), 0b11_00_11_01);
-                var vprev10 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_00_11_00);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff9, vprev9));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff10, vprev10));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev10 = Ssse3.AlignRight(vprev10, vprev9, 8);
-                    vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order21
-#region Order22
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order22(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order22(in RestoreParameters parameters)
             {
                 const int Order = 22;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff5 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsInt32();
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 18)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 14)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 10)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 6)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 2)), 0b00_01_10_11);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_01_00_01);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default, vsum8 = default, vsum9 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
+                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum9 = Sse41.Multiply(vcoeff9, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vzero, vsum9, 8);
+                    vsum9 += prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum2 = Sse41.MultiplyLow(vcoeff5, vprev5);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vzero, vsum9, 8);
+                    vsum9 += prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order22(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 22;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
-                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
-                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 20))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 18))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 16))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 14))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 12))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 10))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 8))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 6))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 4))).AsInt32(), 0b11_00_11_01);
-                var vprev9 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 2))).AsInt32(), 0b11_00_11_01);
-                var vprev10 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff9, vprev9));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff10, vprev10));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev10 = Ssse3.AlignRight(vprev10, vprev9, 8);
-                    vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order22
-#region Order23
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order23(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order23(in RestoreParameters parameters)
             {
                 const int Order = 23;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff5 = Sse2.ShiftRightLogical128BitLane(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 19)), 4);
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 19)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 15)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 11)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 7)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 3)), 0b00_01_10_11);
-                var vprev5 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref o), 0b11_00_01_10);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default, vsum8 = default, vsum9 = default, vsum10 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
+                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
+                var vcoeff10 = vzero.AsInt32();
+                if (coeffs.Length - 22 >= Vector128<long>.Count)
+                {
+                    vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
+                }
+                else
+                {
+                    vcoeff10 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1));
+                }
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum10 = Sse41.Multiply(vcoeff10, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum2 = Sse41.MultiplyLow(vcoeff5, vprev5);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order23(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 23;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
-                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
-                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
-                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 22)).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 21))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 19))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 17))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 15))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 13))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 11))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 9))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 7))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 5))).AsInt32(), 0b11_00_11_01);
-                var vprev9 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 3))).AsInt32(), 0b11_00_11_01);
-                var vprev10 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 1))).AsInt32(), 0b11_00_11_01);
-                var vprev11 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_00_11_00);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff9, vprev9));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff10, vprev10));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff11, vprev11));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev11 = Ssse3.AlignRight(vprev11, vprev10, 8);
-                    vprev10 = Ssse3.AlignRight(vprev10, vprev9, 8);
-                    vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order23
-#region Order24
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order24(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order24(in RestoreParameters parameters)
             {
                 const int Order = 24;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 20));
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 20)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 16)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 12)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 8)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 4)), 0b00_01_10_11);
-                var vprev5 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 0)), 0b00_01_10_11);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default, vsum8 = default, vsum9 = default, vsum10 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
+                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
+                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum10 = Sse41.Multiply(vcoeff10, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vzero, vsum10, 8);
+                    vsum10 += prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum2 = Sse41.MultiplyLow(vcoeff5, vprev5);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vzero, vsum10, 8);
+                    vsum10 += prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order24(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 24;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
-                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
-                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
-                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 22))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 20))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 18))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 16))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 14))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 12))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 10))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 8))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 6))).AsInt32(), 0b11_00_11_01);
-                var vprev9 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 4))).AsInt32(), 0b11_00_11_01);
-                var vprev10 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 2))).AsInt32(), 0b11_00_11_01);
-                var vprev11 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff9, vprev9));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff10, vprev10));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff11, vprev11));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev11 = Ssse3.AlignRight(vprev11, vprev10, 8);
-                    vprev10 = Ssse3.AlignRight(vprev10, vprev9, 8);
-                    vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order24
-#region Order25
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order25(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order25(in RestoreParameters parameters)
             {
                 const int Order = 25;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 20));
-                var vcoeff6 = Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 24));
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 21)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 17)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 13)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 9)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 5)), 0b00_01_10_11);
-                var vprev5 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 1)), 0b00_01_10_11);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe((int)o), 0b11_11_11_00);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default, vsum8 = default, vsum9 = default, vsum10 = default, vsum11 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
+                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
+                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
+                var vcoeff11 = vzero.AsInt32();
+                if (coeffs.Length - 24 >= Vector128<long>.Count)
+                {
+                    vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).AsInt32();
+                }
+                else
+                {
+                    vcoeff11 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1));
+                }
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum11 = Sse41.Multiply(vcoeff11, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum2 = Sse41.MultiplyLow(vcoeff5, vprev5);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum2 = Sse41.MultiplyLow(vcoeff6, vprev6);
-                    sum1 = Sse2.Add(sum2, sum1);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order25(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 25;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
-                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
-                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
-                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
-                var vcoeff12 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 24)).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 23))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 21))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 19))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 17))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 15))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 13))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 11))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 9))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 7))).AsInt32(), 0b11_00_11_01);
-                var vprev9 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 5))).AsInt32(), 0b11_00_11_01);
-                var vprev10 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 3))).AsInt32(), 0b11_00_11_01);
-                var vprev11 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 1))).AsInt32(), 0b11_00_11_01);
-                var vprev12 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_00_11_00);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff9, vprev9));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff10, vprev10));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff11, vprev11));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff12, vprev12));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev12 = Ssse3.AlignRight(vprev12, vprev11, 8);
-                    vprev11 = Ssse3.AlignRight(vprev11, vprev10, 8);
-                    vprev10 = Ssse3.AlignRight(vprev10, vprev9, 8);
-                    vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order25
-#region Order26
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order26(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order26(in RestoreParameters parameters)
             {
                 const int Order = 26;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 20));
-                var vcoeff6 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsInt32();
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 22)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 18)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 14)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 10)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 6)), 0b00_01_10_11);
-                var vprev5 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 2)), 0b00_01_10_11);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_01_00_01);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default, vsum8 = default, vsum9 = default, vsum10 = default, vsum11 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
+                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
+                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
+                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).AsInt32();
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum11 = Sse41.Multiply(vcoeff11, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = Ssse3.AlignRight(vzero, vsum11, 8);
+                    vsum11 += prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum2 = Sse41.MultiplyLow(vcoeff5, vprev5);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum2 = Sse41.MultiplyLow(vcoeff6, vprev6);
-                    sum1 = Sse2.Add(sum2, sum1);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = Ssse3.AlignRight(vzero, vsum11, 8);
+                    vsum11 += prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order26(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 26;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
-                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
-                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
-                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
-                var vcoeff12 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 24))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 22))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 20))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 18))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 16))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 14))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 12))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 10))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 8))).AsInt32(), 0b11_00_11_01);
-                var vprev9 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 6))).AsInt32(), 0b11_00_11_01);
-                var vprev10 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 4))).AsInt32(), 0b11_00_11_01);
-                var vprev11 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 2))).AsInt32(), 0b11_00_11_01);
-                var vprev12 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff9, vprev9));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff10, vprev10));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff11, vprev11));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff12, vprev12));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev12 = Ssse3.AlignRight(vprev12, vprev11, 8);
-                    vprev11 = Ssse3.AlignRight(vprev11, vprev10, 8);
-                    vprev10 = Ssse3.AlignRight(vprev10, vprev9, 8);
-                    vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order26
-#region Order27
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order27(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order27(in RestoreParameters parameters)
             {
                 const int Order = 27;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 20));
-                var vcoeff6 = Sse2.ShiftRightLogical128BitLane(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 23)), 4);
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 23)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 19)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 15)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 11)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 7)), 0b00_01_10_11);
-                var vprev5 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 3)), 0b00_01_10_11);
-                var vprev6 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref o), 0b11_00_01_10);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default, vsum8 = default, vsum9 = default, vsum10 = default, vsum11 = default, vsum12 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
+                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
+                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
+                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).AsInt32();
+                var vcoeff12 = vzero.AsInt32();
+                if (coeffs.Length - 26 >= Vector128<long>.Count)
+                {
+                    vcoeff12 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsUInt32()).AsInt32();
+                }
+                else
+                {
+                    vcoeff12 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1));
+                }
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum12 = Sse41.Multiply(vcoeff12, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = Ssse3.AlignRight(vsum12, vsum11, 8);
+                    vsum11 += prod;
+                    prod = Sse41.Multiply(vcoeff12, vlast);
+                    vsum12 = prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum2 = Sse41.MultiplyLow(vcoeff5, vprev5);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum2 = Sse41.MultiplyLow(vcoeff6, vprev6);
-                    sum1 = Sse2.Add(sum2, sum1);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = Ssse3.AlignRight(vsum12, vsum11, 8);
+                    vsum11 += prod;
+                    prod = Sse41.Multiply(vcoeff12, vlast);
+                    vsum12 = prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order27(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 27;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
-                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
-                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
-                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
-                var vcoeff12 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).AsInt32();
-                var vcoeff13 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 26)).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 25))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 23))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 21))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 19))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 17))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 15))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 13))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 11))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 9))).AsInt32(), 0b11_00_11_01);
-                var vprev9 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 7))).AsInt32(), 0b11_00_11_01);
-                var vprev10 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 5))).AsInt32(), 0b11_00_11_01);
-                var vprev11 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 3))).AsInt32(), 0b11_00_11_01);
-                var vprev12 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 1))).AsInt32(), 0b11_00_11_01);
-                var vprev13 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_00_11_00);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff9, vprev9));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff10, vprev10));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff11, vprev11));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff12, vprev12));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff13, vprev13));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev13 = Ssse3.AlignRight(vprev13, vprev12, 8);
-                    vprev12 = Ssse3.AlignRight(vprev12, vprev11, 8);
-                    vprev11 = Ssse3.AlignRight(vprev11, vprev10, 8);
-                    vprev10 = Ssse3.AlignRight(vprev10, vprev9, 8);
-                    vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order27
-#region Order28
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order28(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order28(in RestoreParameters parameters)
             {
                 const int Order = 28;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 20));
-                var vcoeff6 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 24));
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 24)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 20)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 16)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 12)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 8)), 0b00_01_10_11);
-                var vprev5 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 4)), 0b00_01_10_11);
-                var vprev6 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 0)), 0b00_01_10_11);
-                Vector128<int> sum0, sum1, sum2;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default, vsum8 = default, vsum9 = default, vsum10 = default, vsum11 = default, vsum12 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
+                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
+                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
+                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).AsInt32();
+                var vcoeff12 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsUInt32()).AsInt32();
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum12 = Sse41.Multiply(vcoeff12, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = Ssse3.AlignRight(vsum12, vsum11, 8);
+                    vsum11 += prod;
+                    prod = Sse41.Multiply(vcoeff12, vlast);
+                    vsum12 = Ssse3.AlignRight(vzero, vsum12, 8);
+                    vsum12 += prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum2 = Sse41.MultiplyLow(vcoeff5, vprev5);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum2 = Sse41.MultiplyLow(vcoeff6, vprev6);
-                    sum1 = Sse2.Add(sum2, sum1);
-                    sum0 = Sse2.Add(sum1, sum0);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = Ssse3.AlignRight(vsum12, vsum11, 8);
+                    vsum11 += prod;
+                    prod = Sse41.Multiply(vcoeff12, vlast);
+                    vsum12 = Ssse3.AlignRight(vzero, vsum12, 8);
+                    vsum12 += prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order28(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 28;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
-                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
-                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
-                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
-                var vcoeff12 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).AsInt32();
-                var vcoeff13 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 26))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 24))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 22))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 20))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 18))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 16))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 14))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 12))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 10))).AsInt32(), 0b11_00_11_01);
-                var vprev9 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 8))).AsInt32(), 0b11_00_11_01);
-                var vprev10 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 6))).AsInt32(), 0b11_00_11_01);
-                var vprev11 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 4))).AsInt32(), 0b11_00_11_01);
-                var vprev12 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 2))).AsInt32(), 0b11_00_11_01);
-                var vprev13 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff9, vprev9));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff10, vprev10));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff11, vprev11));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff12, vprev12));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff13, vprev13));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev13 = Ssse3.AlignRight(vprev13, vprev12, 8);
-                    vprev12 = Ssse3.AlignRight(vprev12, vprev11, 8);
-                    vprev11 = Ssse3.AlignRight(vprev11, vprev10, 8);
-                    vprev10 = Ssse3.AlignRight(vprev10, vprev9, 8);
-                    vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order28
-#region Order29
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order29(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order29(in RestoreParameters parameters)
             {
                 const int Order = 29;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 20));
-                var vcoeff6 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 24));
-                var vcoeff7 = Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 28));
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 25)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 21)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 17)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 13)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 9)), 0b00_01_10_11);
-                var vprev5 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 5)), 0b00_01_10_11);
-                var vprev6 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 1)), 0b00_01_10_11);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe((int)o), 0b11_11_11_00);
-                Vector128<int> sum0, sum1, sum2, sum3;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default, vsum8 = default, vsum9 = default, vsum10 = default, vsum11 = default, vsum12 = default, vsum13 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
+                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
+                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
+                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).AsInt32();
+                var vcoeff12 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsUInt32()).AsInt32();
+                var vcoeff13 = vzero.AsInt32();
+                if (coeffs.Length - 28 >= Vector128<long>.Count)
+                {
+                    vcoeff13 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 28))).AsUInt32()).AsInt32();
+                }
+                else
+                {
+                    vcoeff13 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1));
+                }
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum13 = Sse41.Multiply(vcoeff13, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = Ssse3.AlignRight(vsum12, vsum11, 8);
+                    vsum11 += prod;
+                    prod = Sse41.Multiply(vcoeff12, vlast);
+                    vsum12 = Ssse3.AlignRight(vsum13, vsum12, 8);
+                    vsum12 += prod;
+                    prod = Sse41.Multiply(vcoeff13, vlast);
+                    vsum13 = prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum2 = Sse41.MultiplyLow(vcoeff5, vprev5);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum2 = Sse41.MultiplyLow(vcoeff6, vprev6);
-                    sum3 = Sse41.MultiplyLow(vcoeff7, vprev7);
-                    sum2 = Sse2.Add(sum2, sum3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 12);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = Ssse3.AlignRight(vsum12, vsum11, 8);
+                    vsum11 += prod;
+                    prod = Sse41.Multiply(vcoeff12, vlast);
+                    vsum12 = Ssse3.AlignRight(vsum13, vsum12, 8);
+                    vsum12 += prod;
+                    prod = Sse41.Multiply(vcoeff13, vlast);
+                    vsum13 = prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order29(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 29;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
-                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
-                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
-                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
-                var vcoeff12 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).AsInt32();
-                var vcoeff13 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsUInt32()).AsInt32();
-                var vcoeff14 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 28)).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 27))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 25))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 23))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 21))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 19))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 17))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 15))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 13))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 11))).AsInt32(), 0b11_00_11_01);
-                var vprev9 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 9))).AsInt32(), 0b11_00_11_01);
-                var vprev10 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 7))).AsInt32(), 0b11_00_11_01);
-                var vprev11 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 5))).AsInt32(), 0b11_00_11_01);
-                var vprev12 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 3))).AsInt32(), 0b11_00_11_01);
-                var vprev13 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 1))).AsInt32(), 0b11_00_11_01);
-                var vprev14 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_00_11_00);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff9, vprev9));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff10, vprev10));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff11, vprev11));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff12, vprev12));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff13, vprev13));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff14, vprev14));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev14 = Ssse3.AlignRight(vprev14, vprev13, 8);
-                    vprev13 = Ssse3.AlignRight(vprev13, vprev12, 8);
-                    vprev12 = Ssse3.AlignRight(vprev12, vprev11, 8);
-                    vprev11 = Ssse3.AlignRight(vprev11, vprev10, 8);
-                    vprev10 = Ssse3.AlignRight(vprev10, vprev9, 8);
-                    vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order29
-#region Order30
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order30(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order30(in RestoreParameters parameters)
             {
                 const int Order = 30;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 20));
-                var vcoeff6 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 24));
-                var vcoeff7 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 28))).AsInt32();
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 26)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 22)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 18)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 14)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 10)), 0b00_01_10_11);
-                var vprev5 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 6)), 0b00_01_10_11);
-                var vprev6 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 2)), 0b00_01_10_11);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_01_00_01);
-                Vector128<int> sum0, sum1, sum2, sum3;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default, vsum8 = default, vsum9 = default, vsum10 = default, vsum11 = default, vsum12 = default, vsum13 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
+                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
+                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
+                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).AsInt32();
+                var vcoeff12 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsUInt32()).AsInt32();
+                var vcoeff13 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 28))).AsUInt32()).AsInt32();
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum13 = Sse41.Multiply(vcoeff13, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = Ssse3.AlignRight(vsum12, vsum11, 8);
+                    vsum11 += prod;
+                    prod = Sse41.Multiply(vcoeff12, vlast);
+                    vsum12 = Ssse3.AlignRight(vsum13, vsum12, 8);
+                    vsum12 += prod;
+                    prod = Sse41.Multiply(vcoeff13, vlast);
+                    vsum13 = Ssse3.AlignRight(vzero, vsum13, 8);
+                    vsum13 += prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum2 = Sse41.MultiplyLow(vcoeff5, vprev5);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum2 = Sse41.MultiplyLow(vcoeff6, vprev6);
-                    sum3 = Sse41.MultiplyLow(vcoeff7, vprev7);
-                    sum2 = Sse2.Add(sum2, sum3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 12);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = Ssse3.AlignRight(vsum12, vsum11, 8);
+                    vsum11 += prod;
+                    prod = Sse41.Multiply(vcoeff12, vlast);
+                    vsum12 = Ssse3.AlignRight(vsum13, vsum12, 8);
+                    vsum12 += prod;
+                    prod = Sse41.Multiply(vcoeff13, vlast);
+                    vsum13 = Ssse3.AlignRight(vzero, vsum13, 8);
+                    vsum13 += prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order30(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 30;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
-                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
-                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
-                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
-                var vcoeff12 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).AsInt32();
-                var vcoeff13 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsUInt32()).AsInt32();
-                var vcoeff14 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 28))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 28))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 26))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 24))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 22))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 20))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 18))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 16))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 14))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 12))).AsInt32(), 0b11_00_11_01);
-                var vprev9 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 10))).AsInt32(), 0b11_00_11_01);
-                var vprev10 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 8))).AsInt32(), 0b11_00_11_01);
-                var vprev11 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 6))).AsInt32(), 0b11_00_11_01);
-                var vprev12 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 4))).AsInt32(), 0b11_00_11_01);
-                var vprev13 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 2))).AsInt32(), 0b11_00_11_01);
-                var vprev14 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff9, vprev9));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff10, vprev10));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff11, vprev11));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff12, vprev12));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff13, vprev13));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff14, vprev14));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev14 = Ssse3.AlignRight(vprev14, vprev13, 8);
-                    vprev13 = Ssse3.AlignRight(vprev13, vprev12, 8);
-                    vprev12 = Ssse3.AlignRight(vprev12, vprev11, 8);
-                    vprev11 = Ssse3.AlignRight(vprev11, vprev10, 8);
-                    vprev10 = Ssse3.AlignRight(vprev10, vprev9, 8);
-                    vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order30
-#region Order31
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order31(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order31(in RestoreParameters parameters)
             {
                 const int Order = 31;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 20));
-                var vcoeff6 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 24));
-                var vcoeff7 = Sse2.ShiftRightLogical128BitLane(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 27)), 4);
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 27)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 23)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 19)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 15)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 11)), 0b00_01_10_11);
-                var vprev5 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 7)), 0b00_01_10_11);
-                var vprev6 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 3)), 0b00_01_10_11);
-                var vprev7 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref o), 0b11_00_01_10);
-                Vector128<int> sum0, sum1, sum2, sum3;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default, vsum8 = default, vsum9 = default, vsum10 = default, vsum11 = default, vsum12 = default, vsum13 = default, vsum14 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
+                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
+                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
+                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).AsInt32();
+                var vcoeff12 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsUInt32()).AsInt32();
+                var vcoeff13 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 28))).AsUInt32()).AsInt32();
+                var vcoeff14 = vzero.AsInt32();
+                if (coeffs.Length - 30 >= Vector128<long>.Count)
+                {
+                    vcoeff14 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 30))).AsUInt32()).AsInt32();
+                }
+                else
+                {
+                    vcoeff14 = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1));
+                }
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum14 = Sse41.Multiply(vcoeff14, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = Ssse3.AlignRight(vsum12, vsum11, 8);
+                    vsum11 += prod;
+                    prod = Sse41.Multiply(vcoeff12, vlast);
+                    vsum12 = Ssse3.AlignRight(vsum13, vsum12, 8);
+                    vsum12 += prod;
+                    prod = Sse41.Multiply(vcoeff13, vlast);
+                    vsum13 = Ssse3.AlignRight(vsum14, vsum13, 8);
+                    vsum13 += prod;
+                    prod = Sse41.Multiply(vcoeff14, vlast);
+                    vsum14 = prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum2 = Sse41.MultiplyLow(vcoeff5, vprev5);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum2 = Sse41.MultiplyLow(vcoeff6, vprev6);
-                    sum3 = Sse41.MultiplyLow(vcoeff7, vprev7);
-                    sum2 = Sse2.Add(sum2, sum3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 12);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = Ssse3.AlignRight(vsum12, vsum11, 8);
+                    vsum11 += prod;
+                    prod = Sse41.Multiply(vcoeff12, vlast);
+                    vsum12 = Ssse3.AlignRight(vsum13, vsum12, 8);
+                    vsum12 += prod;
+                    prod = Sse41.Multiply(vcoeff13, vlast);
+                    vsum13 = Ssse3.AlignRight(vsum14, vsum13, 8);
+                    vsum13 += prod;
+                    prod = Sse41.Multiply(vcoeff14, vlast);
+                    vsum14 = prod;
                 }
             }
 
-
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order31(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 31;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
-                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
-                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
-                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
-                var vcoeff12 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).AsInt32();
-                var vcoeff13 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsUInt32()).AsInt32();
-                var vcoeff14 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 28))).AsUInt32()).AsInt32();
-                var vcoeff15 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 30)).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 29))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 27))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 25))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 23))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 21))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 19))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 17))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 15))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 13))).AsInt32(), 0b11_00_11_01);
-                var vprev9 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 11))).AsInt32(), 0b11_00_11_01);
-                var vprev10 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 9))).AsInt32(), 0b11_00_11_01);
-                var vprev11 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 7))).AsInt32(), 0b11_00_11_01);
-                var vprev12 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 5))).AsInt32(), 0b11_00_11_01);
-                var vprev13 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 3))).AsInt32(), 0b11_00_11_01);
-                var vprev14 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 1))).AsInt32(), 0b11_00_11_01);
-                var vprev15 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_00_11_00);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff9, vprev9));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff10, vprev10));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff11, vprev11));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff12, vprev12));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff13, vprev13));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff14, vprev14));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff15, vprev15));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev15 = Ssse3.AlignRight(vprev15, vprev14, 8);
-                    vprev14 = Ssse3.AlignRight(vprev14, vprev13, 8);
-                    vprev13 = Ssse3.AlignRight(vprev13, vprev12, 8);
-                    vprev12 = Ssse3.AlignRight(vprev12, vprev11, 8);
-                    vprev11 = Ssse3.AlignRight(vprev11, vprev10, 8);
-                    vprev10 = Ssse3.AlignRight(vprev10, vprev9, 8);
-                    vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order31
-#region Order32
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Sse41Order32(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Sse41Order32(in RestoreParameters parameters)
             {
                 const int Order = 32;
-                if (coeffs.Length < Order) return;
+                var coeffs = parameters.Coefficients;
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
                 _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                Vector128<int> sum;
-                var vzero = Vector128.Create(0);
-                nint dataLength = output.Length - Order;
-                var vcoeff0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 0));
-                var vcoeff1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 4));
-                var vcoeff2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8));
-                var vcoeff3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 12));
-                var vcoeff4 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 16));
-                var vcoeff5 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 20));
-                var vcoeff6 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 24));
-                var vcoeff7 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 28));
-                var vprev0 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 28)), 0b00_01_10_11);
-                var vprev1 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 24)), 0b00_01_10_11);
-                var vprev2 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 20)), 0b00_01_10_11);
-                var vprev3 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 16)), 0b00_01_10_11);
-                var vprev4 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 12)), 0b00_01_10_11);
-                var vprev5 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 8)), 0b00_01_10_11);
-                var vprev6 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 4)), 0b00_01_10_11);
-                var vprev7 = Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref o, 0)), 0b00_01_10_11);
-                Vector128<int> sum0, sum1, sum2, sum3;
+
+                var vzero = Vector128<long>.Zero;
+                long sum0 = 0, sum1 = 0;
+                int dataLength = output.Length - Order;
+                Vector128<long> vsum0 = default, vsum1 = default, vsum2 = default, vsum3 = default, vsum4 = default, vsum5 = default, vsum6 = default, vsum7 = default, vsum8 = default, vsum9 = default, vsum10 = default, vsum11 = default, vsum12 = default, vsum13 = default, vsum14 = default;
+                Vector128<long> prod;
+                long coeff0 = Unsafe.Add(ref c, 0);
+                long coeff1 = Unsafe.Add(ref c, 1);
+                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
+                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
+                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
+                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
+                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
+                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
+                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
+                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
+                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
+                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
+                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
+                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).AsInt32();
+                var vcoeff12 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsUInt32()).AsInt32();
+                var vcoeff13 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 28))).AsUInt32()).AsInt32();
+                var vcoeff14 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 30))).AsUInt32()).AsInt32();
+                long nlast = 0;
+                var vlast = Vector128.Create(Unsafe.Add(ref o, 0));
+                vsum14 = Sse41.Multiply(vcoeff14, vlast);
+                var sum2 = vsum0.GetElement(0);
+                for (var i = 1; i < Order; i++)
+                {
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = Ssse3.AlignRight(vsum12, vsum11, 8);
+                    vsum11 += prod;
+                    prod = Sse41.Multiply(vcoeff12, vlast);
+                    vsum12 = Ssse3.AlignRight(vsum13, vsum12, 8);
+                    vsum12 += prod;
+                    prod = Sse41.Multiply(vcoeff13, vlast);
+                    vsum13 = Ssse3.AlignRight(vsum14, vsum13, 8);
+                    vsum13 += prod;
+                    prod = Sse41.Multiply(vcoeff14, vlast);
+                    vsum14 = Ssse3.AlignRight(vzero, vsum14, 8);
+                    vsum14 += prod;
+                }
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    sum0 = Sse41.MultiplyLow(vcoeff0, vprev0);
-                    sum1 = Sse41.MultiplyLow(vcoeff1, vprev1);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff2, vprev2);
-                    sum2 = Sse41.MultiplyLow(vcoeff3, vprev3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    sum1 = Sse41.MultiplyLow(vcoeff4, vprev4);
-                    sum2 = Sse41.MultiplyLow(vcoeff5, vprev5);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum2 = Sse41.MultiplyLow(vcoeff6, vprev6);
-                    sum3 = Sse41.MultiplyLow(vcoeff7, vprev7);
-                    sum2 = Sse2.Add(sum2, sum3);
-                    sum1 = Sse2.Add(sum1, sum2);
-                    sum0 = Sse2.Add(sum0, sum1);
-                    var sumx = Sse2.Shuffle(sum0, 0xee);
-                    sum = Sse2.Add(sum0, sumx);
-                    sumx = Sse2.Shuffle(sum, 0x55);
-                    sum = Sse2.Add(sum, sumx);
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
-                    var y = Sse2.Add(sum, res);
-                    Unsafe.Add(ref d, i) = y.GetElement(0);
-                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 12);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
-                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector128.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    prod = Sse41.Multiply(vcoeff0, vlast);
+                    vsum0 = Ssse3.AlignRight(vsum1, vsum0, 8);
+                    vsum0 += prod;
+                    sum2 = vsum0.GetElement(0);
+                    prod = Sse41.Multiply(vcoeff1, vlast);
+                    vsum1 = Ssse3.AlignRight(vsum2, vsum1, 8);
+                    vsum1 += prod;
+                    prod = Sse41.Multiply(vcoeff2, vlast);
+                    vsum2 = Ssse3.AlignRight(vsum3, vsum2, 8);
+                    vsum2 += prod;
+                    prod = Sse41.Multiply(vcoeff3, vlast);
+                    vsum3 = Ssse3.AlignRight(vsum4, vsum3, 8);
+                    vsum3 += prod;
+                    prod = Sse41.Multiply(vcoeff4, vlast);
+                    vsum4 = Ssse3.AlignRight(vsum5, vsum4, 8);
+                    vsum4 += prod;
+                    prod = Sse41.Multiply(vcoeff5, vlast);
+                    vsum5 = Ssse3.AlignRight(vsum6, vsum5, 8);
+                    vsum5 += prod;
+                    prod = Sse41.Multiply(vcoeff6, vlast);
+                    vsum6 = Ssse3.AlignRight(vsum7, vsum6, 8);
+                    vsum6 += prod;
+                    prod = Sse41.Multiply(vcoeff7, vlast);
+                    vsum7 = Ssse3.AlignRight(vsum8, vsum7, 8);
+                    vsum7 += prod;
+                    prod = Sse41.Multiply(vcoeff8, vlast);
+                    vsum8 = Ssse3.AlignRight(vsum9, vsum8, 8);
+                    vsum8 += prod;
+                    prod = Sse41.Multiply(vcoeff9, vlast);
+                    vsum9 = Ssse3.AlignRight(vsum10, vsum9, 8);
+                    vsum9 += prod;
+                    prod = Sse41.Multiply(vcoeff10, vlast);
+                    vsum10 = Ssse3.AlignRight(vsum11, vsum10, 8);
+                    vsum10 += prod;
+                    prod = Sse41.Multiply(vcoeff11, vlast);
+                    vsum11 = Ssse3.AlignRight(vsum12, vsum11, 8);
+                    vsum11 += prod;
+                    prod = Sse41.Multiply(vcoeff12, vlast);
+                    vsum12 = Ssse3.AlignRight(vsum13, vsum12, 8);
+                    vsum12 += prod;
+                    prod = Sse41.Multiply(vcoeff13, vlast);
+                    vsum13 = Ssse3.AlignRight(vsum14, vsum13, 8);
+                    vsum13 += prod;
+                    prod = Sse41.Multiply(vcoeff14, vlast);
+                    vsum14 = Ssse3.AlignRight(vzero, vsum14, 8);
+                    vsum14 += prod;
                 }
             }
-
-
-            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Sse41Order32(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-            {
-                const int Order = 32;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
-                ref var c = ref MemoryMarshal.GetReference(coeffs);
-                ref var o = ref MemoryMarshal.GetReference(output);
-                ref var d = ref Unsafe.Add(ref o, Order);
-                int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
-                Vector128<long> sum;
-                var vcoeff0 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 0))).AsUInt32()).AsInt32();
-                var vcoeff1 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 2))).AsUInt32()).AsInt32();
-                var vcoeff2 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 4))).AsUInt32()).AsInt32();
-                var vcoeff3 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 6))).AsUInt32()).AsInt32();
-                var vcoeff4 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsUInt32()).AsInt32();
-                var vcoeff5 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 10))).AsUInt32()).AsInt32();
-                var vcoeff6 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 12))).AsUInt32()).AsInt32();
-                var vcoeff7 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 14))).AsUInt32()).AsInt32();
-                var vcoeff8 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsUInt32()).AsInt32();
-                var vcoeff9 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 18))).AsUInt32()).AsInt32();
-                var vcoeff10 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 20))).AsUInt32()).AsInt32();
-                var vcoeff11 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 22))).AsUInt32()).AsInt32();
-                var vcoeff12 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsUInt32()).AsInt32();
-                var vcoeff13 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 26))).AsUInt32()).AsInt32();
-                var vcoeff14 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 28))).AsUInt32()).AsInt32();
-                var vcoeff15 = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 30))).AsUInt32()).AsInt32();
-                var vprev0 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 30))).AsInt32(), 0b11_00_11_01);
-                var vprev1 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 28))).AsInt32(), 0b11_00_11_01);
-                var vprev2 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 26))).AsInt32(), 0b11_00_11_01);
-                var vprev3 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 24))).AsInt32(), 0b11_00_11_01);
-                var vprev4 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 22))).AsInt32(), 0b11_00_11_01);
-                var vprev5 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 20))).AsInt32(), 0b11_00_11_01);
-                var vprev6 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 18))).AsInt32(), 0b11_00_11_01);
-                var vprev7 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 16))).AsInt32(), 0b11_00_11_01);
-                var vprev8 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 14))).AsInt32(), 0b11_00_11_01);
-                var vprev9 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 12))).AsInt32(), 0b11_00_11_01);
-                var vprev10 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 10))).AsInt32(), 0b11_00_11_01);
-                var vprev11 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 8))).AsInt32(), 0b11_00_11_01);
-                var vprev12 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 6))).AsInt32(), 0b11_00_11_01);
-                var vprev13 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 4))).AsInt32(), 0b11_00_11_01);
-                var vprev14 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 2))).AsInt32(), 0b11_00_11_01);
-                var vprev15 = Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b11_00_11_01);
-                for(nint i = 0; i < dataLength;)
-                {
-                    sum = Sse41.Multiply(vcoeff0, vprev0);
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff1, vprev1));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff2, vprev2));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff3, vprev3));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff4, vprev4));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff5, vprev5));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff6, vprev6));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff7, vprev7));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff8, vprev8));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff9, vprev9));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff10, vprev10));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff11, vprev11));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff12, vprev12));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff13, vprev13));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff14, vprev14));
-                    sum = Sse2.Add(sum, Sse41.Multiply(vcoeff15, vprev15));
-                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-                    sum = Sse2.ShiftRightLogical(sum, vshift);
-                    var yy = Sse2.Add(sum.AsInt32(), res);
-                    Unsafe.Add(ref d, i) = yy.GetElement(0);
-                    i++;
-                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
-                    vprev15 = Ssse3.AlignRight(vprev15, vprev14, 8);
-                    vprev14 = Ssse3.AlignRight(vprev14, vprev13, 8);
-                    vprev13 = Ssse3.AlignRight(vprev13, vprev12, 8);
-                    vprev12 = Ssse3.AlignRight(vprev12, vprev11, 8);
-                    vprev11 = Ssse3.AlignRight(vprev11, vprev10, 8);
-                    vprev10 = Ssse3.AlignRight(vprev10, vprev9, 8);
-                    vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
-                    vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
-                    vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
-                    vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
-                    vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
-                    vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
-                    vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
-                    vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
-                    vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
-                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
-                }
-            }
-#endregion Order32
         }
     }
 }

@@ -15,12 +15,16 @@ namespace Shamisen.Benchmarks.Running
     {
         private static void Main(string[] args)
         {
-            BenchmarkSwitcher
+            _ = BenchmarkSwitcher
             .FromAssembly(typeof(ResamplerBenchmarks).Assembly)
-            .Run(args, DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithMaxParameterColumnWidth(256)).AddDiagnoser(new DisassemblyDiagnoser(new(int.MaxValue)))
+            .Run(args,
+                DefaultConfig.Instance
+                    .WithSummaryStyle(SummaryStyle.Default.WithMaxParameterColumnWidth(256))
+                    .WithOptions(ConfigOptions.DontOverwriteResults)
+                    .AddDiagnoser(new DisassemblyDiagnoser(new(int.MaxValue)))
             );
             Console.Write("Press any key to exit:");
-            Console.ReadKey();
+            _ = Console.ReadKey();
         }
     }
 }

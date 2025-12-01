@@ -22,16 +22,16 @@ namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
     //[SimpleJob(RuntimeMoniker.Mono, baseline: true)]
     public partial class ResamplerBenchmarks
     {
-        private SplineResampler resampler;
-        private IReadableAudioSource<float, SampleFormat> source;
-        private float[] buffer;
+        private SplineResampler? resampler;
+        private IReadableAudioSource<float, SampleFormat>? source;
+        private float[]? buffer;
         #region Configs and custom columns
 
         private class Config : ManualConfig
         {
             public Config()
             {
-                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(FrameSelector));
                 //_ = AddColumn(new PlaybackSpeedColumn(
                 //    FrameSelector,
@@ -88,7 +88,7 @@ namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
         public void SplineResampler()
         {
             var span = buffer.AsSpan();
-            _ = resampler.Read(span);
+            _ = resampler?.Read(span);
         }
     }
 }

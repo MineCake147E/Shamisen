@@ -18,15 +18,15 @@ namespace Shamisen.Benchmarks.BiQuad
     [DisassemblyDiagnoser(maxDepth: 16)]
     public class BiQuadFilterBenchmarks
     {
-        private IReadableAudioSource<float, SampleFormat> source;
-        private BiQuadFilter filter;
-        private float[] buffer;
+        private IReadableAudioSource<float, SampleFormat>? source;
+        private BiQuadFilter? filter;
+        private float[]? buffer;
         private const int SampleRate = 192000;
         private class Config : ManualConfig
         {
             public Config()
             {
-                _ = AddColumn(new FrameThroughputColumn(a => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value));
+                _ = AddColumn(new FrameThroughputColumn(a => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value));
             }
         }
         [Params(1, 4, 8, 17)]
@@ -45,6 +45,7 @@ namespace Shamisen.Benchmarks.BiQuad
         [Benchmark]
         public void BiQuadFilter()
         {
+            ObjectDisposedException.ThrowIf(filter is null, this);
             var span = buffer.AsSpan();
             _ = filter.Read(span);
         }

@@ -21,18 +21,18 @@ namespace Shamisen.Benchmarks.Data
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class PreloadDataBufferBenchmarks
     {
-        private class Config : ManualConfig
+        internal sealed class Config : ManualConfig
         {
             public Config()
             {
-                _ = AddColumn(new FrameThroughputColumn(a => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames", StringComparison.Ordinal)).Value));
+                _ = AddColumn(new FrameThroughputColumn(a => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames", StringComparison.Ordinal)).Value));
             }
         }
 
-        private IReadableAudioSource<float, SampleFormat> source;
-        private SampleDataSource<float, SampleFormat> filter;
-        private PreloadDataBuffer<float> preloadDataBuffer;
-        private float[] buffer;
+        private IReadableAudioSource<float, SampleFormat>? source;
+        private SampleDataSource<float, SampleFormat>? filter;
+        private PreloadDataBuffer<float>? preloadDataBuffer;
+        private float[]? buffer;
         private const int SampleRate = 192000;
         [Params(4095)]
         public int Frames { get; set; }
@@ -46,9 +46,9 @@ namespace Shamisen.Benchmarks.Data
         }
 
         [Benchmark]
-        public void PreloadDataBuffer() => _ = preloadDataBuffer.Read(buffer);
+        public void PreloadDataBuffer() => _ = preloadDataBuffer?.Read(buffer);
 
         [GlobalCleanup]
-        public void Cleanup() => preloadDataBuffer.Dispose();
+        public void Cleanup() => preloadDataBuffer?.Dispose();
     }
 }

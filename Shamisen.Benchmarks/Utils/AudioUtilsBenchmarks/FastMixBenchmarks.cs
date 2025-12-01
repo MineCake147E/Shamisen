@@ -19,7 +19,7 @@ namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
         {
             public Config()
             {
-                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(frameSelector));
                 _ = AddColumn(new PlaybackSpeedColumn(
                     frameSelector,
@@ -37,7 +37,7 @@ namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
         [Params(MathF.E)]
         public float ScaleB { get; set; }
 
-        private float[] bufferDst, bufferA, bufferB;
+        private float[]? bufferDst, bufferA, bufferB;
         [GlobalSetup]
         public void Setup()
         {

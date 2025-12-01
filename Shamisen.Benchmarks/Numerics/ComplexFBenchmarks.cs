@@ -22,7 +22,7 @@ namespace Shamisen.Benchmarks.Numerics
         {
             public Config()
             {
-                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                 //_ = AddColumn(new PlaybackSpeedColumn(frameSelector, a => SampleRate));
                 _ = AddColumn(new FrameThroughputColumn(frameSelector));
             }
@@ -31,8 +31,8 @@ namespace Shamisen.Benchmarks.Numerics
         [Params(4095)]
         public int Frames { get; set; }
 
-        private ComplexF[] x, y, z;
-        private Vector2[] v;
+        private ComplexF[]? x, y, z;
+        private Vector2[]? v;
 
         [GlobalSetup]
         public void Setup()

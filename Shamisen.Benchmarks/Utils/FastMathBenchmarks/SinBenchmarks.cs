@@ -22,14 +22,14 @@ namespace Shamisen.Benchmarks.Utils.FastMathBenchmarks
         {
             public Config()
             {
-                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(frameSelector));
             }
         }
 
         [Params(65536)]
         public int Frames { get; set; }
-        private float[] bufferDst, bufferSrc;
+        private float[]? bufferDst, bufferSrc;
         [GlobalSetup]
         public void Setup()
         {

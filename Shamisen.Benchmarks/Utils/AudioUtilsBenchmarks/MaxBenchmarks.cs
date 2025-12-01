@@ -25,13 +25,13 @@ namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
         {
             public Config()
             {
-                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(frameSelector));
             }
         }
         [Params(131071)]
         public int Frames { get; set; }
-        private float[] bufferA;
+        private float[] bufferA = [];
         [GlobalSetup]
         public void Setup()
         {

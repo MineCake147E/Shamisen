@@ -25,14 +25,14 @@ namespace Shamisen.Benchmarks.BiQuad
         {
             public Config()
             {
-                _ = AddColumn(new FrameThroughputColumn(a => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames", StringComparison.Ordinal)).Value));
+                _ = AddColumn(new FrameThroughputColumn(a => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames", StringComparison.Ordinal)).Value));
             }
         }
         [Params(8191)]
         public int Frames { get; set; }
-        private float[] buffer;
+        private float[]? buffer;
         private BiQuadParameter parameter;
-        private Vector2[] states;
+        private Vector2[]? states;
         [GlobalSetup]
         public void Setup()
         {

@@ -23,7 +23,7 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
         {
             public Config()
             {
-                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(frameSelector));
             }
         }
@@ -35,8 +35,8 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
 
         [ParamsSource(nameof(GetBitDepthValues))]
         public int EffectiveBitDepth { get; set; }
-        private float[] bufferDst;
-        private int[] bufferSrc;
+        private float[]? bufferDst;
+        private int[]? bufferSrc;
         [GlobalSetup]
         public void Setup()
         {

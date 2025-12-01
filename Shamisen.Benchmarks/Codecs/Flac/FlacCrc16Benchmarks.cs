@@ -25,7 +25,7 @@ namespace Shamisen.Benchmarks.Codecs.Flac
         {
             public Config()
             {
-                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Words")).Value;
+                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Words")).Value;
                 _ = AddColumn(new FrameThroughputColumn(FrameSelector)
                 {
                     ColumnName = "CRC Throughput [words/s]",
@@ -34,7 +34,7 @@ namespace Shamisen.Benchmarks.Codecs.Flac
             }
         }
 
-        private ulong[] srcBuffer;
+        private ulong[]? srcBuffer;
 
         [Params(/*2047, */4095, Priority = -990)]
         public int Words { get; set; }

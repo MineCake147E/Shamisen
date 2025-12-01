@@ -11,7 +11,7 @@ namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class GenerateCoeffsBenchmarks
     {
-        private Vector4[] buffer;
+        private Vector4[]? buffer;
         [Params(2881, Priority = -990)]
         public int Frames { get; set; }
         [GlobalSetup]

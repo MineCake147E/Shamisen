@@ -17,17 +17,17 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
     public class Pcm32ToSampleConverterBenchmarks
     {
         private const int SampleRate = 192000;
-        private class Config : ManualConfig
+        internal sealed class Config : ManualConfig
         {
             public Config()
             {
-                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.First(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(frameSelector));
             }
         }
         [Params(4095)]
         public int Frames { get; set; }
-        private float[] bufferDst;
+        private float[]? bufferDst;
         [GlobalSetup]
         public void Setup()
         {

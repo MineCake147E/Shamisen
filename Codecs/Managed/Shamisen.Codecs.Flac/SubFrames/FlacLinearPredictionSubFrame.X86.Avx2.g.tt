@@ -17,30 +17,50 @@
     const bool TestSse41OverAvx2 = false;
     var c = Enumerable.Range(1, 32);
     List<FlacLinearPredictionVariantInfo> lowOrderVariants = [
-        /*(52, 64, 0x3440_0003_e017_0000ul, $"52{SuffixIfmaV512}"),*/
-        new(0x4040_0003_d000_0000ul, $"64{SuffixAvx2}")
+        new(0x4040_0003_801f_0000ul, $"64{SuffixSse41}")
+    ];
+    List<FlacLinearPredictionVariantInfo> midOrderVariants = [
+        new(0x4040_0003_d000_0000ul, $"64{SuffixAvx2}"),
     ];
     List<FlacLinearPredictionVariantInfo> highOrderVariants = [
         new (0x2020_0003_d000_0000ul, $"32{SuffixAvx2}"),
-        /*(52, 64, 0x3440_0003_e017_0000ul, $"52{SuffixIfmaV512}"),*/
         new (0x4040_0003_d000_0000ul, $"64{SuffixAvx2}"),
     ];
     var orderConfig = new Dictionary<int, List<FlacLinearPredictionVariantInfo>>() {
         {1, [StandardVariatntInfo]},
+        {2, [StandardVariatntInfo]},
+        {3, [StandardVariatntInfo]},
+        {4, lowOrderVariants},
+        {5, lowOrderVariants},
+        {6, lowOrderVariants},
+        {7, lowOrderVariants},
+        {8, lowOrderVariants},
+        {9, lowOrderVariants},
     };
-    for (int i = 2; i <= 20; i++)
+    /*for (int i = 2; i <= 13; i++)
     {
-        orderConfig[i] = lowOrderVariants;
+        orderConfig[i] = [StandardVariatntInfo];
+    }*/
+    for (int i = 10; i <= 22; i++)
+    {
+        orderConfig[i] = midOrderVariants;
     }
 
-    var names = c.Select(f => {
+    var names32 = c.Select(f => {
         var config = orderConfig.TryGetValue(f, out var c) ? c : highOrderVariants;
-        var generate32 = config.Any(a => a.VariantId == 0x2020_0003_d000_0000ul);
-        var generate64 = config.Any(a => a.VariantId == 0x4040_0003_d000_0000ul);
-        var callee32 = config.First(a => a.MultiplyBitsRequired >= 32);
-        var callee64 = config.First(a => a.MultiplyBitsRequired >= 64);
-        return (Order: f, generate32, generate64, callee32, callee64);
-    }).ToList();
+        var generate = config.Any(a => a.VariantId == 0x2020_0003_d000_0000ul);
+        var callee = config.First(a => a.MultiplyBitsRequired >= 32);
+        var order = callee.GetOrderOverride(f);
+        return (Order: order, generate, callee);
+    }).OrderBy(a => a.Order).ToList();
+
+    var names64 = c.Select(f => {
+        var config = orderConfig.TryGetValue(f, out var c) ? c : highOrderVariants;
+        var generate = config.Any(a => a.VariantId == 0x4040_0003_d000_0000ul);
+        var callee = config.First(a => a.MultiplyBitsRequired >= 64);
+        var order = callee.GetOrderOverride(f);
+        return (Order: order, generate, callee);
+    }).OrderBy(a => a.Order).ToList();
 
     const string NegativeDebugFlagDescription = "Unsafe.AsPointer<T>(ref T) should only be used in Release mode.";
 #>
@@ -48,6 +68,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -62,16 +83,17 @@ namespace Shamisen.Codecs.Flac.SubFrames
     {
         internal static partial class X86
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            internal static void RestoreSignalAvx2(int shiftsNeeded, int accumulatorBitsRequired, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static bool IsAvx2Supported => Avx2.IsSupported;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal static void RestoreSignalAvx2(in RestoreParameters parameters, [ConstantExpected] bool skipAvx512Check = false)
             {
-                switch (accumulatorBitsRequired)
+                switch (parameters.AccumulatorBitsRequired)
                 {
-                    case <= 32 when !Avx512F.IsSupported && !Avx10v1.IsSupported:
-                        RestoreSignal32Avx2(shiftsNeeded, residual, coeffs, output);
+                    case <= 32 when skipAvx512Check || !Avx512F.IsSupported && !Avx10v1.IsSupported:
+                        RestoreSignal32Avx2(in parameters);
                         return;
                     case <= 64:
-                        RestoreSignal64Avx2(shiftsNeeded, residual, coeffs, output);
+                        RestoreSignal64Avx2(in parameters);
                         return;
                     default:
                         throw new FlacException("Invalid FLAC stream!");
@@ -79,15 +101,14 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
             
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            internal static void RestoreSignal32Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static void RestoreSignal32Avx2(in RestoreParameters parameters)
             {
-                var order = coeffs.Length;
-                switch (order)
+                switch (parameters.PredictorOrder)
                 {
-<#  foreach(var item in names){#>
+<#  foreach(var item in names32){#>
                     case <#=item.Order#>:
 <#
-        var lines = item.callee32.WriteCall("32", "32", item.Order);
+        var lines = item.callee.WriteCall("parameters.MultiplyBitsRequired", "parameters.AccumulatorBitsRequired", item.Order);
         foreach (var line in lines)
         {#>
                         <#=line#>
@@ -100,15 +121,14 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
             
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            internal static void RestoreSignal64Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static void RestoreSignal64Avx2(in RestoreParameters parameters)
             {
-                var order = coeffs.Length;
-                switch (order)
+                switch (parameters.PredictorOrder)
                 {
-<#  foreach(var item in names){#>
+<#  foreach(var item in names64){#>
                     case <#=item.Order#>:
 <#
-        var lines = item.callee64.WriteCall("64", "64", item.Order);
+        var lines = item.callee.WriteCall("parameters.MultiplyBitsRequired", "parameters.AccumulatorBitsRequired", item.Order);
         foreach (var line in lines)
         {#>
                         <#=line#>
@@ -119,253 +139,314 @@ namespace Shamisen.Codecs.Flac.SubFrames
                         throw new FlacException("Invalid FLAC stream!");
                 }
             }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe delegate* managed<int, ReadOnlySpan<int>, ReadOnlySpan<int>, Span<int>, void> GetRestoreSignalFunctionPointerAvx2(int order) => order switch
-            {
-<#  foreach(var item in names){#>
-                <#=item.Order#> => &<#=$"RestoreSignal{item.callee32.Name}Order{item.Order}"#>,
-<#  }#>
-                _ => null
-            };
-<#
-    foreach (var item in names)
+<#  foreach (var item in names32)
     {
-        int jmax = item.Order + (item.Order & 1) - 2;
-        int jmax2 = item.Order - 2;
-        int j;
-        if (item.generate32)
+        if (item.generate)
         {
-            var orderO8 = item.Order / 8;
-            var orderM8 = item.Order % 8;
+            int j;
+            var scalarOrder = 2;
+            var vectorizedOrder = item.Order - scalarOrder;
+            var orderO8 = vectorizedOrder / 8;
+            var orderM8 = vectorizedOrder % 8;
             var maxVs = orderO8 + (orderM8 > 0 ? 1 : 0);
+            var mvm1 = maxVs - 1;
 #>
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal32Avx2Order<#=item.Order#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal32Avx2Order<#=item.Order#>(in RestoreParameters parameters)
             {
                 const int Order = <#=item.Order#>;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<int> <#=string.Join(", ", Enumerable.Range(0, maxVs).Select(a=>$"sum{a} = default"))#>;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
+                var vshift = Vector128.CreateScalar((uint)shiftsNeeded);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                int sum0 = 0, sum1 = 0;
                 var permShift = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
-                Vector256<int> prodHigh = default, prodLow = default;
-<#      
-            var mvm1 = maxVs - 1;
+<#          for (j = 0; j < scalarOrder; j++)
+            {#>
+                int coeff<#=j#> = Unsafe.Add(ref c, <#=j#>);
+<#          }
             for (j = 0; j < orderO8; j++)
-            {
-#>
-                var vcoeff<#=j#> = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, <#=j * 8#>));
-<#
-            }
+            {#>
+                var vcoeff<#=j#> = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, <#=j * 8 + scalarOrder#>));
+<#          }
+            var offset = orderO8 * 8 + scalarOrder;
             switch (orderM8)
             {
                 case 1:#>
-                var vcoeff<#=mvm1#> = Vector256.CreateScalar(Unsafe.Add(ref c, <#=item.Order - 1#>));
+                var vcoeff<#=mvm1#> = Vector256.CreateScalarUnsafe(Unsafe.Add(ref c, Order - 1)).AsInt32();
 <#                  break;
                 case 2:#>
-                var vcoeff<#=mvm1#> = Vector256.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, <#=item.Order - 2#>))).AsInt32();
+                var vcoeff<#=mvm1#> = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, <#=item.Order - 2#>))).ToVector256Unsafe().AsInt32();
+<#                  break;
+                case 3 when item.Order >= 4:#>
+                var v0TempLoad3 = Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, <#=item.Order - 4#>)).AsInt32();
+                var vcoeff<#=mvm1#> = Ssse3.AlignRight(vzero256.GetLower().AsInt32(), v0TempLoad3, 4).ToVector256Unsafe();
 <#                  break;
                 case 3:#>
-                var vcoeff<#=mvm1#> = Sse2.ShiftRightLogical128BitLane(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, <#=item.Order - 4#>)), 4).ToVector256Unsafe();
+                var v0TempLoad3 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref c)).AsInt32();
+                var v1TempLoad3 = Vector128.CreateScalarUnsafe((uint)Unsafe.Add(ref c, <#=item.Order - 1#>));
+                v0TempLoad3 = Sse.Shuffle(v0TempLoad3.AsSingle(), v1TempLoad3.AsSingle(), 0b11_00_01_00).AsInt32();
+                var vcoeff<#=mvm1#> = v0TempLoad3.ToVector256Unsafe();
 <#                  break;
                 case 4:#>
                 var vcoeff<#=mvm1#> = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, <#=item.Order - 4#>)).ToVector256Unsafe();
 <#                  break;
-                case 5:#>
-                var vcoeff<#=mvm1#> = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, <#=item.Order - 8#>)), Vector256.Create(3,4,5,6,7,0,1,2)), vzero256, 0b1110_0000);
-<#                  break;
-                case 6:#>
-                var vcoeff<#=mvm1#> = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, <#=item.Order - 8#>)), Vector256.Create(2,3,4,5,6,7,0,1)), vzero256, 0b1100_0000);
-<#                  break;
-                case 7:#>
-                var vcoeff<#=mvm1#> = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, <#=item.Order - 8#>)), Vector256.Create(1,2,3,4,5,6,7,0)), vzero256, 0b1000_0000);
+                case > 4:
+                    var overlap = item.Order - 4;
+                #>
+                var v2TempLoadM = Vector256<int>.Indices - Vector256.Create(<#=orderM8#> - 4);
+                var v1TempLoadM = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - 4)).ToVector256Unsafe();
+                var v0TempLoadM = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, <#=offset#>)).ToVector256Unsafe();
+                v1TempLoadM = Avx2.PermuteVar8x32(v1TempLoadM, v2TempLoadM);
+                var vcoeff<#=mvm1#> = Avx.Blend(v0TempLoadM.AsDouble(), v1TempLoadM.AsDouble(), 0b1100).AsInt32();
 <#                  break;
                 default:
                     break;
-            }
-#>
+            }#>
+                Vector256<int> prodHigh = default, prodLow = default;
+                Vector256<int> <#=string.Join(", ", Enumerable.Range(0, maxVs).Select(a=>$"vsum{a} = default"))#>;
+                int nlast = 0;
                 var vlast = Vector256.Create((uint)Unsafe.Add(ref o, 0));
-                sum<#=mvm1#> = Avx2.MultiplyLow(vcoeff<#=mvm1#>, vlast.AsInt32());
-<#          if (mvm1 > 0)
-            {#>
-                //sum<#=mvm1 - 1#> = Avx2.Blend(sum<#=mvm1 - 1#>, sum<#=mvm1#>, 0b1000_0000);
-<#          }
-            int jmaxA2N_1 = item.Order - 7;
-            int jmaxA2N_2 = item.Order - 8;
-#>
+                vsum<#=mvm1#> = Avx2.MultiplyLow(vcoeff<#=mvm1#>, vlast.AsInt32());
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create((uint)Unsafe.Add(ref o, i));
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
 <#          for (j = 0; j < maxVs; j++)
             {
-#>
+                var isLastOneCoeff = j + 1 >= maxVs && orderM8 == 1;
+                if (!isLastOneCoeff)
+                {#>
                     prodHigh = Avx2.Shuffle(vcoeff<#=j#>, 0b11_11_01_01);
                     prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+<#              }#>
                     prodLow = Avx2.Multiply(vcoeff<#=j#>.AsUInt32(), vlast).AsInt32();
+<#              if (!isLastOneCoeff)
+                {#>
                     prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-<#              if (j + 1 < maxVs)
-                {#>
-                    sum<#=j + 1#> = Avx2.PermuteVar8x32(sum<#=j + 1#>, permShift);
-                    sum<#=j#> = Avx2.Blend(sum<#=j#>, sum<#=j + 1#>, 0b1000_0000);
 <#              }
-                else
+                if (j + 1 < maxVs)
                 {#>
-                    sum<#=j#> = Avx2.Blend(sum<#=j#>, vzero256, 0b1000_0000);
+                    vsum<#=j + 1#> = Avx2.PermuteVar8x32(vsum<#=j + 1#>, permShift);
+                    vsum<#=j#> = Avx2.Blend(vsum<#=j#>, vsum<#=j + 1#>, 0b1000_0000);
 <#              }
-#>
+                else if (!isLastOneCoeff)
+                {#>
+                    vsum<#=j#> = Avx2.Blend(vsum<#=j#>, vzero256, 0b1000_0000);
+<#              }#>
+<#              if (!isLastOneCoeff)
+                {#>
                     prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum<#=j#> += prodLow;
-<#          }#>
+<#              }#>
+                    vsum<#=j#> <#=isLastOneCoeff ? "" : "+"#>= prodLow;
+<#              if (j == 0)
+                {#>
+                    sum2 = vsum0.GetElement(0);
+<#              }
+            }#>
                 }
-                var xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
+                var eax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0).AsUInt32();
-                    sum0 = Avx2.PermuteVar8x32(sum0, permShift);
+                    var res = Unsafe.Add(ref d, i);
+                    eax += res;
+                    nlast = eax;
+                    Unsafe.Add(ref d, i) = eax;
+                    vlast = Vector256.Create(nlast).AsUInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    eax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.PermuteVar8x32(vsum0, permShift);
 <#          for (j = 0; j < maxVs; j++)
             {
-#>
+                var isLastOneCoeff = j + 1 >= maxVs && orderM8 == 1;
+                if (!isLastOneCoeff)
+                {#>
                     prodHigh = Avx2.Shuffle(vcoeff<#=j#>, 0b11_11_01_01);
                     prodHigh = Avx2.Multiply(prodHigh.AsUInt32(), vlast).AsInt32();
+<#              }#>
                     prodLow = Avx2.Multiply(vcoeff<#=j#>.AsUInt32(), vlast).AsInt32();
-                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
-<#              if (j + 1 < maxVs)
-                {
-#>
-                    sum<#=j + 1#> = Avx2.PermuteVar8x32(sum<#=j + 1#>, permShift);
-                    sum<#=j#> = Avx2.Blend(sum<#=j#>, sum<#=j + 1#>, 0b1000_0000);
-<#              }
-                else
+<#              if (!isLastOneCoeff)
                 {#>
-                    sum<#=j#> = Avx2.Blend(sum<#=j#>, vzero256, 0b1000_0000);
+                    prodHigh = Avx2.Shuffle(prodHigh, 0b10_11_00_01);
 <#              }
-#>
+                if (j + 1 < maxVs)
+                {#>
+                    vsum<#=j + 1#> = Avx2.PermuteVar8x32(vsum<#=j + 1#>, permShift);
+                    vsum<#=j#> = Avx2.Blend(vsum<#=j#>, vsum<#=j + 1#>, 0b1000_0000);
+<#              }
+                else if (!isLastOneCoeff)
+                {#>
+                    vsum<#=j#> = Avx2.Blend(vsum<#=j#>, vzero256, 0b1000_0000);
+<#              }#>
+<#              if (!isLastOneCoeff)
+                {#>
                     prodLow = Avx2.Blend(prodLow, prodHigh, 0b1010_1010);
-                    sum<#=j#> += prodLow;
+<#              }#>
+                    vsum<#=j#> <#=isLastOneCoeff ? "" : "+"#>= prodLow;
 <#              if (j == 0)
-                {
-#>
-                    xmm0 = Avx2.ShiftRightArithmeticVariable(sum0.GetLower(), vshift);
+                {#>
+                    sum2 = vsum0.GetElement(0);
 <#              }
-            }
-#>
+            }#>
                 }
             }
 <#      }
-        if (item.generate64)
+    }
+    foreach (var item in names64)
+    {
+        if (item.generate)
         {
-            var orderO4 = item.Order / 4;
-            var orderM4 = item.Order % 4;
+            int j;
+            var scalarOrder = 2;
+            var vectorizedOrder = item.Order - scalarOrder;
+            var orderO4 = vectorizedOrder / 4;
+            var orderM4 = vectorizedOrder % 4;
             var maxVs = orderO4 + (orderM4 > 0 ? 1 : 0);
+            var mvm1 = maxVs - 1;
 #>
 
             [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-            internal static unsafe void RestoreSignal64Avx2Order<#=item.Order#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            internal static unsafe void RestoreSignal64Avx2Order<#=item.Order#>(in RestoreParameters parameters)
             {
                 const int Order = <#=item.Order#>;
-                if(coeffs.Length < Order) return;
-                _ = coeffs[Order - 1];
-                var vshift = Vector128.CreateScalar((ulong)shiftsNeeded);
-                var vzero = Vector128<int>.Zero;
-                var vzero256 = vzero.ToVector256Unsafe();
-                Vector256<long> <#=string.Join(", ", Enumerable.Range(0, maxVs).Select(a=>$"sum{a} = default"))#>;
+                var coeffs = parameters.Coefficients;
                 ref var c = ref MemoryMarshal.GetReference(coeffs);
+                _ = coeffs[Order - 1];
+                var shiftsNeeded = parameters.ShiftsNeeded;
+                var output = parameters.Output;
                 ref var o = ref MemoryMarshal.GetReference(output);
                 ref var d = ref Unsafe.Add(ref o, Order);
+                var vzero = Vector128<int>.Zero;
+                var vzero256 = vzero.ToVector256Unsafe();
+                long sum0 = 0, sum1 = 0;
+                Vector256<long> <#=string.Join(", ", Enumerable.Range(0, maxVs).Select(a=>$"vsum{a} = default"))#>;
                 int dataLength = output.Length - Order;
-                ref var r = ref MemoryMarshal.GetReference(residual);
                 const byte PermShift = 0b00_11_10_01;
                 Vector256<long> prod = default;
-<#      
-            var mvm1 = maxVs - 1;
-            for (j = 0; j < orderO4; j++)
-            {
-#>
-                var vcoeff<#=j#> = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, <#=j * 4#>))).AsInt32();
-<#
-            }
-            switch (orderM4)
-            {
-                case 1:#>
-                var vcoeff<#=mvm1#> = Vector256.CreateScalarUnsafe((ulong)(uint)Unsafe.Add(ref c, <#=item.Order - 1#>)).AsInt32();
-<#                  break;
-                case 2:#>
-                var vcoeff<#=mvm1#> = Sse41.ConvertToVector128Int64(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, <#=item.Order - 2#>))).AsUInt32()).ToVector256Unsafe().AsInt32();
-<#                  break;
-                case 3:#>
-                var vcoeff<#=mvm1#> = Avx2.ConvertToVector256Int64(Sse2.Shuffle(Unsafe.As<int, Vector128<uint>>(ref Unsafe.Add(ref c, <#=item.Order - 4#>)), 0b00_11_10_01)).AsInt32();
-                vcoeff<#=mvm1#> = Avx.Blend(vcoeff<#=mvm1#>.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt32();
-<#                  break;
-                default:
-                    break;
-            }
-#>
-                var vlast = Vector256.Create(Unsafe.Add(ref o, 0));
-                sum<#=mvm1#> = Avx2.Multiply(vcoeff<#=mvm1#>, vlast);
+<#          for (j = 0; j < scalarOrder; j++)
+            {#>
+                int coeff<#=j#> = Unsafe.Add(ref c, <#=j#>);
+<#          }
+            for(j = 0; j < orderO4; j++)
+            {#>
+                var vcoeff<#=j#> = Avx2.ConvertToVector256Int64(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, <#=j * 4 + scalarOrder#>))).AsInt32();
+<#          }
+            var offset = orderO4 * 4 + scalarOrder;
+            if (orderM4 > 0)
+            {#>
+                var vcoeff<#=mvm1#>Low = vzero;
+                if (coeffs.Length - <#=offset#> >= Vector128<int>.Count)
+                {
+                    vcoeff<#=mvm1#>Low = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, <#=offset#>));
+                }
+                else
+                {
+                    if (Order >= Vector128<int>.Count && coeffs.Length >= Vector128<int>.Count)
+                    {
+                        var shiftIndices = Vector128<sbyte>.Indices + Vector128.Create((sbyte)(sizeof(int) * (4 - <#=orderM4#>)));
+                        shiftIndices |= Sse2.CompareGreaterThan(shiftIndices, Vector128.Create((sbyte)15));
+                        var loadLow = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, Order - Vector128<int>.Count));
+                        vcoeff<#=mvm1#>Low = Ssse3.Shuffle(loadLow.AsSByte(), shiftIndices).AsInt32();
+                    }
+                    else
+                    {
+                        var extraOrder = Order - <#=offset#>;
+                        if ((extraOrder & 1) > 0)
+                        {
+                            vcoeff<#=mvm1#>Low = Vector128.CreateScalar(Unsafe.Add(ref c, Order - 1)).AsInt32();
+                        }
+                        if (extraOrder > 1)
+                        {
+                            var loadLow = Vector128.CreateScalar(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, <#=offset#>))).AsInt32();
+                            if (extraOrder > 2)
+                            {
+                                loadLow = Sse.Shuffle(loadLow.AsSingle(), vcoeff<#=mvm1#>Low.AsSingle(), 0b11_00_01_00).AsInt32();
+                            }
+                            vcoeff<#=mvm1#>Low = loadLow;
+                        }
+                    }
+                }
+                var vcoeff<#=mvm1#> = Avx2.ConvertToVector256Int64(vcoeff<#=mvm1#>Low).AsInt32();
+<#          }#>
+                long nlast = 0;
+                var vlast = Vector256.Create(Unsafe.Add(ref o, 0)).AsInt32();
+                vsum<#=mvm1#> = Avx2.Multiply(vcoeff<#=mvm1#>, vlast);
+                var sum2 = vsum0.GetElement(0);
                 for (var i = 1; i < Order; i++)
                 {
-                    vlast = Vector256.Create(Unsafe.Add(ref o, i));
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    nlast = Unsafe.Add(ref o, i);
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    sum1 = sum2 + nlast * coeff1;
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
 <#          for (j = 0; j < maxVs; j++)
             {
+                var isLastOneCoeff = j + 1 >= maxVs && orderM4 == 1;
 #>
                     prod = Avx2.Multiply(vcoeff<#=j#>, vlast);
 <#              if (j + 1 < maxVs)
                 {#>
-                    sum<#=j + 1#> = Avx2.Permute4x64(sum<#=j + 1#>, PermShift);
-                    sum<#=j#> = Avx.Blend(sum<#=j#>.AsDouble(), sum<#=j + 1#>.AsDouble(), 0b1000).AsInt64();
+                    vsum<#=j + 1#> = Avx2.Permute4x64(vsum<#=j + 1#>, PermShift);
+                    vsum<#=j#> = Avx.Blend(vsum<#=j#>.AsDouble(), vsum<#=j + 1#>.AsDouble(), 0b1000).AsInt64();
 <#              }
-                else
+                else if (!isLastOneCoeff)
                 {#>
-                    sum<#=j#> = Avx.Blend(sum<#=j#>.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum<#=j#> = Avx.Blend(vsum<#=j#>.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
 <#              }
 #>
-                    sum<#=j#> += prod;
-<#          }#>
+                    vsum<#=j#> <#=isLastOneCoeff ? "" : "+"#>= prod;
+<#              if (j == 0)
+                {#>
+                    sum2 = vsum0.GetElement(0);
+<#              }
+            }#>
                 }
-                var xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                var rax = sum0 >> shiftsNeeded;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
-                    xmm0 += res;
-                    Unsafe.Add(ref d, i) = xmm0.GetElement(0);
-                    vlast = Avx2.BroadcastScalarToVector256(xmm0);
-                    sum0 = Avx2.Permute4x64(sum0, PermShift);
+                    vsum0 = Avx2.Permute4x64(vsum0, PermShift);
+                    var res = Unsafe.Add(ref d, i);
+                    rax += res;
+                    nlast = rax;
+                    Unsafe.Add(ref d, i) = (int)rax;
+                    vlast = Vector256.Create(nlast).AsInt32();
+                    sum0 = sum1 + nlast * coeff0;
+                    rax = sum0 >> shiftsNeeded;
+                    sum1 = sum2 + nlast * coeff1;
 <#          for (j = 0; j < maxVs; j++)
             {
+                var isLastOneCoeff = j + 1 >= maxVs && orderM4 == 1;
 #>
                     prod = Avx2.Multiply(vcoeff<#=j#>, vlast);
 <#              if (j + 1 < maxVs)
                 {#>
-                    sum<#=j + 1#> = Avx2.Permute4x64(sum<#=j + 1#>, PermShift);
-                    sum<#=j#> = Avx.Blend(sum<#=j#>.AsDouble(), sum<#=j + 1#>.AsDouble(), 0b1000).AsInt64();
+                    vsum<#=j + 1#> = Avx2.Permute4x64(vsum<#=j + 1#>, PermShift);
+                    vsum<#=j#> = Avx.Blend(vsum<#=j#>.AsDouble(), vsum<#=j + 1#>.AsDouble(), 0b1000).AsInt64();
 <#              }
-                else
+                else if (!isLastOneCoeff)
                 {#>
-                    sum<#=j#> = Avx.Blend(sum<#=j#>.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
+                    vsum<#=j#> = Avx.Blend(vsum<#=j#>.AsDouble(), vzero256.AsDouble(), 0b1000).AsInt64();
 <#              }
 #>
-                    sum<#=j#> += prod;
+                    vsum<#=j#> <#=isLastOneCoeff ? "" : "+"#>= prod;
 <#              if (j == 0)
-                {
-#>
-                    xmm0 = Avx2.ShiftRightLogicalVariable(sum0.GetLower(), vshift).AsInt32();
+                {#>
+                    sum2 = vsum0.GetElement(0);
 <#              }
-            }
-#>
+            }#>
                 }
             }
 <#      }

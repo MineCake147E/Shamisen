@@ -164,16 +164,16 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             t.Stop();
             Console.WriteLine($"Memory preparation took {t.Elapsed.TotalSeconds}[s]");
             t.Restart();
+            var rw = wav.Read(MemoryMarshal.Cast<short, byte>(dataW.Span));
+            t.Stop();
+            Console.WriteLine($"WAVE Decoding took {t.Elapsed.TotalSeconds}[s]");
+            t.Restart();
             using var flac = new FlacParser(flacSource, new FlacParserOptions(true, true, true, true, true, true));
             var rr = flac.Read(MemoryMarshal.Cast<int, byte>(dataF.Span));
             t.Stop();
             double duration = (double)wav.TotalLength / wav.Format.SampleRate;
             Console.WriteLine($"FLAC Decoding took {t.Elapsed.TotalSeconds}[s]\n(around {duration / t.Elapsed.TotalSeconds} times faster than real time)");
             Assert.That(rr.Length, Is.EqualTo(size * sizeof(int)));
-            t.Restart();
-            var rw = wav.Read(MemoryMarshal.Cast<short, byte>(dataW.Span));
-            t.Stop();
-            Console.WriteLine($"WAVE Decoding took {t.Elapsed.TotalSeconds}[s]");
             Assert.That(rr.Length / sizeof(int), Is.EqualTo(rw.Length / sizeof(short)));
             Debug.WriteLine("Comparing!");
             using (Assert.EnterMultipleScope())

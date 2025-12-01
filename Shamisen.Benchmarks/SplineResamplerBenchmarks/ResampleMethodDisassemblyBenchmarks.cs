@@ -1,12 +1,12 @@
-﻿using System.Threading;
-using System;
+﻿using System;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 
 using Shamisen.Conversion.Resampling.Sample;
-using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
 {
@@ -15,13 +15,13 @@ namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
     public class ResampleMethodDisassemblyBenchmarks
     {
         private UnifiedResampleArgs args;
-        private float[] buffer, srcBuffer;
-        private Vector4[] cbuf;
+        private float[]? buffer, srcBuffer;
+        private Vector4[]? cbuf;
         [GlobalSetup]
         public void Setup()
         {
             args = new(0, 0, 1ul << 32, 0, 0);
-            buffer = Array.Empty<float>();
+            buffer = [];
             srcBuffer = new float[1024];
             cbuf = new Vector4[1024];
         }

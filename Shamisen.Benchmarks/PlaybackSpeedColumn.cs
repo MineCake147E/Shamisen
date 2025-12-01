@@ -37,11 +37,11 @@ namespace Shamisen.Benchmarks
         {
             try
             {
-                int? nf = FrameSelector?.Invoke(benchmarkCase);
-                int? ndst = SampleRateSelector?.Invoke(benchmarkCase);
-                double? playbackTime = (double)nf / ndst * 1.0E9f;
-                double mean = summary[benchmarkCase].ResultStatistics.Mean;
-                double? speed = playbackTime / mean;
+                var nf = FrameSelector?.Invoke(benchmarkCase) ?? 0.0;
+                var ndst = SampleRateSelector?.Invoke(benchmarkCase) ?? 192000.0;
+                var playbackTime = nf / ndst * 1.0E9f;
+                var mean = summary[benchmarkCase]?.ResultStatistics?.Mean ?? double.PositiveInfinity;
+                var speed = playbackTime / mean;
                 return $"{speed}";
             }
             catch (Exception ex)
