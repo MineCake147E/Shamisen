@@ -5,12 +5,12 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.2.5" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.2.5" />
-        <PackageReference Include="Avalonia.Diagnostics" Version="11.2.5" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5" />
-        <PackageReference Include="ReactiveProperty" Version="9.7.0" />
+        <PackageReference Include="Avalonia" Version="11.3.9" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.9" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.9" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.9" />
+        <PackageReference Include="ReactiveProperty" Version="9.8.0" />
+        <PackageReference Include="ReactiveUI.Avalonia" Version="11.3.8" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Shamisen.IO.OpenTK\Shamisen.IO.OpenTK.csproj" />
