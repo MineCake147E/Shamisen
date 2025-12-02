@@ -39,8 +39,6 @@ using System.Runtime.CompilerServices;
 
 #if NET5_0_OR_GREATER
 
-
-
 #endif
 #if NETCOREAPP3_1_OR_GREATER
 
@@ -137,12 +135,18 @@ namespace Shamisen.Codecs.Flac
                 else
                 {
                     if (!bitReader.ReadBitsUInt32(5, out t)) return false;
-                    var bits = (byte)t;
                     var u = partition == 0 ? partitionSamples - predictorOrder : partitionSamples;
-                    for (var i = 0; i < u; i++)
+                    if (t == 0)
                     {
-                        if (!bitReader.ReadBitsUInt32(bits, out t)) return false;
-                        bH[i] = (int)t;
+                        bH.Slice(0, u).Clear();
+                    }
+                    else
+                    {
+                        var bits = (byte)t;
+                        for (var i = 0; i < u; i++)
+                        {
+                            if (!bitReader.ReadBitsInt32(bits, out bH[i])) return false;
+                        }
                     }
                     bH = bH.Slice(u);
                 }

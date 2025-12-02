@@ -2130,12 +2130,6 @@
             <param name="buffer">The buffer.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacFixedPredictionSubFrame.Finalize">
-            <summary>
-            Finalizes this instance.
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacFixedPredictionSubFrame.Dispose">
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -2176,11 +2170,6 @@
             <returns>
             The length of the data written.
             </returns>
-        </member>
-        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacLinearPredictionSubFrame.Finalize">
-            <summary>
-            Finalizes an instance of the <see cref="T:Shamisen.Codecs.Flac.SubFrames.FlacLinearPredictionSubFrame"/> class.
-            </summary>
         </member>
         <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacLinearPredictionSubFrame.Dispose">
             <summary>

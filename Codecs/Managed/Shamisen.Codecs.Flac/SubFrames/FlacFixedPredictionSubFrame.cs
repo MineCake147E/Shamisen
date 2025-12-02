@@ -134,8 +134,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             var output = data.Span;
             warmup.CopyTo(output);
             RestoreSignal(resiSpan, order, output);
-            FlacUtils.ShiftLeftLogical(output, wastedBits);
             length = blockSize;
+            if (wastedBits > 0)
+            {
+                FlacUtils.ShiftLeftLogical(output, wastedBits);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -405,15 +408,6 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 data.Dispose();
                 disposedValue = true;
             }
-        }
-
-        /// <summary>
-        /// Finalizes this instance.
-        /// </summary>
-        /// <returns></returns>
-        ~FlacFixedPredictionSubFrame()
-        {
-            Dispose(disposing: false);
         }
 
         /// <summary>

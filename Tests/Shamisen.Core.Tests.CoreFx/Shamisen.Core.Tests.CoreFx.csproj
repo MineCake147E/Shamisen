@@ -51,8 +51,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference
-            Include="..\..\Codecs\Managed\Shamisen.Codecs.Flac\Shamisen.Codecs.Flac.csproj" />
+        <ProjectReference Include="..\..\Codecs\Managed\Shamisen.Codecs.Flac\Shamisen.Codecs.Flac.csproj" />
         <ProjectReference Include="..\..\Shamisen.TestUtils\Shamisen.TestUtils.csproj" />
         <ProjectReference Include="..\..\Shamisen\Shamisen.csproj" />
     </ItemGroup>
@@ -64,5 +63,9 @@
         <None Update="Samples\*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Songs\" />
     </ItemGroup>
 </Project>

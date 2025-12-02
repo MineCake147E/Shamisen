@@ -63,6 +63,7 @@ namespace Shamisen.Codecs.Flac
         private Int32Divisor channelsDivisor;
         private FlacFrameParser? currentFrame;
         private bool disposedValue;
+        private readonly ulong totalSamples;
         private Memory<FlacSeekPoint> seekPoints;
 
         /// <summary>
@@ -114,23 +115,19 @@ namespace Shamisen.Codecs.Flac
         /// <value>
         /// The length.
         /// </value>
-        public ulong Length => TotalLength - Position;
+        public ulong? Length => TotalLength is null ? null : TotalLength.Value - Position;
 
         /// <inheritdoc/>
         public ulong Position { get; private set; }
 
         /// <inheritdoc/>
-        public ulong TotalLength { get; }
-
-        ulong? IAudioSource<int, Int32RangedLinearPcmSampleFormat>.Length => Length;
+        public ulong? TotalLength => totalSamples == 0 ? null : totalSamples;
 
         ulong? IAudioSource<int, Int32RangedLinearPcmSampleFormat>.Position => Position;
 
         ISeekSupport? IAudioSource<int, Int32RangedLinearPcmSampleFormat>.SeekSupport { get; }
 
         ISkipSupport? IAudioSource<int, Int32RangedLinearPcmSampleFormat>.SkipSupport { get; }
-
-        ulong? IAudioSource<int, Int32RangedLinearPcmSampleFormat>.TotalLength => TotalLength;
 
         private FlacBitReader BitReader { get; }
 
@@ -161,7 +158,7 @@ namespace Shamisen.Codecs.Flac
             var streamInfo = streamInfoBlock = FlacStreamInfoBlock.ToReadableValue(Read<FlacStreamInfoBlock>(source));
             Format = new(streamInfo.Channels, (int)streamInfo.SampleRate, streamInfo.BitDepth);
             channelsDivisor = new(Format.Channels);
-            TotalLength = streamInfo.TotalSamples;
+            totalSamples = streamInfo.TotalSamples;
             var currentHeader = streamInfoHeader;
             var appl = new List<FlacApplicationMetadata>();
             var pics = new List<FlacPicture>();
@@ -248,15 +245,15 @@ namespace Shamisen.Codecs.Flac
             var bb = buffer.SliceAlign(channelsDivisor);
             var bbr = bb;
             if (Length == 0) return ReadResult.EndOfStream;
-            while (!bbr.IsEmpty && Length > 0)
+            while (!bbr.IsEmpty && (Length is null || Length.Value > 0))
             {
                 while (currentFrame?.Length is null || currentFrame.Length == 0)
                 {
                     var g = FindNextFrame();
                     if (g is null)
                     {
-                        Position = TotalLength;
-                        return (bb.Length - bbr.Length);
+                        Position = TotalLength ?? ulong.MaxValue;
+                        return bb.Length - bbr.Length;
                     }
                     currentFrame = g;
                 }
@@ -268,8 +265,8 @@ namespace Shamisen.Codecs.Flac
                         var g = FindNextFrame();
                         if (g is null)
                         {
-                            Position = TotalLength;
-                            return (bb.Length - bbr.Length);
+                            Position = TotalLength ?? ulong.MaxValue;
+                            return bb.Length - bbr.Length;
                         }
                         currentFrame = g;
                     }
@@ -280,7 +277,7 @@ namespace Shamisen.Codecs.Flac
                     return bb.Length;
                 bbr = bbr.Slice(rr.Length);
             }
-            return (bb.Length - bbr.Length);
+            return bb.Length - bbr.Length;
         }
 
         /// <summary>

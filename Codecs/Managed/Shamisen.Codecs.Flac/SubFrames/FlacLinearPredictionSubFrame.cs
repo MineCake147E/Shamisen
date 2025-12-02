@@ -173,14 +173,6 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="FlacLinearPredictionSubFrame"/> class.
-        /// </summary>
-        ~FlacLinearPredictionSubFrame()
-        {
-            Dispose(disposing: false);
-        }
-
-        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
