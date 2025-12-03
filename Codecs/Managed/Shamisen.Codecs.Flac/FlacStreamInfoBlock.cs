@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,6 +15,7 @@ namespace Shamisen.Codecs.Flac
     /// Represents a FLAC Stream Info block.
     /// </summary>
     [StructLayout(LayoutKind.Explicit, Pack = 1, Size = 34)]
+    [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
     public readonly struct FlacStreamInfoBlock : IEquatable<FlacStreamInfoBlock>
     {
         [FieldOffset(0)]
@@ -31,10 +34,7 @@ namespace Shamisen.Codecs.Flac
         private readonly ulong field4;
 
         [FieldOffset(18)]
-        private readonly ulong md5Head;
-
-        [FieldOffset(26)]
-        private readonly ulong md5Tail;
+        private readonly Vector128<byte> md5Signature;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FlacStreamInfoBlock"/> struct directly.
@@ -47,15 +47,14 @@ namespace Shamisen.Codecs.Flac
         /// <param name="md5head">The md5 head.</param>
         /// <param name="md5tail">The md5 tail.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public FlacStreamInfoBlock(ushort blockMinSize, ushort blockMaxSize, UInt24 frameMinSize, UInt24 frameMaxSize, ulong field4, ulong md5head, ulong md5tail)
+        public FlacStreamInfoBlock(ushort blockMinSize, ushort blockMaxSize, UInt24 frameMinSize, UInt24 frameMaxSize, ulong field4, Vector128<byte> md5Signature)
         {
             this.blockMinSize = blockMinSize;
             this.blockMaxSize = blockMaxSize;
             this.frameMinSize = frameMinSize;
             this.frameMaxSize = frameMaxSize;
             this.field4 = field4;
-            md5Head = md5head;
-            md5Tail = md5tail;
+            this.md5Signature = md5Signature;
         }
 
         /// <summary>
@@ -73,7 +72,7 @@ namespace Shamisen.Codecs.Flac
         /// <param name="md5Head">The MD5 head.</param>
         /// <param name="md5Tail">The MD5 tail.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public FlacStreamInfoBlock(ushort minimumBlockSize, ushort maximumBlockSize, UInt24 minimumFrameSize, UInt24 maximumFrameSize, uint sampleRate, byte channels, byte bitDepth, ulong totalSamples, ulong md5Head, ulong md5Tail)
+        public FlacStreamInfoBlock(ushort minimumBlockSize, ushort maximumBlockSize, UInt24 minimumFrameSize, UInt24 maximumFrameSize, uint sampleRate, byte channels, byte bitDepth, ulong totalSamples, Vector128<byte> md5Signature)
         {
             blockMinSize = minimumBlockSize;
             blockMaxSize = maximumBlockSize;
@@ -90,8 +89,7 @@ namespace Shamisen.Codecs.Flac
             channels--;
             bitDepth--;
             field4 = ((ulong)sampleRate << 44) | ((ulong)channels << 41) | ((ulong)bitDepth << 36) | totalSamples;
-            this.md5Head = md5Head;
-            this.md5Tail = md5Tail;
+            this.md5Signature = md5Signature;
         }
 
         /// <summary>
@@ -196,17 +194,7 @@ namespace Shamisen.Codecs.Flac
         /// <value>
         /// The MD5 signature.
         /// </value>
-        public Memory<byte> MD5Signature
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get
-            {
-                var h = new byte[16];
-                BinaryPrimitives.WriteUInt64BigEndian(h, md5Head);
-                BinaryPrimitives.WriteUInt64BigEndian(h.AsSpan(8), md5Head);
-                return h;
-            }
-        }
+        public Vector128<byte> MD5Signature => md5Signature;
 
         /// <summary>
         /// Converts the specified <paramref name="value"/> read directly from <see cref="Span{T}"/> of <see cref="byte"/>, to readable value.
@@ -239,8 +227,7 @@ namespace Shamisen.Codecs.Flac
                     UInt24.ReverseEndianness(value.frameMinSize),
                     UInt24.ReverseEndianness(value.frameMaxSize),
                     BinaryPrimitives.ReverseEndianness(value.field4),
-                    BinaryPrimitives.ReverseEndianness(value.md5Head),
-                    BinaryPrimitives.ReverseEndianness(value.md5Tail));
+                    value.md5Signature);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -258,7 +245,7 @@ namespace Shamisen.Codecs.Flac
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
-        public bool Equals(FlacStreamInfoBlock other) => blockMinSize == other.blockMinSize && blockMaxSize == other.blockMaxSize && frameMinSize.Equals(other.frameMinSize) && frameMaxSize.Equals(other.frameMaxSize) && field4 == other.field4 && md5Head == other.md5Head && md5Tail == other.md5Tail;
+        public bool Equals(FlacStreamInfoBlock other) => blockMinSize == other.blockMinSize && blockMaxSize == other.blockMaxSize && frameMinSize.Equals(other.frameMinSize) && frameMaxSize.Equals(other.frameMaxSize) && field4 == other.field4 && md5Signature == other.md5Signature;
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -266,7 +253,7 @@ namespace Shamisen.Codecs.Flac
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
-        public override int GetHashCode() => HashCode.Combine(blockMinSize, blockMaxSize, frameMinSize, frameMaxSize, field4, md5Head, md5Tail);
+        public override int GetHashCode() => HashCode.Combine(blockMinSize, blockMaxSize, frameMinSize, frameMaxSize, field4, md5Signature);
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="FlacStreamInfoBlock"/> objects are equal.
@@ -287,5 +274,22 @@ namespace Shamisen.Codecs.Flac
         ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
         /// </returns>
         public static bool operator !=(FlacStreamInfoBlock left, FlacStreamInfoBlock right) => !(left == right);
+
+        /// <inheritdoc/>
+        public override string? ToString() => GetDebuggerDisplay();
+
+        private string GetDebuggerDisplay()
+        {
+            var sb = new StringBuilder();
+            _ = sb.AppendLine($"{nameof(MinimumBlockSize)}: {blockMinSize}");
+            _ = sb.AppendLine($"{nameof(MaximumBlockSize)}: {blockMaxSize}");
+            _ = sb.AppendLine($"{nameof(MinimumFrameSize)}: {frameMinSize}");
+            _ = sb.AppendLine($"{nameof(MaximumFrameSize)}: {frameMaxSize}");
+            _ = sb.AppendLine($"{nameof(SampleRate)}: {SampleRate}");
+            _ = sb.AppendLine($"{nameof(Channels)}: {Channels}");
+            _ = sb.AppendLine($"{nameof(BitDepth)}: {BitDepth}");
+            _ = sb.Append($"{nameof(MD5Signature)}: {md5Signature}");
+            return sb.ToString();
+        }
     }
 }

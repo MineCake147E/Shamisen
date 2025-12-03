@@ -18,7 +18,7 @@ namespace Shamisen
     /// <seealso cref="System.IEquatable{T}" />
     [StructLayout(LayoutKind.Explicit, Size = 3)]
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-    public readonly partial struct Int24 : IComparable<Int24>, IEquatable<Int24>, IMinMaxValue<Int24>
+    public readonly partial struct Int24 : IComparable<Int24>, IEquatable<Int24>, IMinMaxValue<Int24>, IComparisonOperators<Int24, Int24, bool>
     {
         private const int NegativeValueOrMask = -0x80_0000;
         private const int Mask = -0x7F80_0001;
@@ -66,7 +66,6 @@ namespace Shamisen
             Unsafe.SkipInit(out this);
             var sign = value >> 31;
             sign &= unchecked((int)0xFF80_0000);
-            value &= 0x007f_ffff;
             value |= sign;
             if (BitConverter.IsLittleEndian)
             {

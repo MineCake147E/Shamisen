@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -51,205 +53,75 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             using var flacSource = new StreamDataSource(flacMemory);
             using var wavSource = new StreamDataSource(wavMemory);
             using var wav = new SimpleWaveParser(new SimpleChunkParserFactory(), wavSource);
-            Console.WriteLine($"Format: {wav.Format.SampleRate}Hz, {wav.Format.BitDepth}bit LinearPCM, {wav.Format.Channels}ch");
-            Console.WriteLine($"TotalLength : {wav.TotalLength}");
-            int size = (int)wav.TotalLength * wav.Format.Channels;
+            Console.WriteLine($"WAVE Format: {wav.Format.SampleRate}Hz, {wav.Format.BitDepth}bit {wav.Format.Encoding}, {wav.Format.Channels}ch");
+            Console.WriteLine($"WAVE TotalLength : {wav.TotalLength}");
+            using var flac = new FlacParser(flacSource, new FlacParserOptions(true, true, true, true, true, true));
+            DumpFlacMetadata(flac);
             switch (wav.Format.BitDepth)
             {
                 case 32:
-                    Compare32(flacSource, wav, size);
+                    Compare<int>(flac, wav);
                     break;
                 case 24:
-                    Compare24(flacSource, wav, size);
+                    Compare<Int24>(flac, wav);
                     break;
                 case 16:
-                    Compare16(flacSource, wav, size);
+                    Compare<short>(flac, wav);
                     break;
                 case 8:
-                    Compare8(flacSource, wav, size);
+                    Compare<OffsetSByte>(flac, wav);
                     break;
                 default:
                     Assert.Fail($"Bit depth {wav.Format.BitDepth} is not supported!");
                     break;
             }
         }
-        #region Compare
 
-        private static void Compare32(StreamDataSource flacSource, SimpleWaveParser wav, int size)
+        private static void Compare<T>(FlacParser flac, SimpleWaveParser wav) where T : unmanaged, IBinaryNumber<T>, ISignedNumber<T>
         {
             var t = new Stopwatch();
             t.Start();
-            var dataF = new PooledArray<int>(size);
-            var dataW = new PooledArray<int>(size);
-            t.Stop();
-            Console.WriteLine($"Memory preparation took {t.Elapsed.TotalSeconds}[s]");
-            t.Restart();
-            var rw = wav.Read(MemoryMarshal.Cast<int, byte>(dataW.Span));
-            t.Stop();
-            Console.WriteLine($"WAVE Decoding took {t.Elapsed.TotalSeconds}[s]");
-            t.Restart();
-            using var flac = new FlacParser(flacSource, new FlacParserOptions(true, true, true, true, true, true));
-            var rr = flac.Read(MemoryMarshal.Cast<int, byte>(dataF.Span));
-            t.Stop();
-            double duration = (double)wav.TotalLength / wav.Format.SampleRate;
-            Console.WriteLine($"FLAC Decoding took {t.Elapsed.TotalSeconds}[s]\n(around {duration / t.Elapsed.TotalSeconds} times faster than real time)");
-            Assert.That(rr.Length, Is.EqualTo(size * sizeof(int)));
-            Assert.That(rr.Length / sizeof(int), Is.EqualTo(rw.Length / 4));
             Debug.WriteLine("Comparing!");
-            var shiftsNeeded = wav.Format.BitDepth - flac.Format.EffectiveBitDepth;
-            using (Assert.EnterMultipleScope())
+            ulong err = 0ul;
+            ulong frameIndex = 0ul;
+            ulong wavLength = 0ul;
+            ulong flacLength = 0ul;
+            while (true)
             {
-                t.Restart();
-                ulong err = 0ul;
+                var frame = flac.PrepareNextFrame();
+                if (frame is null) break;
+                using var dataF = new PooledArray<int>((int)frame.TotalLength.GetValueOrDefault(int.MaxValue) * frame.Format.Channels);
+                using var dataW = new PooledArray<T>(dataF.Length);
+                var shiftsNeeded = wav.Format.BitDepth - frame.Format.EffectiveBitDepth;
                 var sw = dataW.Span;
                 var sf = dataF.Span;
-                for (int i = 0; i < sw.Length; i++)
+                var rrf = flac.ReadFrame(sf);
+                var rrw = wav.Read(MemoryMarshal.Cast<T, byte>(sw));
+                Assert.That(rrf, Is.EqualTo(rrw / Unsafe.SizeOf<T>()), $"FLAC ReadResult length mismatch in frame #{frameIndex} ({frame})");
+                wavLength += (ulong)(rrw.Length / Unsafe.SizeOf<T>());
+                flacLength += (ulong)rrf.Length;
+                using (Assert.EnterMultipleScope())
                 {
-                    if (sw[i] != sf[i] << shiftsNeeded)
+                    for (int i = 0; i < sf.Length; i++)
                     {
-                        Assert.That(sf[i] << shiftsNeeded, Is.EqualTo(sw[i]), $"Comparing {i}th element");
-                        err++;
-                        if (err > 128) break;
+                        var vw = long.CreateChecked(sw[i]);
+                        var vf = sf[i] << shiftsNeeded;
+                        if (vw != vf)
+                        {
+                            Assert.That(vf, Is.EqualTo(vw), $"Comparing element #{i} in frame #{frameIndex} ({frame})");
+                            err++;
+                            if (err > 128) break;
+                        }
                     }
                 }
-                t.Stop();
-                Console.WriteLine($"Comparison took {t.Elapsed.TotalSeconds}[s]");
+                frameIndex++;
             }
-            DumpFlacMetadata(flac);
+            Assert.That(flacLength, Is.EqualTo(wavLength), "Total length mismatch!");
         }
 
-        private static void Compare24(StreamDataSource flacSource, SimpleWaveParser wav, int size)
-        {
-            var t = new Stopwatch();
-            t.Start();
-            var dataF = new PooledArray<int>(size);
-            var dataW = new PooledArray<Int24>(size);
-            t.Stop();
-            Console.WriteLine($"Memory preparation took {t.Elapsed.TotalSeconds}[s]");
-            t.Restart();
-            var rw = wav.Read(MemoryMarshal.Cast<Int24, byte>(dataW.Span));
-            t.Stop();
-            Console.WriteLine($"WAVE Decoding took {t.Elapsed.TotalSeconds}[s]");
-            t.Restart();
-            using var flac = new FlacParser(flacSource, new FlacParserOptions(true, true, true, true, true, true));
-            var rr = flac.Read(MemoryMarshal.Cast<int, byte>(dataF.Span));
-            t.Stop();
-            double duration = (double)wav.TotalLength / wav.Format.SampleRate;
-            Console.WriteLine($"FLAC Decoding took {t.Elapsed.TotalSeconds}[s]\n(around {duration / t.Elapsed.TotalSeconds} times faster than real time)");
-            Assert.That(rr.Length, Is.EqualTo(size * sizeof(int)));
-            Assert.That(rr.Length / sizeof(int), Is.EqualTo(rw.Length / 3));
-            Debug.WriteLine("Comparing!");
-            var shiftsNeeded = wav.Format.BitDepth - flac.Format.EffectiveBitDepth;
-            using (Assert.EnterMultipleScope())
-            {
-                t.Restart();
-                ulong err = 0ul;
-                var sw = dataW.Span;
-                var sf = dataF.Span;
-                for (int i = 0; i < sw.Length; i++)
-                {
-                    if (sw[i] != (int)(Int24)sf[i] << shiftsNeeded)
-                    {
-                        Assert.That((int)(Int24)sf[i] << shiftsNeeded, Is.EqualTo((int)sw[i]), $"Comparing {i}th element");
-                        err++;
-                        if (err > 128) break;
-                    }
-                }
-                t.Stop();
-                Console.WriteLine($"Comparison took {t.Elapsed.TotalSeconds}[s]");
-            }
-            DumpFlacMetadata(flac);
-        }
-
-        private static void Compare16(StreamDataSource flacSource, SimpleWaveParser wav, int size)
-        {
-            var t = new Stopwatch();
-            t.Start();
-            var dataF = new PooledArray<int>(size);
-            var dataW = new PooledArray<short>(size);
-            t.Stop();
-            Console.WriteLine($"Memory preparation took {t.Elapsed.TotalSeconds}[s]");
-            t.Restart();
-            var rw = wav.Read(MemoryMarshal.Cast<short, byte>(dataW.Span));
-            t.Stop();
-            Console.WriteLine($"WAVE Decoding took {t.Elapsed.TotalSeconds}[s]");
-            t.Restart();
-            using var flac = new FlacParser(flacSource, new FlacParserOptions(true, true, true, true, true, true));
-            var rr = flac.Read(MemoryMarshal.Cast<int, byte>(dataF.Span));
-            t.Stop();
-            double duration = (double)wav.TotalLength / wav.Format.SampleRate;
-            Console.WriteLine($"FLAC Decoding took {t.Elapsed.TotalSeconds}[s]\n(around {duration / t.Elapsed.TotalSeconds} times faster than real time)");
-            Assert.That(rr.Length, Is.EqualTo(size * sizeof(int)));
-            Assert.That(rr.Length / sizeof(int), Is.EqualTo(rw.Length / sizeof(short)));
-            Debug.WriteLine("Comparing!");
-            var shiftsNeeded = wav.Format.BitDepth - flac.Format.EffectiveBitDepth;
-            using (Assert.EnterMultipleScope())
-            {
-                t.Restart();
-                ulong err = 0ul;
-                var sw = dataW.Span;
-                var sf = dataF.Span;
-                for (int i = 0; i < sw.Length; i++)
-                {
-                    if (sw[i] != sf[i] << shiftsNeeded)
-                    {
-                        Assert.That(sf[i] << shiftsNeeded, Is.EqualTo((int)sw[i]), $"Comparing {i}th element");
-                        err++;
-                        if (err > 128) break;
-                    }
-                }
-                t.Stop();
-                Console.WriteLine($"Comparison took {t.Elapsed.TotalSeconds}[s]");
-            }
-            DumpFlacMetadata(flac);
-        }
-
-        private static void Compare8(StreamDataSource flacSource, SimpleWaveParser wav, int size)
-        {
-            var t = new Stopwatch();
-            t.Start();
-            var dataF = new PooledArray<int>(size);
-            var dataW = new PooledArray<OffsetSByte>(size);
-            t.Stop();
-            Console.WriteLine($"Memory preparation took {t.Elapsed.TotalSeconds}[s]");
-            t.Restart();
-            var rw = wav.Read(MemoryMarshal.Cast<OffsetSByte, byte>(dataW.Span));
-            t.Stop();
-            Console.WriteLine($"WAVE Decoding took {t.Elapsed.TotalSeconds}[s]");
-            t.Restart();
-            using var flac = new FlacParser(flacSource, new FlacParserOptions(true, true, true, true, true, true));
-            var rr = flac.Read(MemoryMarshal.Cast<int, byte>(dataF.Span));
-            t.Stop();
-            double duration = (double)wav.TotalLength / wav.Format.SampleRate;
-            Console.WriteLine($"FLAC Decoding took {t.Elapsed.TotalSeconds}[s]\n(around {duration / t.Elapsed.TotalSeconds} times faster than real time)");
-            Assert.That(rr.Length, Is.EqualTo(size * sizeof(int)));
-            Assert.That(rr.Length / sizeof(int), Is.EqualTo(rw.Length / Unsafe.SizeOf<OffsetSByte>()));
-            Debug.WriteLine("Comparing!");
-            var shiftsNeeded = wav.Format.BitDepth - flac.Format.EffectiveBitDepth;
-            using (Assert.EnterMultipleScope())
-            {
-                t.Restart();
-                ulong err = 0ul;
-                var sw = dataW.Span;
-                var sf = dataF.Span;
-                for (int i = 0; i < sw.Length; i++)
-                {
-                    if ((int)sw[i] != sf[i] << shiftsNeeded)
-                    {
-                        Assert.That(sf[i] << shiftsNeeded, Is.EqualTo((int)sw[i]), $"Comparing {i}th element");
-                        err++;
-                        if (err > 128) break;
-                    }
-                }
-                t.Stop();
-                Console.WriteLine($"Comparison took {t.Elapsed.TotalSeconds}[s]");
-            }
-            DumpFlacMetadata(flac);
-        }
-
-        #endregion
         private static void DumpFlacMetadata(FlacParser flac)
         {
+            DumpStreamInfo(flac.StreamInfoBlock);
             if (flac.CueSheet.HasValue)
             {
                 DumpCueSheet(flac.CueSheet.Value);
@@ -268,9 +140,15 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             }
         }
 
+        private static void DumpStreamInfo(FlacStreamInfoBlock streamInfoBlock)
+        {
+            Console.WriteLine($"FLAC Stream Info:");
+            Console.WriteLine(streamInfoBlock);
+        }
+
         private static void DumpPictures(ReadOnlyMemory<FlacPicture> pictures)
         {
-            Console.WriteLine($"Pictures:");
+            Console.WriteLine($"FLAC Pictures:");
             var sb = new StringBuilder();
             for (int i = 0; i < pictures.Span.Length; i++)
             {
@@ -288,7 +166,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
 
         private static void DumpApplicationMetadata(ReadOnlyMemory<FlacApplicationMetadata> applicationMetadata)
         {
-            Console.WriteLine($"Application Metadata:");
+            Console.WriteLine($"FLAC Application Metadata:");
             var sb = new StringBuilder();
             for (int i = 0; i < applicationMetadata.Span.Length; i++)
             {
@@ -303,7 +181,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
 
         private static void DumpComment(VorbisComment value)
         {
-            Console.WriteLine($"VorbisComment: ");
+            Console.WriteLine($"FLAC VorbisComment: ");
             var sb = new StringBuilder();
             _ = sb.AppendLine($"\tVendor: {value.Vendor}");
             _ = sb.AppendLine($"\tUserComments:\n\t\t{string.Join("\n\t\t", value.UserComments)}");

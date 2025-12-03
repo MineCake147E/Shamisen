@@ -2,6 +2,7 @@
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -13,7 +14,7 @@ namespace Shamisen
     /// </summary>
     [StructLayout(LayoutKind.Explicit, Size = 1)]
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-    public readonly struct OffsetSByte : IEquatable<OffsetSByte>, IComparable<OffsetSByte>
+    public readonly partial struct OffsetSByte : IEquatable<OffsetSByte>, IComparable<OffsetSByte>, IMinMaxValue<OffsetSByte>, IComparisonOperators<OffsetSByte, OffsetSByte, bool>
     {
         private const byte Inverter = 0x80;
 
@@ -23,27 +24,27 @@ namespace Shamisen
         /// <summary>
         /// Represents the largest possible value of <see cref="OffsetSByte"/>. This field is constant and read-only.
         /// </summary>
-        public static readonly OffsetSByte MaxValue = new(byte.MaxValue);
+        public static OffsetSByte MaxValue => new(byte.MaxValue);
 
         /// <summary>
         /// Represents the smallest possible value of <see cref="OffsetSByte"/>. This field is constant and read-only.
         /// </summary>
-        public static readonly OffsetSByte MinValue = new(byte.MinValue);
+        public static OffsetSByte MinValue => new(byte.MinValue);
 
         /// <summary>
         /// Represents the number zero (0).
         /// </summary>
-        public static readonly OffsetSByte Zero = new(128);
+        public static OffsetSByte Zero => new(128);
 
         /// <summary>
         /// Represents the number one (1).
         /// </summary>
-        public static readonly OffsetSByte One = new(129);
+        public static OffsetSByte One => new(129);
 
         /// <summary>
         /// Represents the number negative one (-1).
         /// </summary>
-        public static readonly OffsetSByte MinusOne = new(127);
+        public static OffsetSByte MinusOne => new(127);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OffsetSByte"/> struct.
@@ -162,7 +163,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static explicit operator byte(OffsetSByte value) => value.value;
+        public static explicit operator byte(OffsetSByte value) => (byte)(sbyte)value;
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="sbyte"/> to <see cref="OffsetSByte"/>.

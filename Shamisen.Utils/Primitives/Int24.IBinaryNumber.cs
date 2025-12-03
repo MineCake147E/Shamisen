@@ -242,6 +242,61 @@ namespace Shamisen
         public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) => ((int)this).TryFormat(destination, out charsWritten, format, provider);
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int CreateChecked<TOther>(TOther value) where TOther : INumberBase<TOther>
+        {
+            Int24 result;
+            if (typeof(TOther) == typeof(Int24))
+            {
+                result = (Int24)(object)value;
+            }
+            else if (!TryConvertFromChecked(value, out result) && !TOther.TryConvertToChecked(value, out result))
+            {
+                throw new NotSupportedException($"Unable to convert {typeof(TOther)} to {nameof(Int24)}!");
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int CreateSaturating<TOther>(TOther value) where TOther : INumberBase<TOther>
+        {
+            Int24 result;
+            if (typeof(TOther) == typeof(Int24))
+            {
+                result = (Int24)(object)value;
+            }
+            else if (!TryConvertFromSaturating(value, out result) && !TOther.TryConvertToSaturating(value, out result))
+            {
+                throw new NotSupportedException($"Unable to convert {typeof(TOther)} to {nameof(Int24)}!");
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int CreateTruncating<TOther>(TOther value) where TOther : INumberBase<TOther>
+        {
+            Int24 result;
+            if (typeof(TOther) == typeof(Int24))
+            {
+                result = (Int24)(object)value;
+            }
+            else if (typeof(TOther) == typeof(int))
+            {
+                result = (Int24)(int)(object)value;
+            }
+            else if (!TryConvertFromTruncating(value, out result) && !TOther.TryConvertToTruncating(value, out result))
+            {
+                throw new NotSupportedException($"Unable to convert {typeof(TOther)} to {nameof(Int24)}!");
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
         bool IBinaryInteger<Int24>.TryWriteBigEndian(Span<byte> destination, out int bytesWritten) => throw new NotImplementedException();
 
         /// <inheritdoc/>
@@ -249,11 +304,122 @@ namespace Shamisen
 
         /// <inheritdoc/>
         static bool INumberBase<Int24>.IsNegative(Int24 value) => value.IsNegative;
-        static bool INumberBase<Int24>.TryConvertFromChecked<TOther>(TOther value, out Int24 result) => throw new NotImplementedException();
-        static bool INumberBase<Int24>.TryConvertFromSaturating<TOther>(TOther value, out Int24 result) => throw new NotImplementedException();
-        static bool INumberBase<Int24>.TryConvertFromTruncating<TOther>(TOther value, out Int24 result) => throw new NotImplementedException();
-        static bool INumberBase<Int24>.TryConvertToChecked<TOther>(Int24 value, out TOther result) => throw new NotImplementedException();
-        static bool INumberBase<Int24>.TryConvertToSaturating<TOther>(Int24 value, out TOther result) => throw new NotImplementedException();
-        static bool INumberBase<Int24>.TryConvertToTruncating<TOther>(Int24 value, out TOther result) => throw new NotImplementedException();
+        static bool INumberBase<Int24>.TryConvertFromChecked<TOther>(TOther value, out Int24 result) => TryConvertFromChecked(value, out result);
+
+        private static bool TryConvertFromChecked<TOther>(TOther value, out Int24 result) where TOther : INumberBase<TOther>
+        {
+            if (TOther.TryConvertToChecked(value, out int eax))
+            {
+                _ = checked(eax * 256);
+                result = (Int24)eax;
+                return true;
+            }
+            if (TOther.TryConvertToChecked(value, out long rax))
+            {
+                _ = checked(rax * 256);
+                result = (Int24)rax;
+                return true;
+            }
+            if (TOther.TryConvertToChecked(value, out sbyte al))
+            {
+                result = (Int24)al;
+                return true;
+            }
+            if (TOther.TryConvertToChecked(value, out short ax))
+            {
+                result = (Int24)ax;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+
+        static bool INumberBase<Int24>.TryConvertFromSaturating<TOther>(TOther value, out Int24 result) => TryConvertFromSaturating(value, out result);
+
+        private static bool TryConvertFromSaturating<TOther>(TOther value, out Int24 result) where TOther : INumberBase<TOther>
+        {
+            if (TOther.TryConvertToSaturating(value, out int eax))
+            {
+                eax = int.Clamp(eax, MinValue, MaxValue);
+                result = (Int24)eax;
+                return true;
+            }
+            if (TOther.TryConvertToSaturating(value, out long rax))
+            {
+                rax = long.Clamp(rax, MinValue, MaxValue);
+                result = (Int24)rax;
+                return true;
+            }
+            if (TOther.TryConvertToSaturating(value, out sbyte al))
+            {
+                result = (Int24)al;
+                return true;
+            }
+            if (TOther.TryConvertToSaturating(value, out short ax))
+            {
+                result = (Int24)ax;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+
+        static bool INumberBase<Int24>.TryConvertFromTruncating<TOther>(TOther value, out Int24 result) => TryConvertFromTruncating(value, out result);
+
+        private static bool TryConvertFromTruncating<TOther>(TOther value, out Int24 result) where TOther : INumberBase<TOther>
+        {
+            if (TOther.TryConvertToTruncating(value, out int eax))
+            {
+                result = (Int24)eax;
+                return true;
+            }
+            if (TOther.TryConvertToTruncating(value, out long rax))
+            {
+                result = (Int24)rax;
+                return true;
+            }
+            if (TOther.TryConvertToTruncating(value, out sbyte al))
+            {
+                result = (Int24)al;
+                return true;
+            }
+            if (TOther.TryConvertToTruncating(value, out short ax))
+            {
+                result = (Int24)ax;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+
+        static bool INumberBase<Int24>.TryConvertToChecked<TOther>(Int24 value, out TOther result) => TryConvertToChecked(value, out result);
+
+        private static bool TryConvertToChecked<TOther>(Int24 value, out TOther result) where TOther : INumberBase<TOther>
+        {
+            int sv = (int)value;
+            return TOther.TryConvertFromChecked(sv, out result!) || TOther.TryConvertFromChecked((long)sv, out result!) || TOther.TryConvertFromChecked((float)sv, out result!) || TOther.TryConvertFromChecked((double)sv, out result!)
+                ? true
+                : throw new NotSupportedException($"Unable to convert {nameof(Int24)} to {typeof(TOther)}!");
+        }
+
+        static bool INumberBase<Int24>.TryConvertToSaturating<TOther>(Int24 value, out TOther result) => TryConvertToSaturating(value, out result);
+
+        private static bool TryConvertToSaturating<TOther>(Int24 value, out TOther result) where TOther : INumberBase<TOther>
+        {
+            int sv = (int)value;
+            return TOther.TryConvertFromSaturating(sv, out result!) || TOther.TryConvertFromSaturating((long)sv, out result!) || TOther.TryConvertFromSaturating((float)sv, out result!) || TOther.TryConvertFromSaturating((double)sv, out result!)
+                ? true
+                : throw new NotSupportedException($"Unable to convert {nameof(Int24)} to {typeof(TOther)}!");
+        }
+
+        static bool INumberBase<Int24>.TryConvertToTruncating<TOther>(Int24 value, out TOther result) => TryConvertToTruncating(value, out result);
+
+        private static bool TryConvertToTruncating<TOther>(Int24 value, out TOther result) where TOther : INumberBase<TOther>
+        {
+            int sv = (int)value;
+            return TOther.TryConvertFromTruncating(sv, out result!) || TOther.TryConvertFromTruncating((long)sv, out result!) || TOther.TryConvertFromTruncating((float)sv, out result!) || TOther.TryConvertFromTruncating((double)sv, out result!)
+                ? true
+                : throw new NotSupportedException($"Unable to convert {nameof(Int24)} to {typeof(TOther)}!");
+        }
     }
 }

@@ -31,7 +31,7 @@ namespace Shamisen.Codecs.Flac
             {
                 ref var head = ref MemoryMarshal.GetReference(span);
                 nint length = span.Length;
-                var vlen = length - length % 4;
+                var vlen = length - 4 + 1;
                 nint i;
                 for (i = 0; i < vlen; i += 4)
                 {
@@ -76,58 +76,55 @@ namespace Shamisen.Codecs.Flac
             unsafe
             {
                 ref var head = ref MemoryMarshal.GetReference(span);
-                nint length = span.Length;
-                var vlen = length - length % Vector128<int>.Count;
-                var avlen = (vlen - vlen % (8 * Vector128<int>.Count)) * sizeof(int);
-                var v0 = Vector128.Create(shift);
-                ref var vhead = ref Unsafe.As<int, Vector128<int>>(ref head);
-                nint i;
-                const int Size = sizeof(int);
-                for (i = 0; i < avlen; i += 8 * Vector128<int>.Count * sizeof(int))
+                nuint length = (uint)span.Length;
+                var v15_4s = Vector128.Create(shift);
+                nuint i = 0;
+                var olen = length - 8 * (uint)Vector128<int>.Count + 1;
+                if (olen < length)
                 {
-                    //Changing ways to offset to suppress RyuJIT allocating more registers for storing offset addresses.
-                    var v1 = Unsafe.AddByteOffset(ref vhead, i + 16 * 0);
-                    var v2 = Unsafe.AddByteOffset(ref vhead, i + 16 * 1);
-                    var v3 = Unsafe.AddByteOffset(ref vhead, i + 16 * 2);
-                    var v4 = Unsafe.AddByteOffset(ref vhead, i + 16 * 3);
-
-                    v1 = AdvSimd.ShiftLogical(v1, v0);
-                    v2 = AdvSimd.ShiftLogical(v2, v0);
-                    v3 = AdvSimd.ShiftLogical(v3, v0);
-                    v4 = AdvSimd.ShiftLogical(v4, v0);
-
-                    Unsafe.AddByteOffset(ref vhead, i) = v1;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 1) = v2;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 2) = v3;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 3) = v4;
-
-                    v1 = Unsafe.AddByteOffset(ref vhead, i + 16 * 4);
-                    v2 = Unsafe.AddByteOffset(ref vhead, i + 16 * 5);
-                    v3 = Unsafe.AddByteOffset(ref vhead, i + 16 * 6);
-                    v4 = Unsafe.AddByteOffset(ref vhead, i + 16 * 7);
-
-                    v1 = AdvSimd.ShiftLogical(v1, v0);
-                    v2 = AdvSimd.ShiftLogical(v2, v0);
-                    v3 = AdvSimd.ShiftLogical(v3, v0);
-                    v4 = AdvSimd.ShiftLogical(v4, v0);
-
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 4) = v1;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 5) = v2;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 6) = v3;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 7) = v4;
+                    for (; i < olen; i += 8 * (uint)Vector128<int>.Count)
+                    {
+                        var v0_4s = Vector128.LoadUnsafe(ref head, i + 0 * (uint)Vector128<int>.Count);
+                        var v1_4s = Vector128.LoadUnsafe(ref head, i + 1 * (uint)Vector128<int>.Count);
+                        var v2_4s = Vector128.LoadUnsafe(ref head, i + 2 * (uint)Vector128<int>.Count);
+                        var v3_4s = Vector128.LoadUnsafe(ref head, i + 3 * (uint)Vector128<int>.Count);
+                        v0_4s = AdvSimd.ShiftLogical(v0_4s, v15_4s);
+                        v1_4s = AdvSimd.ShiftLogical(v1_4s, v15_4s);
+                        v2_4s = AdvSimd.ShiftLogical(v2_4s, v15_4s);
+                        v3_4s = AdvSimd.ShiftLogical(v3_4s, v15_4s);
+                        v0_4s.StoreUnsafe(ref head, i + 0 * (uint)Vector128<int>.Count);
+                        v0_4s = Vector128.LoadUnsafe(ref head, i + 4 * (uint)Vector128<int>.Count);
+                        v1_4s.StoreUnsafe(ref head, i + 1 * (uint)Vector128<int>.Count);
+                        v1_4s = Vector128.LoadUnsafe(ref head, i + 5 * (uint)Vector128<int>.Count);
+                        v2_4s.StoreUnsafe(ref head, i + 2 * (uint)Vector128<int>.Count);
+                        v2_4s = Vector128.LoadUnsafe(ref head, i + 6 * (uint)Vector128<int>.Count);
+                        v3_4s.StoreUnsafe(ref head, i + 3 * (uint)Vector128<int>.Count);
+                        v3_4s = Vector128.LoadUnsafe(ref head, i + 7 * (uint)Vector128<int>.Count);
+                        v0_4s = AdvSimd.ShiftLogical(v0_4s, v15_4s);
+                        v1_4s = AdvSimd.ShiftLogical(v1_4s, v15_4s);
+                        v2_4s = AdvSimd.ShiftLogical(v2_4s, v15_4s);
+                        v3_4s = AdvSimd.ShiftLogical(v3_4s, v15_4s);
+                        v0_4s.StoreUnsafe(ref head, i + 4 * (uint)Vector128<int>.Count);
+                        v1_4s.StoreUnsafe(ref head, i + 5 * (uint)Vector128<int>.Count);
+                        v2_4s.StoreUnsafe(ref head, i + 6 * (uint)Vector128<int>.Count);
+                        v3_4s.StoreUnsafe(ref head, i + 7 * (uint)Vector128<int>.Count);
+                    }
                 }
-                for (; i < vlen; i += Vector128<int>.Count)
+                olen = length - 1 * (uint)Vector128<int>.Count + 1;
+                if (olen < length)
                 {
-                    var v1 = Unsafe.AddByteOffset(ref vhead, Size * i);
-                    v1 = AdvSimd.ShiftLogical(v1, v0);
-                    Unsafe.AddByteOffset(ref vhead, Size * i) = v1;
+                    for (; i < olen; i += (uint)Vector128<int>.Count)
+                    {
+                        var v0_4s = Vector128.LoadUnsafe(ref head, i);
+                        v0_4s = AdvSimd.ShiftLogical(v0_4s, v15_4s);
+                        v0_4s.StoreUnsafe(ref head, i);
+                    }
                 }
-
                 for (; i < length; i++)
                 {
-                    var w15 = Unsafe.Add(ref head, i);
-                    w15 <<= shift;
-                    Unsafe.Add(ref head, i) = w15;
+                    var r15d = Unsafe.Add(ref head, i);
+                    r15d <<= shift;
+                    Unsafe.Add(ref head, i) = r15d;
                 }
             }
             return true;
@@ -158,53 +155,50 @@ namespace Shamisen.Codecs.Flac
             unsafe
             {
                 ref var head = ref MemoryMarshal.GetReference(span);
-                nint length = span.Length;
-                var vlen = length - length % Vector256<int>.Count;
-                var avlen = (vlen - vlen % (8 * Vector256<int>.Count)) * sizeof(int);
-                var ymm0 = Vector256.Create((uint)shift);
-                ref var vhead = ref Unsafe.As<int, Vector256<int>>(ref head);
-                nint i;
-                const int Size = sizeof(int);
-                for (i = 0; i < avlen; i += 8 * Vector256<int>.Count * sizeof(int))
+                nuint length = (uint)span.Length;
+                var ymm15 = Vector256.Create((uint)shift);
+                nuint i = 0;
+                var olen = length - 8 * (uint)Vector256<int>.Count + 1;
+                if (olen < length)
                 {
-                    //Changing ways to offset to suppress RyuJIT allocating more registers for storing offset addresses.
-                    var ymm1 = Unsafe.AddByteOffset(ref vhead, i + 32 * 0);
-                    var ymm2 = Unsafe.AddByteOffset(ref vhead, i + 32 * 1);
-                    var ymm3 = Unsafe.AddByteOffset(ref vhead, i + 32 * 2);
-                    var ymm4 = Unsafe.AddByteOffset(ref vhead, i + 32 * 3);
-
-                    ymm1 = Avx2.ShiftLeftLogicalVariable(ymm1, ymm0);
-                    ymm2 = Avx2.ShiftLeftLogicalVariable(ymm2, ymm0);
-                    ymm3 = Avx2.ShiftLeftLogicalVariable(ymm3, ymm0);
-                    ymm4 = Avx2.ShiftLeftLogicalVariable(ymm4, ymm0);
-
-                    Unsafe.AddByteOffset(ref vhead, i) = ymm1;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 1) = ymm2;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 2) = ymm3;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 3) = ymm4;
-
-                    ymm1 = Unsafe.AddByteOffset(ref vhead, i + 32 * 4);
-                    ymm2 = Unsafe.AddByteOffset(ref vhead, i + 32 * 5);
-                    ymm3 = Unsafe.AddByteOffset(ref vhead, i + 32 * 6);
-                    ymm4 = Unsafe.AddByteOffset(ref vhead, i + 32 * 7);
-
-                    ymm1 = Avx2.ShiftLeftLogicalVariable(ymm1, ymm0);
-                    ymm2 = Avx2.ShiftLeftLogicalVariable(ymm2, ymm0);
-                    ymm3 = Avx2.ShiftLeftLogicalVariable(ymm3, ymm0);
-                    ymm4 = Avx2.ShiftLeftLogicalVariable(ymm4, ymm0);
-
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 4) = ymm1;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 5) = ymm2;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 6) = ymm3;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 7) = ymm4;
+                    for (; i < olen; i += 8 * (uint)Vector256<int>.Count)
+                    {
+                        var ymm0 = Vector256.LoadUnsafe(ref head, i + 0 * (uint)Vector256<int>.Count);
+                        var ymm1 = Vector256.LoadUnsafe(ref head, i + 1 * (uint)Vector256<int>.Count);
+                        var ymm2 = Vector256.LoadUnsafe(ref head, i + 2 * (uint)Vector256<int>.Count);
+                        var ymm3 = Vector256.LoadUnsafe(ref head, i + 3 * (uint)Vector256<int>.Count);
+                        ymm0 = Avx2.ShiftLeftLogicalVariable(ymm0, ymm15);
+                        ymm1 = Avx2.ShiftLeftLogicalVariable(ymm1, ymm15);
+                        ymm2 = Avx2.ShiftLeftLogicalVariable(ymm2, ymm15);
+                        ymm3 = Avx2.ShiftLeftLogicalVariable(ymm3, ymm15);
+                        ymm0.StoreUnsafe(ref head, i + 0 * (uint)Vector256<int>.Count);
+                        ymm0 = Vector256.LoadUnsafe(ref head, i + 4 * (uint)Vector256<int>.Count);
+                        ymm1.StoreUnsafe(ref head, i + 1 * (uint)Vector256<int>.Count);
+                        ymm1 = Vector256.LoadUnsafe(ref head, i + 5 * (uint)Vector256<int>.Count);
+                        ymm2.StoreUnsafe(ref head, i + 2 * (uint)Vector256<int>.Count);
+                        ymm2 = Vector256.LoadUnsafe(ref head, i + 6 * (uint)Vector256<int>.Count);
+                        ymm3.StoreUnsafe(ref head, i + 3 * (uint)Vector256<int>.Count);
+                        ymm3 = Vector256.LoadUnsafe(ref head, i + 7 * (uint)Vector256<int>.Count);
+                        ymm0 = Avx2.ShiftLeftLogicalVariable(ymm0, ymm15);
+                        ymm1 = Avx2.ShiftLeftLogicalVariable(ymm1, ymm15);
+                        ymm2 = Avx2.ShiftLeftLogicalVariable(ymm2, ymm15);
+                        ymm3 = Avx2.ShiftLeftLogicalVariable(ymm3, ymm15);
+                        ymm0.StoreUnsafe(ref head, i + 4 * (uint)Vector256<int>.Count);
+                        ymm1.StoreUnsafe(ref head, i + 5 * (uint)Vector256<int>.Count);
+                        ymm2.StoreUnsafe(ref head, i + 6 * (uint)Vector256<int>.Count);
+                        ymm3.StoreUnsafe(ref head, i + 7 * (uint)Vector256<int>.Count);
+                    }
                 }
-                for (; i < vlen; i += Vector256<int>.Count)
+                olen = length - 1 * (uint)Vector256<int>.Count + 1;
+                if (olen < length)
                 {
-                    var ymm1 = Unsafe.AddByteOffset(ref vhead, Size * i);
-                    ymm1 = Avx2.ShiftLeftLogicalVariable(ymm1, ymm0);
-                    Unsafe.AddByteOffset(ref vhead, Size * i) = ymm1;
+                    for (; i < olen; i += (uint)Vector256<int>.Count)
+                    {
+                        var ymm0 = Vector256.LoadUnsafe(ref head, i);
+                        ymm0 = Avx2.ShiftLeftLogicalVariable(ymm0, ymm15);
+                        ymm0.StoreUnsafe(ref head, i);
+                    }
                 }
-
                 for (; i < length; i++)
                 {
                     var r15d = Unsafe.Add(ref head, i);
@@ -220,53 +214,50 @@ namespace Shamisen.Codecs.Flac
             unsafe
             {
                 ref var head = ref MemoryMarshal.GetReference(span);
-                nint length = span.Length;
-                var vlen = length - length % Vector128<int>.Count;
-                var avlen = (vlen - vlen % (8 * Vector128<int>.Count)) * sizeof(int);
-                var xmm0 = Vector128.Create(shift);
-                ref var vhead = ref Unsafe.As<int, Vector128<int>>(ref head);
-                nint i;
-                const int Size = sizeof(int);
-                for (i = 0; i < avlen; i += 8 * Vector128<int>.Count * sizeof(int))
+                nuint length = (uint)span.Length;
+                var xmm15 = Vector128.Create(shift);
+                nuint i = 0;
+                var olen = length - 8 * (uint)Vector128<int>.Count + 1;
+                if (olen < length)
                 {
-                    //Changing ways to offset to suppress RyuJIT allocating more registers for storing offset addresses.
-                    var xmm1 = Unsafe.AddByteOffset(ref vhead, i + 16 * 0);
-                    var xmm2 = Unsafe.AddByteOffset(ref vhead, i + 16 * 1);
-                    var xmm3 = Unsafe.AddByteOffset(ref vhead, i + 16 * 2);
-                    var xmm4 = Unsafe.AddByteOffset(ref vhead, i + 16 * 3);
-
-                    xmm1 = Sse2.ShiftLeftLogical(xmm1, xmm0);
-                    xmm2 = Sse2.ShiftLeftLogical(xmm2, xmm0);
-                    xmm3 = Sse2.ShiftLeftLogical(xmm3, xmm0);
-                    xmm4 = Sse2.ShiftLeftLogical(xmm4, xmm0);
-
-                    Unsafe.AddByteOffset(ref vhead, i) = xmm1;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 1) = xmm2;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 2) = xmm3;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 3) = xmm4;
-
-                    xmm1 = Unsafe.AddByteOffset(ref vhead, i + 16 * 4);
-                    xmm2 = Unsafe.AddByteOffset(ref vhead, i + 16 * 5);
-                    xmm3 = Unsafe.AddByteOffset(ref vhead, i + 16 * 6);
-                    xmm4 = Unsafe.AddByteOffset(ref vhead, i + 16 * 7);
-
-                    xmm1 = Sse2.ShiftLeftLogical(xmm1, xmm0);
-                    xmm2 = Sse2.ShiftLeftLogical(xmm2, xmm0);
-                    xmm3 = Sse2.ShiftLeftLogical(xmm3, xmm0);
-                    xmm4 = Sse2.ShiftLeftLogical(xmm4, xmm0);
-
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 4) = xmm1;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 5) = xmm2;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 6) = xmm3;
-                    Unsafe.Add(ref Unsafe.AddByteOffset(ref vhead, i), 7) = xmm4;
+                    for (; i < olen; i += 8 * (uint)Vector128<int>.Count)
+                    {
+                        var xmm0 = Vector128.LoadUnsafe(ref head, i + 0 * (uint)Vector128<int>.Count);
+                        var xmm1 = Vector128.LoadUnsafe(ref head, i + 1 * (uint)Vector128<int>.Count);
+                        var xmm2 = Vector128.LoadUnsafe(ref head, i + 2 * (uint)Vector128<int>.Count);
+                        var xmm3 = Vector128.LoadUnsafe(ref head, i + 3 * (uint)Vector128<int>.Count);
+                        xmm0 = Sse2.ShiftLeftLogical(xmm0, xmm15);
+                        xmm1 = Sse2.ShiftLeftLogical(xmm1, xmm15);
+                        xmm2 = Sse2.ShiftLeftLogical(xmm2, xmm15);
+                        xmm3 = Sse2.ShiftLeftLogical(xmm3, xmm15);
+                        xmm0.StoreUnsafe(ref head, i + 0 * (uint)Vector128<int>.Count);
+                        xmm0 = Vector128.LoadUnsafe(ref head, i + 4 * (uint)Vector128<int>.Count);
+                        xmm1.StoreUnsafe(ref head, i + 1 * (uint)Vector128<int>.Count);
+                        xmm1 = Vector128.LoadUnsafe(ref head, i + 5 * (uint)Vector128<int>.Count);
+                        xmm2.StoreUnsafe(ref head, i + 2 * (uint)Vector128<int>.Count);
+                        xmm2 = Vector128.LoadUnsafe(ref head, i + 6 * (uint)Vector128<int>.Count);
+                        xmm3.StoreUnsafe(ref head, i + 3 * (uint)Vector128<int>.Count);
+                        xmm3 = Vector128.LoadUnsafe(ref head, i + 7 * (uint)Vector128<int>.Count);
+                        xmm0 = Sse2.ShiftLeftLogical(xmm0, xmm15);
+                        xmm1 = Sse2.ShiftLeftLogical(xmm1, xmm15);
+                        xmm2 = Sse2.ShiftLeftLogical(xmm2, xmm15);
+                        xmm3 = Sse2.ShiftLeftLogical(xmm3, xmm15);
+                        xmm0.StoreUnsafe(ref head, i + 4 * (uint)Vector128<int>.Count);
+                        xmm1.StoreUnsafe(ref head, i + 5 * (uint)Vector128<int>.Count);
+                        xmm2.StoreUnsafe(ref head, i + 6 * (uint)Vector128<int>.Count);
+                        xmm3.StoreUnsafe(ref head, i + 7 * (uint)Vector128<int>.Count);
+                    }
                 }
-                for (; i < vlen; i += Vector128<int>.Count)
+                olen = length - 1 * (uint)Vector128<int>.Count + 1;
+                if (olen < length)
                 {
-                    var xmm1 = Unsafe.AddByteOffset(ref vhead, Size * i);
-                    xmm1 = Sse2.ShiftLeftLogical(xmm1, xmm0);
-                    Unsafe.AddByteOffset(ref vhead, Size * i) = xmm1;
+                    for (; i < olen; i += (uint)Vector128<int>.Count)
+                    {
+                        var xmm0 = Vector128.LoadUnsafe(ref head, i);
+                        xmm0 = Sse2.ShiftLeftLogical(xmm0, xmm15);
+                        xmm0.StoreUnsafe(ref head, i);
+                    }
                 }
-
                 for (; i < length; i++)
                 {
                     var r15d = Unsafe.Add(ref head, i);

@@ -51,6 +51,7 @@ using Shamisen.Codecs.Flac.SubFrames;
 using Shamisen.Conversion;
 using Shamisen.Data;
 using Shamisen.Data.Binary;
+using Shamisen.Formats;
 using Shamisen.Utils;
 
 namespace Shamisen.Codecs.Flac.Parsing
@@ -58,7 +59,7 @@ namespace Shamisen.Codecs.Flac.Parsing
     /// <summary>
     /// Parses FLAC frames.
     /// </summary>
-    public sealed partial class FlacFrameParser : IReadableAudioSource<int, Int32LinearPcmSampleFormat>
+    public sealed partial class FlacFrameParser : IReadableAudioSource<int, Int32RangedLinearPcmSampleFormat>
     {
         private uint bitDepth = 0;
 
@@ -80,7 +81,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         private IFlacSubFrame[]? subFrames;
 
         /// <inheritdoc/>
-        public Int32LinearPcmSampleFormat Format { get; }
+        public Int32RangedLinearPcmSampleFormat Format => new(channels.GetChannels(), (int)sampleRate, (int)bitDepth);
 
         /// <inheritdoc/>
         public ulong? Length => TotalLength - Position;

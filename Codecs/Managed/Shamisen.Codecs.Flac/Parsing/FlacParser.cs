@@ -36,6 +36,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -61,7 +62,6 @@ namespace Shamisen.Codecs.Flac
     {
         private readonly FlacStreamInfoBlock streamInfoBlock;
         private Int32Divisor channelsDivisor;
-        private FlacFrameParser? currentFrame;
         private bool disposedValue;
         private readonly ulong totalSamples;
         private Memory<FlacSeekPoint> seekPoints;
@@ -132,6 +132,10 @@ namespace Shamisen.Codecs.Flac
         private FlacBitReader BitReader { get; }
 
         private IReadableDataSource<byte> Source { get; }
+
+        internal FlacStreamInfoBlock StreamInfoBlock => streamInfoBlock;
+
+        public FlacFrameParser? CurrentFrame { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FlacParser"/> class.
@@ -223,7 +227,8 @@ namespace Shamisen.Codecs.Flac
             Pictures = pics.ToArray();
             UnusedMetadata = unused.ToArray();
             BitReader = new FlacBitReader(source);
-            currentFrame = FindNextFrame() ?? throw new FlacException("The FLAC file has no data!", BitReader);
+            if (options.ParseFirstFrame)
+                CurrentFrame = FindNextFrame() ?? throw new FlacException("The FLAC file has no data!", BitReader);
         }
 
         /// <summary>
@@ -247,7 +252,7 @@ namespace Shamisen.Codecs.Flac
             if (Length == 0) return ReadResult.EndOfStream;
             while (!bbr.IsEmpty && (Length is null || Length.Value > 0))
             {
-                while (currentFrame?.Length is null || currentFrame.Length == 0)
+                while (CurrentFrame?.Length is null || CurrentFrame.Length == 0)
                 {
                     var g = FindNextFrame();
                     if (g is null)
@@ -255,12 +260,12 @@ namespace Shamisen.Codecs.Flac
                         Position = TotalLength ?? ulong.MaxValue;
                         return bb.Length - bbr.Length;
                     }
-                    currentFrame = g;
+                    CurrentFrame = g;
                 }
-                var rr = currentFrame.Read(bbr);
+                var rr = CurrentFrame.Read(bbr);
                 while (rr.HasNoData)
                 {
-                    while (currentFrame?.Length is null || currentFrame.Length == 0)
+                    while (CurrentFrame?.Length is null || CurrentFrame.Length == 0)
                     {
                         var g = FindNextFrame();
                         if (g is null)
@@ -268,9 +273,9 @@ namespace Shamisen.Codecs.Flac
                             Position = TotalLength ?? ulong.MaxValue;
                             return bb.Length - bbr.Length;
                         }
-                        currentFrame = g;
+                        CurrentFrame = g;
                     }
-                    rr = currentFrame.Read(bbr);
+                    rr = CurrentFrame.Read(bbr);
                 }
                 Position += (ulong)(rr.Length / channelsDivisor);
                 if (rr.Length == bbr.Length)
@@ -289,6 +294,42 @@ namespace Shamisen.Codecs.Flac
         {
             var bb = MemoryMarshal.Cast<byte, int>(buffer).SliceAlign(channelsDivisor);
             return Read(bb) * sizeof(int);
+        }
+
+        internal FlacFrameParser? PrepareNextFrame()
+        {
+            if (CurrentFrame is not null && CurrentFrame.Length > 0) return CurrentFrame;
+            while (CurrentFrame?.Length is null || CurrentFrame.Length == 0)
+            {
+                var g = FindNextFrame();
+                if (g is null)
+                {
+                    Position = TotalLength ?? ulong.MaxValue;
+                    CurrentFrame = g;
+                    return g;
+                }
+                CurrentFrame = g;
+            }
+            return CurrentFrame;
+        }
+
+        internal ReadResult ReadFrame(Span<int> buffer)
+        {
+            var bb = buffer.SliceAlign(channelsDivisor);
+            var bbr = bb;
+            if (Length == 0) return ReadResult.EndOfStream;
+            var rr = CurrentFrame?.Read(bbr) ?? 0;
+            while (rr.HasNoData && !rr.IsEndOfStream)
+            {
+                var g = PrepareNextFrame();
+                if (g is null)
+                {
+                    return ReadResult.EndOfStream;
+                }
+                rr = g.Read(bbr);
+            }
+            Position += (ulong)(rr.Length / channelsDivisor);
+            return rr;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -322,9 +363,8 @@ namespace Shamisen.Codecs.Flac
 
         private FlacFrameParser? FindNextFrame()
         {
-            var frameParser = FlacFrameParser.ParseNextFrame(BitReader, streamInfoBlock);
-
-            return frameParser;
+            CurrentFrame?.Dispose();
+            return FlacFrameParser.ParseNextFrame(BitReader, streamInfoBlock);
         }
 
         private static FlacCueSheet ReadCueSheet(FlacMetadataBlockHeader header, IReadableDataSource<byte> source)

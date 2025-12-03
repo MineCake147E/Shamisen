@@ -46,6 +46,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
     /// <seealso cref="IFlacSubFrame" />
     public sealed partial class FlacLinearPredictionSubFrame : IFlacSubFrame
     {
+        private int order;
+        private int partition;
+        private PooledArray<int> data;
+        private bool disposedValue;
+
         /// <summary>
         /// Gets the number of wasted LSBs.
         /// </summary>
@@ -55,11 +60,6 @@ namespace Shamisen.Codecs.Flac.SubFrames
         /// Gets the type of the sub-frame.
         /// </summary>
         public byte SubFrameType { get; }
-
-        private int order;
-        private int partition;
-        private PooledArray<int> data;
-        private bool disposedValue;
 
         /// <summary>
         ///
