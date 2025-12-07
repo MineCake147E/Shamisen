@@ -21,7 +21,8 @@
     </Project>
   </Folder>
   <Folder Name="/Codecs/" />
-  <Folder Name="/Codecs/Managed/">
+  <Folder Name="/Codecs/Managed/" />
+  <Folder Name="/Codecs/Managed/Flac/">
     <Project Path="Codecs/Managed/Shamisen.Codecs.Flac/Shamisen.Codecs.Flac.csproj" />
   </Folder>
   <Folder Name="/Codecs/Native/">
@@ -57,6 +58,7 @@
     <File Path="Shamisen-NuGetIcon.svg" />
     <File Path="Shamisen.Benchmarks.ResamplerBenchmarks-report-github.md" />
     <File Path="Shamisen.Core.targets" />
+    <File Path="T4Transform.targets" />
     <File Path="TargetFrameworks.targets" />
   </Folder>
   <Folder Name="/Tests/">

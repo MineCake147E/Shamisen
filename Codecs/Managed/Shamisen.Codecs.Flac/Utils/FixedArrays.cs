@@ -11,4 +11,14 @@ namespace Shamisen.Codecs.Flac.Utils
     {
         private T element0;
     }
+
+    /// <summary>
+    /// A 16-element fixed array of type <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements.</typeparam>
+    [InlineArray(16)]
+    public struct FixedArray16<T>
+    {
+        private T element0;
+    }
 }

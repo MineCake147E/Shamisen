@@ -1238,6 +1238,7 @@ namespace Shamisen.Utils
             }
         }
         #endregion
+
         #region ShiftRight
         /// <summary>
         /// Shifts the <paramref name="value"/> right with <paramref name="shift"/>.
@@ -1607,6 +1608,355 @@ namespace Shamisen.Utils
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector2 AsVector2(this Vector128<float> value) => Unsafe.As<Vector128<float>, Vector2>(ref value);
 #endif
+        #endregion
+        #region LoadTail128
+        /// <summary>
+        /// Loads the tail elements from <paramref name="values"/> from specified <paramref name="start"/> position.
+        /// </summary>
+        /// <param name="start">The position to load the value from <paramref name="values"/>.</param>
+        /// <param name="values">The source <see cref="ReadOnlySpan{T}"/>.</param>
+        /// <returns>The remaining tail elements.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector128<T> LoadTail128<T>(int start, ReadOnlySpan<T> values) where T : unmanaged
+            => LoadTail128(start, new ReadOnlyNativeSpan<T>(values));
+
+        /// <summary>
+        /// Loads the tail elements from <paramref name="values"/> from specified <paramref name="start"/> position.
+        /// </summary>
+        /// <param name="start">The position to load the value from <paramref name="values"/>.</param>
+        /// <param name="values">The source <see cref="ReadOnlyNativeSpan{T}"/>.</param>
+        /// <returns>The remaining tail elements.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector128<T> LoadTail128<T>(nint start, ReadOnlyNativeSpan<T> values) where T : unmanaged
+        {
+            if (Avx512F.VL.IsSupported && Unsafe.SizeOf<T>() == sizeof(uint))
+            {
+                return LoadTail128Avx512VL(start, SpanUtils.Cast<T, uint>(values)).As<uint, T>();
+            }
+            if (Avx512F.VL.IsSupported && Unsafe.SizeOf<T>() == sizeof(ulong))
+            {
+                return LoadTail128Avx512VL(start * 2, SpanUtils.Cast<T, uint>(values)).As<uint, T>();
+            }
+            if (Avx512BW.VL.IsSupported && Unsafe.SizeOf<T>() == sizeof(byte))
+            {
+                return LoadTail128Avx512BW(start, SpanUtils.Cast<T, byte>(values)).As<byte, T>();
+            }
+            if (Avx512BW.VL.IsSupported && Unsafe.SizeOf<T>() == sizeof(ushort))
+            {
+                return LoadTail128Avx512BW(start * 2, SpanUtils.Cast<T, byte>(values)).As<byte, T>();
+            }
+            if (Ssse3.IsSupported) return LoadTail128Ssse3(start * Unsafe.SizeOf<T>(), SpanUtils.AsBytes(values)).As<byte, T>();
+            // Fallback
+            return LoadTail128Fallback(start, values);
+        }
+
+        internal static Vector128<T> LoadTail128Fallback<T>(nint start, ReadOnlyNativeSpan<T> values) where T : unmanaged
+        {
+            if (start >= values.Length) return default;
+            var sliced = values.Slice(start);
+            if (sliced.Length >= Vector128<T>.Count) return Vector128.LoadUnsafe(ref SpanUtils.GetReference(sliced));
+            Vector128<T> vs = default;
+            sliced.CopyTo(SpanUtils.Cast<Vector128<T>, T>(new NativeSpan<Vector128<T>>(ref vs)));
+            return vs;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static Vector128<byte> LoadTail128Ssse3(nint start, ReadOnlyNativeSpan<byte> values)
+        {
+            var length = values.Length;
+            var tailElements = length - start;
+            ref var head = ref SpanUtils.GetReference(values);
+            if (tailElements < 1) return default;
+            if (tailElements >= Vector128<byte>.Count)
+            {
+                return Vector128.LoadUnsafe(ref head, (nuint)start);
+            }
+            if (length >= Vector128<byte>.Count)
+            {
+                var loadOffset = length - Vector128<byte>.Count;
+                var shiftAmount = start - loadOffset;
+                var xmm15 = Vector128.Create((byte)shiftAmount) + (Vector128<byte>.Indices + Vector128.Create((byte)(128 - 16)));
+                var xmm0 = Vector128.LoadUnsafe(ref head, (nuint)loadOffset);
+                xmm0 = Ssse3.Shuffle(xmm0, xmm15);
+                return xmm0;
+            }
+            if (length >= sizeof(ulong))
+            {
+                var loadOffset = length - sizeof(ulong);
+                var shiftAmount = 8 * (int)(start - loadOffset);
+                var high = Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref head, loadOffset));
+                high >>>= shiftAmount;
+                var xmm1 = Vector128.CreateScalarUnsafe(high).AsByte();
+                if (tailElements > sizeof(ulong))
+                {
+                    var low = Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref head, start));
+                    var xmm0 = Vector128.CreateScalarUnsafe(low);
+                    xmm1 = Sse.Shuffle(xmm0.AsSingle(), xmm1.AsSingle(), 0b01_00_01_00).AsByte();
+                }
+                return xmm1;
+            }
+            var value = 0ul;
+            var tailLoadOffset = tailElements;
+            if ((tailElements & 1) > 0)
+            {
+                value = Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref head, start + tailElements - 1));
+                tailLoadOffset -= 1;
+            }
+            if ((tailElements & 2) > 0)
+            {
+                value <<= 16;
+                value |= Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref head, start + tailLoadOffset - 2));
+                tailLoadOffset -= 2;
+            }
+            if ((tailElements & 4) > 0)
+            {
+                value <<= 32;
+                value |= Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref head, start + tailLoadOffset - 4));
+            }
+            return Vector128.CreateScalarUnsafe(value).AsByte();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static unsafe Vector128<byte> LoadTail128Avx512BW(nint start, ReadOnlyNativeSpan<byte> values)
+        {
+            var length = values.Length;
+            var tailElements = length - start;
+            var loadingElements = byte.CreateSaturating(tailElements);
+            ref var head = ref Unsafe.Add(ref SpanUtils.GetReference(values), start);
+            if (tailElements < 1) return default;
+            var vmask = Avx512BW.VL.CompareLessThan(Vector128<byte>.Indices, Vector128.Create(loadingElements));
+#if DEBUG
+            fixed (byte* p = &head)
+            {
+                return Avx512BW.VL.MaskLoad(p, vmask, Vector128<byte>.Zero);
+            }
+#else
+            return Avx512BW.VL.MaskLoad((byte*)Unsafe.AsPointer(ref head), vmask, Vector128<byte>.Zero);
+#endif
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static unsafe Vector128<uint> LoadTail128Avx512VL(nint start, ReadOnlyNativeSpan<uint> values)
+        {
+            var length = values.Length;
+            var tailElements = length - start;
+            var loadingElements = uint.CreateSaturating(tailElements);
+            ref var head = ref Unsafe.Add(ref SpanUtils.GetReference(values), start);
+            if (tailElements < 1) return default;
+            var vmask = Avx512F.VL.CompareLessThan(Vector128<uint>.Indices, Vector128.Create(loadingElements));
+#if DEBUG
+            fixed (uint* p = &head)
+            {
+                return Avx512F.VL.MaskLoad(p, vmask, Vector128<uint>.Zero);
+            }
+#else
+            return Avx512F.VL.MaskLoad((uint*)Unsafe.AsPointer(ref head), vmask, Vector128<uint>.Zero);
+#endif
+        }
+
+        #endregion
+        #region LoadTail256
+        /// <summary>
+        /// Loads the tail elements from <paramref name="values"/> from specified <paramref name="start"/> position.
+        /// </summary>
+        /// <param name="start">The position to load the value from <paramref name="values"/>.</param>
+        /// <param name="values">The source <see cref="ReadOnlySpan{T}"/>.</param>
+        /// <returns>The remaining tail elements.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector256<T> LoadTail256<T>(nint start, ReadOnlySpan<T> values) where T : unmanaged
+            => LoadTail256(start, new ReadOnlyNativeSpan<T>(values));
+
+        /// <summary>
+        /// Loads the tail elements from <paramref name="values"/> from specified <paramref name="start"/> position.
+        /// </summary>
+        /// <param name="start">The position to load the value from <paramref name="values"/>.</param>
+        /// <param name="values">The source <see cref="ReadOnlyNativeSpan{T}"/>.</param>
+        /// <returns>The remaining tail elements.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector256<T> LoadTail256<T>(nint start, ReadOnlyNativeSpan<T> values) where T : unmanaged
+        {
+            if (Avx512F.VL.IsSupported && Unsafe.SizeOf<T>() == sizeof(uint))
+            {
+                return LoadTail256Avx512VL(start, SpanUtils.Cast<T, uint>(values)).As<uint, T>();
+            }
+            if (Avx512F.VL.IsSupported && Unsafe.SizeOf<T>() == sizeof(ulong))
+            {
+                return LoadTail256Avx512VL(start * 2, SpanUtils.Cast<T, uint>(values)).As<uint, T>();
+            }
+            if (Avx512BW.VL.IsSupported && Unsafe.SizeOf<T>() == sizeof(byte))
+            {
+                return LoadTail256Avx512BW(start, SpanUtils.Cast<T, byte>(values)).As<byte, T>();
+            }
+            if (Avx512BW.VL.IsSupported && Unsafe.SizeOf<T>() == sizeof(ushort))
+            {
+                return LoadTail256Avx512BW(start * 2, SpanUtils.Cast<T, byte>(values)).As<byte, T>();
+            }
+            if (Avx2.IsSupported) return LoadTail256ByteAvx2(start * Unsafe.SizeOf<T>(), SpanUtils.AsBytes(values)).As<byte, T>();
+            // Fallback
+            return LoadTail256Fallback(start, values);
+        }
+
+        internal static Vector256<T> LoadTail256Fallback<T>(nint start, ReadOnlyNativeSpan<T> values) where T : unmanaged
+        {
+            if (start >= values.Length) return default;
+            var sliced = values.Slice(start);
+            if (sliced.Length >= Vector256<T>.Count) return Vector256.LoadUnsafe(ref SpanUtils.GetReference(sliced));
+            Vector256<T> vs = default;
+            sliced.CopyTo(MemoryMarshal.Cast<Vector256<T>, T>(new Span<Vector256<T>>(ref vs)));
+            return vs;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static Vector256<byte> LoadTail256ByteAvx2(nint start, ReadOnlyNativeSpan<byte> values)
+        {
+            var length = values.Length;
+            var tailElements = length - start;
+            ref var head = ref SpanUtils.GetReference(values);
+            if (tailElements < 1) return default;
+            if (tailElements >= Vector256<byte>.Count)
+            {
+                return Vector256.LoadUnsafe(ref head, (nuint)start);
+            }
+            var loadOffset = length - Vector128<byte>.Count;
+            if (tailElements >= Vector128<byte>.Count)
+            {
+                var shiftAmount = start + Vector128<byte>.Count - loadOffset;
+                var xmm15 = Vector128<byte>.Indices + Vector128.Create((byte)shiftAmount);
+                xmm15 |= Sse2.CompareGreaterThan(xmm15.AsSByte(), Vector128.Create((sbyte)(Vector128<byte>.Count - 1))).AsByte();
+                var xmm0 = Vector128.LoadUnsafe(ref head, (nuint)start);
+                var xmm1 = Vector128.LoadUnsafe(ref head, (nuint)loadOffset);
+                xmm1 = Ssse3.Shuffle(xmm1, xmm15);
+                var ymm0 = Avx2.Permute2x128(xmm0.ToVector256Unsafe(), xmm1.ToVector256Unsafe(), 0x20);
+                return ymm0;
+            }
+            return LoadTail128Ssse3(start, values).ToVector256Unsafe();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static unsafe Vector256<byte> LoadTail256Avx512BW(nint start, ReadOnlyNativeSpan<byte> values)
+        {
+            var length = values.Length;
+            var tailElements = length - start;
+            var loadingElements = byte.CreateSaturating(tailElements);
+            ref var head = ref Unsafe.Add(ref SpanUtils.GetReference(values), start);
+            if (tailElements < 1) return default;
+            var vmask = Avx512BW.VL.CompareLessThan(Vector256<byte>.Indices, Vector256.Create(loadingElements));
+#if DEBUG
+            fixed (byte* p = &head)
+            {
+                return Avx512BW.VL.MaskLoad(p, vmask, Vector256<byte>.Zero);
+            }
+#else
+            return Avx512BW.VL.MaskLoad((byte*)Unsafe.AsPointer(ref head), vmask, Vector256<byte>.Zero);
+#endif
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static unsafe Vector256<uint> LoadTail256Avx512VL(nint start, ReadOnlyNativeSpan<uint> values)
+        {
+            var length = values.Length;
+            var tailElements = length - start;
+            var loadingElements = uint.CreateSaturating(tailElements);
+            ref var head = ref Unsafe.Add(ref SpanUtils.GetReference(values), start);
+            if (tailElements < 1) return default;
+            var vmask = Avx512F.VL.CompareLessThan(Vector256<uint>.Indices, Vector256.Create(loadingElements));
+#if DEBUG
+            fixed (uint* p = &head)
+            {
+                return Avx512F.VL.MaskLoad(p, vmask, Vector256<uint>.Zero);
+            }
+#else
+            return Avx512F.VL.MaskLoad((uint*)Unsafe.AsPointer(ref head), vmask, Vector256<uint>.Zero);
+#endif
+        }
+        #endregion
+        #region LoadTail512
+        /// <summary>
+        /// Loads the tail elements from <paramref name="values"/> from specified <paramref name="start"/> position.
+        /// </summary>
+        /// <param name="start">The position to load the value from <paramref name="values"/>.</param>
+        /// <param name="values">The source <see cref="ReadOnlySpan{T}"/>.</param>
+        /// <returns>The remaining tail elements.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector512<T> LoadTail512<T>(int start, ReadOnlySpan<T> values) where T : unmanaged
+            => LoadTail512(start, new ReadOnlyNativeSpan<T>(values));
+
+        /// <summary>
+        /// Loads the tail elements from <paramref name="values"/> from specified <paramref name="start"/> position.
+        /// </summary>
+        /// <param name="start">The position to load the value from <paramref name="values"/>.</param>
+        /// <param name="values">The source <see cref="ReadOnlyNativeSpan{T}"/>.</param>
+        /// <returns>The remaining tail elements.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector512<T> LoadTail512<T>(nint start, ReadOnlyNativeSpan<T> values) where T : unmanaged
+        {
+            if (Avx512F.IsSupported && Unsafe.SizeOf<T>() == sizeof(uint))
+            {
+                return LoadTail512Avx512F(start, SpanUtils.Cast<T, uint>(values)).As<uint, T>();
+            }
+            if (Avx512F.IsSupported && Unsafe.SizeOf<T>() == sizeof(ulong))
+            {
+                return LoadTail512Avx512F(start * 2, SpanUtils.Cast<T, uint>(values)).As<uint, T>();
+            }
+            if (Avx512BW.IsSupported && Unsafe.SizeOf<T>() == sizeof(byte))
+            {
+                return LoadTail512Avx512BW(start, SpanUtils.Cast<T, byte>(values)).As<byte, T>();
+            }
+            if (Avx512BW.IsSupported && Unsafe.SizeOf<T>() == sizeof(ushort))
+            {
+                return LoadTail512Avx512BW(start * 2, SpanUtils.Cast<T, byte>(values)).As<byte, T>();
+            }
+            // Fallback
+            return LoadTail512Fallback(start, values);
+        }
+
+        internal static Vector512<T> LoadTail512Fallback<T>(nint start, ReadOnlyNativeSpan<T> values) where T : unmanaged
+        {
+            if (start >= values.Length) return default;
+            var sliced = values.Slice(start);
+            if (sliced.Length >= Vector512<T>.Count) return Vector512.LoadUnsafe(ref SpanUtils.GetReference(sliced));
+            Vector512<T> vs = default;
+            sliced.CopyTo(MemoryMarshal.Cast<Vector512<T>, T>(new Span<Vector512<T>>(ref vs)));
+            return vs;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static unsafe Vector512<byte> LoadTail512Avx512BW(nint start, ReadOnlyNativeSpan<byte> values)
+        {
+            var length = values.Length;
+            var tailElements = length - start;
+            var loadingElements = byte.CreateSaturating(tailElements);
+            ref var head = ref Unsafe.Add(ref SpanUtils.GetReference(values), start);
+            if (tailElements < 1) return default;
+            var vmask = Avx512BW.CompareLessThan(Vector512<byte>.Indices, Vector512.Create(loadingElements));
+#if DEBUG
+            fixed (byte* p = &head)
+            {
+                return Avx512BW.MaskLoad(p, vmask, Vector512<byte>.Zero);
+            }
+#else
+            return Avx512BW.MaskLoad((byte*)Unsafe.AsPointer(ref head), vmask, Vector512<byte>.Zero);
+#endif
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static unsafe Vector512<uint> LoadTail512Avx512F(nint start, ReadOnlyNativeSpan<uint> values)
+        {
+            var length = values.Length;
+            var tailElements = length - start;
+            var loadingElements = uint.CreateSaturating(tailElements);
+            ref var head = ref Unsafe.Add(ref SpanUtils.GetReference(values), start);
+            if (tailElements < 1) return default;
+            var vmask = Avx512F.CompareLessThan(Vector512<uint>.Indices, Vector512.Create(loadingElements));
+#if DEBUG
+            fixed (uint* p = &head)
+            {
+                return Avx512F.MaskLoad(p, vmask, Vector512<uint>.Zero);
+            }
+#else
+            return Avx512F.MaskLoad((uint*)Unsafe.AsPointer(ref head), vmask, Vector512<uint>.Zero);
+#endif
+        }
         #endregion
     }
 }

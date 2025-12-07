@@ -167,11 +167,6 @@ namespace Shamisen
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ReadOnlyNativeSpan(ReadOnlySpan<T> span)
         {
-            if (span.IsEmpty)
-            {
-                this = default;
-                return;
-            }
             this = new(ref MemoryMarshal.GetReference(span), span.Length);
         }
 

@@ -20,6 +20,46 @@ namespace Shamisen
         public static ReadOnlyNativeSpan<T> CreateReadOnlyNativeSpan<T>(ref T head, nint length) => new(ref head, length);
         #endregion
 
+        #region AsNativeSpan
+
+        /// <summary>
+        /// Creates a <see cref="NativeSpan{T}"/> that provides native access to the memory represented by the specified <see cref="Span{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of elements contained in the span.</typeparam>
+        /// <param name="span">The span whose underlying memory will be exposed as a <see cref="NativeSpan{T}"/>.</param>
+        /// <returns>A <see cref="NativeSpan{T}"/> that wraps the memory referenced by the specified span.</returns>
+        public static NativeSpan<T> AsNativeSpan<T>(this Span<T> span)
+            => new(span);
+
+        /// <summary>
+        /// Creates a <see cref="NativeSpan{T}"/> that represents the specified array.
+        /// </summary>
+        /// <typeparam name="T">The type of elements contained in the array.</typeparam>
+        /// <param name="array">The array to wrap in a <see cref="NativeSpan{T}"/>. Can be null.</param>
+        /// <returns>A <see cref="NativeSpan{T}"/> that provides access to the elements of <paramref name="array"/>. If <paramref
+        /// name="array"/> is null, the returned span will be empty.</returns>
+        public static NativeSpan<T> AsNativeSpan<T>(this T[]? array)
+            => new(array);
+
+        /// <summary>
+        /// Creates a read-only native span that provides access to the data in the specified read-only span.
+        /// </summary>
+        /// <typeparam name="T">The type of elements contained in the span.</typeparam>
+        /// <param name="span">The read-only span whose data will be exposed by the returned native span.</param>
+        /// <returns>A <see cref="ReadOnlyNativeSpan{T}"/> that provides read-only access to the elements of <paramref name="span"/>.</returns>
+        public static ReadOnlyNativeSpan<T> AsNativeSpan<T>(this ReadOnlySpan<T> span)
+            => new(span);
+
+        /// <summary>
+        /// Creates a new <see cref="ReadOnlyNativeSpan{T}"/> object over the entirety of a specified <paramref name="span"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of elements contained in the span.</typeparam>
+        /// <param name="span">The memory region from which to create the <see cref="ReadOnlyNativeSpan{T}"/> object.</param>
+        /// <remarks>If <paramref name="span"/> is null, this constructor returns a <see langword="null"/> <see cref="ReadOnlyNativeSpan{T}"/>.</remarks>
+        public static ReadOnlyNativeSpan<T> AsReadOnlyNativeSpan<T>(this NativeSpan<T> span)
+            => new(span);
+        #endregion
+
         #region GetReference
         /// <inheritdoc cref="MemoryMarshal.GetReference{T}(Span{T})"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -34,11 +74,25 @@ namespace Shamisen
         #region Cast
 
         /// <summary>
+        /// Casts a <see cref="Span{T}"/> of one primitive type, <typeparamref name="T"/>, to a <c>NativeSpan&lt;byte&gt;</c>
+        /// </summary>
+        /// <inheritdoc cref="MemoryMarshal.AsBytes{T}(Span{T})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static NativeSpan<byte> AsBytes<T>(Span<T> span) where T : unmanaged => CreateNativeSpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nint)span.Length * Unsafe.SizeOf<T>()));
+
+        /// <summary>
         /// Casts a <see cref="NativeSpan{T}"/> of one primitive type, <typeparamref name="T"/>, to a <c>NativeSpan&lt;byte&gt;</c>
         /// </summary>
         /// <inheritdoc cref="MemoryMarshal.AsBytes{T}(Span{T})"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static NativeSpan<byte> AsBytes<T>(NativeSpan<T> span) where T : unmanaged => CreateNativeSpan(ref Unsafe.As<T, byte>(ref span.Head), checked(span.Length * Unsafe.SizeOf<T>()));
+
+        /// <summary>
+        /// Casts a <see cref="ReadOnlySpan{T}"/> of one primitive type, <typeparamref name="T"/>, to a <c>ReadOnlyNativeSpan&lt;byte&gt;</c>
+        /// </summary>
+        /// <inheritdoc cref="MemoryMarshal.AsBytes{T}(ReadOnlySpan{T})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static ReadOnlyNativeSpan<byte> AsBytes<T>(ReadOnlySpan<T> span) where T : unmanaged => CreateReadOnlyNativeSpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nint)span.Length * Unsafe.SizeOf<T>()));
 
         /// <summary>
         /// Casts a <see cref="ReadOnlyNativeSpan{T}"/> of one primitive type, <typeparamref name="T"/>, to a <c>ReadOnlyNativeSpan&lt;byte&gt;</c>

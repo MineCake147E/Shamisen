@@ -49,8 +49,10 @@ namespace Shamisen.Utils.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public T[] Resize(int newSize)
         {
-            if (Array is null) throw new ObjectDisposedException(nameof(PooledArrayResizer<T>));
-            ArrayPool<T>.Shared.Return(Array, false);
+            var array = Array;
+            ObjectDisposedException.ThrowIf(array is null, this);
+            if (newSize < array.Length && newSize > array.Length / 4) return array;
+            ArrayPool<T>.Shared.Return(array, false);
             return Array = ArrayPool<T>.Shared.Rent(newSize);
         }
 

@@ -81,19 +81,19 @@ namespace Shamisen.Codecs.Flac.Parsing
     /// </summary>
     public partial struct FlacCrc8
     {
-        private static ReadOnlySpan<byte> Table => new byte[256] {
+        private static ReadOnlySpan<byte> Table => [
         <#
         int h = 0;
         foreach(var item in table){
-            if(h == 0) Write("\t");
+            if(h == 0) Write("    ");
             Write($"0x{item:X2},");
             if(h++ == 15)
             {
                 h = 0;
-                Write("\r\n\t\t");
+                Write("\r\n        ");
             }
         }
-        Write("};\r\n");
+        Write("];\r\n");
     #>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static byte GetTableAt(int index) => Unsafe.Add(ref MemoryMarshal.GetReference(Table), (byte)index);

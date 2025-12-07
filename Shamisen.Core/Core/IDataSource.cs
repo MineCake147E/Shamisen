@@ -64,23 +64,4 @@ namespace Shamisen
         /// </value>
         ISeekSupport? SeekSupport { get; }
     }
-
-    /// <summary>
-    /// Defines a base infrastructure of a source of binary data, which supports skipping.
-    /// </summary>
-    /// <typeparam name="TSample">The type of the sample.</typeparam>
-    /// <seealso cref="IDataSource{TSample}" />
-    [Obsolete("Moving to ISkipSupport")]
-    public interface ISkippableDataSource<TSample> : IDataSource<TSample>, ISkipSupport where TSample : unmanaged
-    {
-    }
-
-    /// <summary>
-    /// Defines a base infrastructure of a source of binary data, which supports seeking.
-    /// </summary>
-    /// <seealso cref="IDataSource{TSample}" />
-    [Obsolete("Moving to ISeekSupport")]
-    public interface ISeekableDataSource<TSample> : ISkippableDataSource<TSample>, ISeekSupport where TSample : unmanaged
-    {
-    }
 }

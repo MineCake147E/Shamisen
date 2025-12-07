@@ -43,9 +43,8 @@ namespace Shamisen.Codecs.Flac
         /// <param name="blockMaxSize">Maximum size of the block.</param>
         /// <param name="frameMinSize">Minimum size of the frame.</param>
         /// <param name="frameMaxSize">Maximum size of the frame.</param>
-        /// <param name="field4">The 5th field which contains informations of <see cref="SampleRate"/>, <see cref="Channels"/>, <see cref="BitDepth"/>, and <see cref="TotalSamples"/>.</param>
-        /// <param name="md5head">The md5 head.</param>
-        /// <param name="md5tail">The md5 tail.</param>
+        /// <param name="field4">The 5th field which contains information of <see cref="SampleRate"/>, <see cref="Channels"/>, <see cref="BitDepth"/>, and <see cref="TotalSamples"/>.</param>
+        /// <param name="md5Signature">The md5 signature.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public FlacStreamInfoBlock(ushort blockMinSize, ushort blockMaxSize, UInt24 frameMinSize, UInt24 frameMaxSize, ulong field4, Vector128<byte> md5Signature)
         {
@@ -69,8 +68,7 @@ namespace Shamisen.Codecs.Flac
         /// <param name="channels">The channels.</param>
         /// <param name="bitDepth">The bit depth.</param>
         /// <param name="totalSamples">The total samples.</param>
-        /// <param name="md5Head">The MD5 head.</param>
-        /// <param name="md5Tail">The MD5 tail.</param>
+        /// <param name="md5Signature">The MD5 signature.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public FlacStreamInfoBlock(ushort minimumBlockSize, ushort maximumBlockSize, UInt24 minimumFrameSize, UInt24 maximumFrameSize, uint sampleRate, byte channels, byte bitDepth, ulong totalSamples, Vector128<byte> md5Signature)
         {

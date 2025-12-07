@@ -84,28 +84,31 @@ namespace Shamisen.Codecs.Flac.Parsing
 <#//Generating 8 tables for using same algorithm as libFLAC.
     for(uint p = 0; p < 8; p++){#>
 
-        private static ReadOnlySpan<byte> Table<#=p#> => new byte[512] {
+        private static ReadOnlySpan<ushort> Table<#=p#> => [
         <#
         int h = 0;
-        foreach(var item in table){
-            if(h == 0) Write("\t");
+        foreach (var item in table){
+            if (h == 0) Write("    ");
             var value = CrcPower(item, p);
-            Write($"0x{(byte)value:X2},");
-            Write($"0x{(byte)(value >> 8):X2},");
-            if(h++ == 15)
+            Write($"0x{value:X4},");
+            if (h++ == 15)
             {
                 h = 0;
-                Write("\r\n\t\t");
+                Write("\r\n        ");
+            }
+            else
+            {
+                Write(" ");
             }
         }
-        Write("};\r\n");
+        Write("];\r\n");
     }
     #>
         <#//Generating 8 tables for using same algorithm as libFLAC.
     for(uint p = 0; p < 8; p++){#>
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private static ushort GetTable<#=p#>At(int index) => BinaryExtensions.ConvertToLittleEndian(Unsafe.Add(ref Unsafe.As<byte, ushort>(ref MemoryMarshal.GetReference(Table<#=p#>)), (byte)index));
+        private static ushort GetTable<#=p#>At(int index) => Unsafe.Add(ref MemoryMarshal.GetReference(Table<#=p#>), (byte)index);
 <#}#>
     }
 }

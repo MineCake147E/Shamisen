@@ -9,16 +9,16 @@ namespace Shamisen.Data
     /// <summary>
     /// Rewinds the data source to the previously-specified way-point if needed.
     /// </summary>
-    public sealed class WaypointRewindingDataSource<TSample> : IReadableDataSource<TSample> where TSample : unmanaged
+    public sealed class WayPointRewindingDataSource<TSample> : IReadableDataSource<TSample> where TSample : unmanaged
     {
         private bool disposedValue;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WaypointRewindingDataSource{TSample}"/> class.
+        /// Initializes a new instance of the <see cref="WayPointRewindingDataSource{TSample}"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <exception cref="System.ArgumentNullException">source</exception>
-        public WaypointRewindingDataSource(IReadableDataSource<TSample> source)
+        public WayPointRewindingDataSource(IReadableDataSource<TSample> source)
         {
             ArgumentNullException.ThrowIfNull(source);
             Source = source;

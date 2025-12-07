@@ -45,7 +45,7 @@ using System.Threading.Tasks;
 namespace Shamisen.Codecs.Flac.Parsing
 {
     /// <summary>
-    /// Calculates a CRC-8 for FLAC stream. Polynomial: CRC-8-CCITT
+    /// Calculates a CRC-8 for FLAC stream. Polynomial: CRC-8-CCITT (0x07)
     /// </summary>
     public readonly partial struct FlacCrc8 : IEquatable<FlacCrc8>
     {
@@ -101,7 +101,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         public static FlacCrc8 operator *(FlacCrc8 left, ushort right) => left * (byte)(right >> 8) * (byte)right;
 
         /// <summary>
-        /// Calculates the next value of CRC-16-IBM with <paramref name="value"/>.
+        /// Calculates the next value of CRC-8-CCITT with <paramref name="value"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>

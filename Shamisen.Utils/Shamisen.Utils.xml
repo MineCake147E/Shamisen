@@ -1068,34 +1068,22 @@
             <returns></returns>
         </member>
         <member name="M:Shamisen.MathI.Min(System.IntPtr,System.IntPtr)">
-            <inheritdoc cref="M:System.Math.Min(System.Int64,System.Int64)"/>
+            <inheritdoc cref="M:System.IntPtr.Min(System.IntPtr,System.IntPtr)"/>
         </member>
         <member name="M:Shamisen.MathI.Min(System.UIntPtr,System.UIntPtr)">
-            <inheritdoc cref="M:System.Math.Min(System.Int64,System.Int64)"/>
+            <inheritdoc cref="M:System.Int64.Min(System.Int64,System.Int64)"/>
         </member>
         <member name="M:Shamisen.MathI.Min(System.Int32,System.Int32)">
-            <inheritdoc cref="M:System.Math.Min(System.Int32,System.Int32)"/>
+            <inheritdoc cref="M:System.Int32.Min(System.Int32,System.Int32)"/>
         </member>
         <member name="M:Shamisen.MathI.Min(System.UInt32,System.UInt32)">
-            <inheritdoc cref="M:System.Math.Min(System.UInt32,System.UInt32)"/>
+            <inheritdoc cref="M:System.UInt32.Min(System.UInt32,System.UInt32)"/>
         </member>
         <member name="M:Shamisen.MathI.Min(System.Int64,System.Int64)">
-            <inheritdoc cref="M:System.Math.Min(System.Int64,System.Int64)"/>
+            <inheritdoc cref="M:System.Int64.Min(System.Int64,System.Int64)"/>
         </member>
         <member name="M:Shamisen.MathI.Min(System.UInt64,System.UInt64)">
-            <inheritdoc cref="M:System.Math.Min(System.UInt64,System.UInt64)"/>
-        </member>
-        <member name="M:Shamisen.MathI.Min(System.Int16,System.Int16)">
-            <inheritdoc cref="M:System.Math.Min(System.Int16,System.Int16)"/>
-        </member>
-        <member name="M:Shamisen.MathI.Min(System.UInt16,System.UInt16)">
-            <inheritdoc cref="M:System.Math.Min(System.UInt16,System.UInt16)"/>
-        </member>
-        <member name="M:Shamisen.MathI.Min(System.SByte,System.SByte)">
-            <inheritdoc cref="M:System.Math.Min(System.SByte,System.SByte)"/>
-        </member>
-        <member name="M:Shamisen.MathI.Min(System.Byte,System.Byte)">
-            <inheritdoc cref="M:System.Math.Min(System.Byte,System.Byte)"/>
+            <inheritdoc cref="M:System.UInt64.Min(System.UInt64,System.UInt64)"/>
         </member>
         <member name="M:Shamisen.MathI.Max(Shamisen.ReadResult,Shamisen.ReadResult)">
             <summary>
@@ -2381,17 +2369,62 @@
         <member name="M:Shamisen.SpanUtils.CreateReadOnlyNativeSpan``1(``0@,System.IntPtr)">
             <inheritdoc cref="M:Shamisen.ReadOnlyNativeSpan`1.#ctor(`0@,System.IntPtr)"/>
         </member>
+        <member name="M:Shamisen.SpanUtils.AsNativeSpan``1(System.Span{``0})">
+            <summary>
+            Creates a <see cref="T:Shamisen.NativeSpan`1"/> that provides native access to the memory represented by the specified <see cref="T:System.Span`1"/>.
+            </summary>
+            <typeparam name="T">The type of elements contained in the span.</typeparam>
+            <param name="span">The span whose underlying memory will be exposed as a <see cref="T:Shamisen.NativeSpan`1"/>.</param>
+            <returns>A <see cref="T:Shamisen.NativeSpan`1"/> that wraps the memory referenced by the specified span.</returns>
+        </member>
+        <member name="M:Shamisen.SpanUtils.AsNativeSpan``1(``0[])">
+            <summary>
+            Creates a <see cref="T:Shamisen.NativeSpan`1"/> that represents the specified array.
+            </summary>
+            <typeparam name="T">The type of elements contained in the array.</typeparam>
+            <param name="array">The array to wrap in a <see cref="T:Shamisen.NativeSpan`1"/>. Can be null.</param>
+            <returns>A <see cref="T:Shamisen.NativeSpan`1"/> that provides access to the elements of <paramref name="array"/>. If <paramref
+            name="array"/> is null, the returned span will be empty.</returns>
+        </member>
+        <member name="M:Shamisen.SpanUtils.AsNativeSpan``1(System.ReadOnlySpan{``0})">
+            <summary>
+            Creates a read-only native span that provides access to the data in the specified read-only span.
+            </summary>
+            <typeparam name="T">The type of elements contained in the span.</typeparam>
+            <param name="span">The read-only span whose data will be exposed by the returned native span.</param>
+            <returns>A <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> that provides read-only access to the elements of <paramref name="span"/>.</returns>
+        </member>
+        <member name="M:Shamisen.SpanUtils.AsReadOnlyNativeSpan``1(Shamisen.NativeSpan{``0})">
+            <summary>
+            Creates a new <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> object over the entirety of a specified <paramref name="span"/>.
+            </summary>
+            <typeparam name="T">The type of elements contained in the span.</typeparam>
+            <param name="span">The memory region from which to create the <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> object.</param>
+            <remarks>If <paramref name="span"/> is null, this constructor returns a <see langword="null"/> <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.</remarks>
+        </member>
         <member name="M:Shamisen.SpanUtils.GetReference``1(Shamisen.NativeSpan{``0})">
             <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.GetReference``1(System.Span{``0})"/>
         </member>
         <member name="M:Shamisen.SpanUtils.GetReference``1(Shamisen.ReadOnlyNativeSpan{``0})">
             <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.GetReference``1(System.Span{``0})"/>
         </member>
+        <member name="M:Shamisen.SpanUtils.AsBytes``1(System.Span{``0})">
+            <summary>
+            Casts a <see cref="T:System.Span`1"/> of one primitive type, <typeparamref name="T"/>, to a <c>NativeSpan&lt;byte&gt;</c>
+            </summary>
+            <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.AsBytes``1(System.Span{``0})"/>
+        </member>
         <member name="M:Shamisen.SpanUtils.AsBytes``1(Shamisen.NativeSpan{``0})">
             <summary>
             Casts a <see cref="T:Shamisen.NativeSpan`1"/> of one primitive type, <typeparamref name="T"/>, to a <c>NativeSpan&lt;byte&gt;</c>
             </summary>
             <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.AsBytes``1(System.Span{``0})"/>
+        </member>
+        <member name="M:Shamisen.SpanUtils.AsBytes``1(System.ReadOnlySpan{``0})">
+            <summary>
+            Casts a <see cref="T:System.ReadOnlySpan`1"/> of one primitive type, <typeparamref name="T"/>, to a <c>ReadOnlyNativeSpan&lt;byte&gt;</c>
+            </summary>
+            <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.AsBytes``1(System.ReadOnlySpan{``0})"/>
         </member>
         <member name="M:Shamisen.SpanUtils.AsBytes``1(Shamisen.ReadOnlyNativeSpan{``0})">
             <summary>
@@ -6871,6 +6904,54 @@
             <param name="value">The vector to reinterpret.</param>
             <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Numerics.Vector2"/>.</returns>
         </member>
+        <member name="M:Shamisen.Utils.VectorUtils.LoadTail128``1(System.Int32,System.ReadOnlySpan{``0})">
+            <summary>
+            Loads the tail elements from <paramref name="values"/> from specified <paramref name="start"/> position.
+            </summary>
+            <param name="start">The position to load the value from <paramref name="values"/>.</param>
+            <param name="values">The source <see cref="T:System.ReadOnlySpan`1"/>.</param>
+            <returns>The remaining tail elements.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.LoadTail128``1(System.IntPtr,Shamisen.ReadOnlyNativeSpan{``0})">
+            <summary>
+            Loads the tail elements from <paramref name="values"/> from specified <paramref name="start"/> position.
+            </summary>
+            <param name="start">The position to load the value from <paramref name="values"/>.</param>
+            <param name="values">The source <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.</param>
+            <returns>The remaining tail elements.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.LoadTail256``1(System.IntPtr,System.ReadOnlySpan{``0})">
+            <summary>
+            Loads the tail elements from <paramref name="values"/> from specified <paramref name="start"/> position.
+            </summary>
+            <param name="start">The position to load the value from <paramref name="values"/>.</param>
+            <param name="values">The source <see cref="T:System.ReadOnlySpan`1"/>.</param>
+            <returns>The remaining tail elements.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.LoadTail256``1(System.IntPtr,Shamisen.ReadOnlyNativeSpan{``0})">
+            <summary>
+            Loads the tail elements from <paramref name="values"/> from specified <paramref name="start"/> position.
+            </summary>
+            <param name="start">The position to load the value from <paramref name="values"/>.</param>
+            <param name="values">The source <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.</param>
+            <returns>The remaining tail elements.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.LoadTail512``1(System.Int32,System.ReadOnlySpan{``0})">
+            <summary>
+            Loads the tail elements from <paramref name="values"/> from specified <paramref name="start"/> position.
+            </summary>
+            <param name="start">The position to load the value from <paramref name="values"/>.</param>
+            <param name="values">The source <see cref="T:System.ReadOnlySpan`1"/>.</param>
+            <returns>The remaining tail elements.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.LoadTail512``1(System.IntPtr,Shamisen.ReadOnlyNativeSpan{``0})">
+            <summary>
+            Loads the tail elements from <paramref name="values"/> from specified <paramref name="start"/> position.
+            </summary>
+            <param name="start">The position to load the value from <paramref name="values"/>.</param>
+            <param name="values">The source <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.</param>
+            <returns>The remaining tail elements.</returns>
+        </member>
         <member name="M:Shamisen.Utils.VectorUtils.AsSingle``1(System.Numerics.Vector{``0})">
             <inheritdoc cref="M:System.Numerics.Vector.AsVectorSingle``1(System.Numerics.Vector{``0})"/>
         </member>
@@ -8969,6 +9050,15 @@
         <member name="M:Shamisen.Int24.TryFormat(System.Span{System.Char},System.Int32@,System.ReadOnlySpan{System.Char},System.IFormatProvider)">
             <inheritdoc/>
         </member>
+        <member name="M:Shamisen.Int24.CreateChecked``1(``0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.CreateSaturating``1(``0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.CreateTruncating``1(``0)">
+            <inheritdoc/>
+        </member>
         <member name="M:Shamisen.Int24.System#Numerics#IBinaryInteger{Shamisen#Int24}#TryWriteBigEndian(System.Span{System.Byte},System.Int32@)">
             <inheritdoc/>
         </member>
@@ -9192,27 +9282,27 @@
             Represents a value that is offset 128 inside 8-bit PCM.
             </summary>
         </member>
-        <member name="F:Shamisen.OffsetSByte.MaxValue">
+        <member name="P:Shamisen.OffsetSByte.MaxValue">
             <summary>
             Represents the largest possible value of <see cref="T:Shamisen.OffsetSByte"/>. This field is constant and read-only.
             </summary>
         </member>
-        <member name="F:Shamisen.OffsetSByte.MinValue">
+        <member name="P:Shamisen.OffsetSByte.MinValue">
             <summary>
             Represents the smallest possible value of <see cref="T:Shamisen.OffsetSByte"/>. This field is constant and read-only.
             </summary>
         </member>
-        <member name="F:Shamisen.OffsetSByte.Zero">
+        <member name="P:Shamisen.OffsetSByte.Zero">
             <summary>
             Represents the number zero (0).
             </summary>
         </member>
-        <member name="F:Shamisen.OffsetSByte.One">
+        <member name="P:Shamisen.OffsetSByte.One">
             <summary>
             Represents the number one (1).
             </summary>
         </member>
-        <member name="F:Shamisen.OffsetSByte.MinusOne">
+        <member name="P:Shamisen.OffsetSByte.MinusOne">
             <summary>
             Represents the number negative one (-1).
             </summary>
@@ -9351,7 +9441,7 @@
             </summary>
             <param name="s">The string representation of the number to convert.</param>
             <param name="result">When this method returns, contains the <see cref="T:Shamisen.OffsetSByte"/> number that is equivalent to the numeric value contained in <paramref name="s"/>, if the conversion succeeded, or zero if the conversion failed.
-            The conversion fails if the <paramref name="s"/> parameter is <c>null</c> or <see cref="F:System.String.Empty"/>, is not a number in a valid format, or represents a number less than <see cref="F:Shamisen.OffsetSByte.MinValue"/> or greater than <see cref="F:Shamisen.OffsetSByte.MaxValue"/>.
+            The conversion fails if the <paramref name="s"/> parameter is <c>null</c> or <see cref="F:System.String.Empty"/>, is not a number in a valid format, or represents a number less than <see cref="P:Shamisen.OffsetSByte.MinValue"/> or greater than <see cref="P:Shamisen.OffsetSByte.MaxValue"/>.
             This parameter is passed uninitialized; any value originally supplied in result is overwritten.</param>
             <returns>
             <c>true</c> if <paramref name="s"/> was converted successfully; otherwise, <c>false</c>.
@@ -9396,6 +9486,195 @@
             <returns>
             <c>true</c> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
             </returns>
+        </member>
+        <member name="P:Shamisen.OffsetSByte.AdditiveIdentity">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.OffsetSByte.MultiplicativeIdentity">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.OffsetSByte.NegativeOne">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.OffsetSByte.Radix">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.Abs(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsCanonical(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsComplexNumber(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsEvenInteger(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsFinite(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsImaginaryNumber(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsInfinity(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsInteger(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsNaN(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsNegativeInfinity(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsNormal(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsOddInteger(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsPositive(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsPositiveInfinity(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsPow2(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsRealNumber(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsSubnormal(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.IsZero(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.Log2(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.MaxMagnitude(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.MaxMagnitudeNumber(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.MinMagnitude(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.MinMagnitudeNumber(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_OnesComplement(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_ExclusiveOr(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_BitwiseAnd(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_BitwiseOr(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_UnsignedRightShift(Shamisen.OffsetSByte,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_LeftShift(Shamisen.OffsetSByte,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_UnaryPlus(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_UnaryNegation(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_Increment(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_Decrement(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_Multiply(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_Division(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_Modulus(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_Addition(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_Subtraction(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_RightShift(Shamisen.OffsetSByte,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.Parse(System.ReadOnlySpan{System.Char},System.Globalization.NumberStyles,System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.Parse(System.String,System.Globalization.NumberStyles,System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.Parse(System.ReadOnlySpan{System.Char},System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.Parse(System.String,System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.PopCount(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.TrailingZeroCount(Shamisen.OffsetSByte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.TryParse(System.ReadOnlySpan{System.Char},System.Globalization.NumberStyles,System.IFormatProvider,Shamisen.OffsetSByte@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.TryParse(System.String,System.Globalization.NumberStyles,System.IFormatProvider,Shamisen.OffsetSByte@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.TryParse(System.ReadOnlySpan{System.Char},System.IFormatProvider,Shamisen.OffsetSByte@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.TryParse(System.String,System.IFormatProvider,Shamisen.OffsetSByte@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.System#Numerics#IBinaryInteger{Shamisen#OffsetSByte}#TryReadBigEndian(System.ReadOnlySpan{System.Byte},System.Boolean,Shamisen.OffsetSByte@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.System#Numerics#IBinaryInteger{Shamisen#OffsetSByte}#TryReadLittleEndian(System.ReadOnlySpan{System.Byte},System.Boolean,Shamisen.OffsetSByte@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.CompareTo(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.GetByteCount">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.GetShortestBitLength">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.ToString(System.String,System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.TryFormat(System.Span{System.Char},System.Int32@,System.ReadOnlySpan{System.Char},System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.System#Numerics#IBinaryInteger{Shamisen#OffsetSByte}#TryWriteBigEndian(System.Span{System.Byte},System.Int32@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.System#Numerics#IBinaryInteger{Shamisen#OffsetSByte}#TryWriteLittleEndian(System.Span{System.Byte},System.Int32@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.System#Numerics#INumberBase{Shamisen#OffsetSByte}#IsNegative(Shamisen.OffsetSByte)">
+            <inheritdoc/>
         </member>
         <member name="T:Shamisen.ReadResult">
             <summary>

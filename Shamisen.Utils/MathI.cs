@@ -117,7 +117,7 @@ namespace Shamisen
 #endif
         public static ReadResult Min(ReadResult a, ReadResult b) => a < b ? a : b;
 
-        /// <inheritdoc cref="Math.Min(long, long)"/>
+        /// <inheritdoc cref="nint.Min(nint, nint)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
@@ -125,14 +125,14 @@ namespace Shamisen
         public static nint Min(nint val1, nint val2)
         {
             var g = val1 > val2;
-            nint y = Unsafe.As<bool, byte>(ref g);
+            nint y = Unsafe.BitCast<bool, byte>(g);
             y = -y;
             var r = y & val2;
             var q = AndNot(y, val1);
             return r | q;
         }
 
-        /// <inheritdoc cref="Math.Min(long, long)"/>
+        /// <inheritdoc cref="long.Min(long, long)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
@@ -140,14 +140,14 @@ namespace Shamisen
         public static nuint Min(nuint val1, nuint val2)
         {
             var g = val1 > val2;
-            nuint y = Unsafe.As<bool, byte>(ref g);
+            nuint y = Unsafe.BitCast<bool, byte>(g);
             y = (nuint)(-(nint)y);
             var r = y & val2;
             var q = AndNot(y, val1);
             return r | q;
         }
 
-        /// <inheritdoc cref="Math.Min(int, int)"/>
+        /// <inheritdoc cref="int.Min(int, int)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
@@ -156,14 +156,14 @@ namespace Shamisen
         public static int Min(int val1, int val2)
         {
             var g = val1 > val2;
-            int y = Unsafe.As<bool, byte>(ref g);
+            int y = Unsafe.BitCast<bool, byte>(g);
             y = -y;
             var r = y & val2;
             var q = AndNot(y, val1);
             return r | q;
         }
 
-        /// <inheritdoc cref="Math.Min(uint, uint)"/>
+        /// <inheritdoc cref="uint.Min(uint, uint)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
@@ -172,13 +172,13 @@ namespace Shamisen
         public static uint Min(uint val1, uint val2)
         {
             var g = val1 > val2;
-            uint y = Unsafe.As<bool, byte>(ref g);
+            uint y = Unsafe.BitCast<bool, byte>(g);
             y = (uint)-(int)y;
             var r = y & val2;
             var q = AndNot(y, val1);
             return r | q;
         }
-        /// <inheritdoc cref="Math.Min(long, long)"/>
+        /// <inheritdoc cref="long.Min(long, long)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
@@ -187,14 +187,14 @@ namespace Shamisen
         public static long Min(long val1, long val2)
         {
             var g = val1 > val2;
-            long y = Unsafe.As<bool, byte>(ref g);
+            long y = Unsafe.BitCast<bool, byte>(g);
             y = -y;
             var r = y & val2;
             var q = AndNot(y, val1);
             return r | q;
         }
 
-        /// <inheritdoc cref="Math.Min(ulong, ulong)"/>
+        /// <inheritdoc cref="ulong.Min(ulong, ulong)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
@@ -203,44 +203,12 @@ namespace Shamisen
         public static ulong Min(ulong val1, ulong val2)
         {
             var g = val1 > val2;
-            ulong y = Unsafe.As<bool, byte>(ref g);
+            ulong y = Unsafe.BitCast<bool, byte>(g);
             y = (ulong)-(long)y;
             var r = y & val2;
             var q = AndNot(y, val1);
             return r | q;
         }
-
-        /// <inheritdoc cref="Math.Min(short, short)"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#if DEBUG_MATHI_NON_USER_CODE
-
-        [DebuggerStepThrough]
-#endif
-        public static short Min(short val1, short val2) => (short)Min((uint)val1, (uint)val2);
-
-        /// <inheritdoc cref="Math.Min(ushort, ushort)"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#if DEBUG_MATHI_NON_USER_CODE
-
-        [DebuggerStepThrough]
-#endif
-        public static ushort Min(ushort val1, ushort val2) => (ushort)Min((uint)val1, val2);
-        /// <inheritdoc cref="Math.Min(sbyte, sbyte)"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#if DEBUG_MATHI_NON_USER_CODE
-
-        [DebuggerStepThrough]
-#endif
-        public static sbyte Min(sbyte val1, sbyte val2) => (sbyte)Min((uint)val1, (uint)val2);
-
-        /// <inheritdoc cref="Math.Min(byte, byte)"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#if DEBUG_MATHI_NON_USER_CODE
-
-        [DebuggerStepThrough]
-#endif
-        public static byte Min(byte val1, byte val2) => (byte)Min((uint)val1, val2);
-
         #endregion
 
         #region Integer Max
@@ -282,7 +250,7 @@ namespace Shamisen
         public static uint Max(uint val1, uint val2)
         {
             var g = val1 < val2;
-            uint y = Unsafe.As<bool, byte>(ref g);
+            uint y = Unsafe.BitCast<bool, byte>(g);
             y = (uint)-(int)y;
             var r = y & val2;
             var q = AndNot(y, val1);
@@ -298,7 +266,7 @@ namespace Shamisen
         public static long Max(long val1, long val2)
         {
             var g = val1 < val2;
-            long y = Unsafe.As<bool, byte>(ref g);
+            long y = Unsafe.BitCast<bool, byte>(g);
             y = -y;
             var r = y & val2;
             var q = AndNot(y, val1);
@@ -314,7 +282,7 @@ namespace Shamisen
         public static ulong Max(ulong val1, ulong val2)
         {
             var g = val1 < val2;
-            ulong y = Unsafe.As<bool, byte>(ref g);
+            ulong y = Unsafe.BitCast<bool, byte>(g);
             y = (ulong)-(long)y;
             var r = y & val2;
             var q = AndNot(y, val1);
@@ -330,7 +298,7 @@ namespace Shamisen
         public static nint Max(nint val1, nint val2)
         {
             var g = val1 < val2;
-            nint y = Unsafe.As<bool, byte>(ref g);
+            nint y = Unsafe.BitCast<bool, byte>(g);
             y = -y;
             var r = y & val2;
             var q = AndNot(y, val1);
@@ -346,7 +314,7 @@ namespace Shamisen
         public static nuint Max(nuint val1, nuint val2)
         {
             var g = val1 < val2;
-            nuint y = Unsafe.As<bool, byte>(ref g);
+            nuint y = Unsafe.BitCast<bool, byte>(g);
             y = (nuint)(-(nint)y);
             var r = y & val2;
             var q = AndNot(y, val1);

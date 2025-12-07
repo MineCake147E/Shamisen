@@ -15,6 +15,7 @@ namespace Shamisen
     public interface IReadableDataSource<TSample> : IDataSource<TSample>, IReadSupport<TSample>
         where TSample : unmanaged
     {
+        IReadSupport<TSample>? IDataSource<TSample>.ReadSupport => this;
     }
 
     /// <summary>

@@ -7311,19 +7311,6 @@
             The seek support.
             </value>
         </member>
-        <member name="T:Shamisen.ISkippableDataSource`1">
-            <summary>
-            Defines a base infrastructure of a source of binary data, which supports skipping.
-            </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-            <seealso cref="T:Shamisen.IDataSource`1" />
-        </member>
-        <member name="T:Shamisen.ISeekableDataSource`1">
-            <summary>
-            Defines a base infrastructure of a source of binary data, which supports seeking.
-            </summary>
-            <seealso cref="T:Shamisen.IDataSource`1" />
-        </member>
         <member name="T:Shamisen.IReadableAudioSource`2">
             <summary>
             Defines a base infrastructure of a readable audio source.
@@ -7463,6 +7450,16 @@
         <member name="T:Shamisen.Core.SeekResult">
             <summary>
             Represents a result of seek operation.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Data.Binary.BitSpanUtils">
+            <summary>
+            Provides utility methods for working with spans of bits.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Data.Binary.BufferedBitPipeReader">
+            <summary>
+            TODO: Summary for BitBuffer
             </summary>
         </member>
         <member name="T:Shamisen.Data.Binary.DataReaderExtensions">
@@ -7723,6 +7720,269 @@
             <param name="readResult">The read result.</param>
             <param name="lengthRequired">The least length required.</param>
             <param name="situation">The situation of reading some required data.</param>
+        </member>
+        <member name="T:Shamisen.Data.Binary.ISliceableBitRegion`2">
+            <summary>
+            Defines a region of bits that supports creating slices based on bit offsets and lengths.
+            </summary>
+            <remarks>Implementations of this interface enable efficient manipulation and extraction of sub-regions
+            within a bit-oriented data structure. Slicing operations do not modify the original instance but return a new
+            instance representing the specified region.</remarks>
+            <typeparam name="T">
+            The type that implements the bit region and supports slicing operations. Must be a value type that implements
+            <see cref="T:Shamisen.Data.Binary.ISliceableBitRegion`2"/> and allows ref struct semantics.
+            </typeparam>
+            <typeparam name="TWord">The type that the implementing type uses for operations and buffering.</typeparam>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ISliceableBitRegion`2.BitsPerBufferWord">
+            <summary>
+            Gets the number of bits contained in a single buffer word.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ISliceableBitRegion`2.BytesPerBufferWord">
+            <summary>
+            Gets the number of bytes contained in a single buffer word (<typeparamref name="TWord"/>) for the implementing type.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ISliceableBitRegion`2.Empty">
+            <summary>
+            Gets an instance of <typeparamref name="T"/> that represents an empty collection.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ISliceableBitRegion`2.IsEmpty">
+            <summary>
+            Gets a value indicating whether the collection contains no elements.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ISliceableBitRegion`2.BitLength">
+            <summary>
+            Gets the length of the content, in bits.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ISliceableBitRegion`2.ByteLength">
+            <summary>
+            Gets the length of the content, in bytes.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ISliceableBitRegion`2.BufferSize">
+            <summary>
+            Gets the size, in words, of the buffer used for data operations.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ISliceableBitRegion`2.FirstWordBitOffset">
+            <summary>
+            Gets the bit offset of the first word within the underlying data structure, counting from MSB.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ISliceableBitRegion`2.Slice(System.UInt64)">
+            <summary>
+            Returns a slice of the current instance starting at the specified bit offset.
+            </summary>
+            <param name="bitOffset">The zero-based bit offset at which to begin the slice. Must be non-negative and within the bounds of the
+            current instance.</param>
+            <returns>A new instance representing the slice that starts at the specified bit offset.</returns>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ISliceableBitRegion`2.Slice(System.UInt64,System.UInt64)">
+            <summary>
+            Returns a slice of the current instance, starting at the specified bit offset and spanning the specified
+            number of bits.
+            </summary>
+            <param name="bitOffset">The zero-based bit offset at which the slice begins. Must be non-negative and within the bounds of the
+            current instance.</param>
+            <param name="bitLength">The number of bits to include in the slice. Must be non-negative and the range defined by bitOffset and
+            bitLength must not exceed the length of the current instance.</param>
+            <returns>A new instance representing the specified slice of bits.</returns>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ISliceableBitRegion`2.SliceWordAligned">
+            <summary>
+            Returns a slice of the underlying data starting at the current bit offset, aligned to the nearest word
+            boundary.
+            </summary>
+            <remarks>The returned slice is guaranteed to start at a word-aligned position, which may
+            improve performance for certain operations. If the bit offset does not correspond to a word boundary, the
+            method aligns the slice to the next word boundary.</remarks>
+            <returns>A slice of type T that begins at the current bit offset and is aligned to a word boundary.</returns>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ISliceableBitRegion`2.SliceByteAligned">
+            <summary>
+            Returns a slice of the current data that is aligned to the nearest byte boundary.
+            </summary>
+            <returns>A value of type <typeparamref name="T"/> representing the byte-aligned slice of the data.</returns>
+        </member>
+        <member name="T:Shamisen.Data.Binary.ReadOnlyBitMemory">
+            <summary>
+            Represents a read-only, memory-efficient sequence of bits backed by immutable memory.
+            </summary>
+            <remarks>Use this struct to access and manipulate bits without modifying the underlying data. The
+            buffer is backed by read-only memory, ensuring that the bit sequence cannot be changed after creation. This type
+            is suitable for scenarios where bit-level access is required without the need for mutation, such as parsing
+            binary data or implementing bit flags in a thread-safe manner.</remarks>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ReadOnlyBitMemory.IsEmpty">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ReadOnlyBitMemory.BitLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ReadOnlyBitMemory.BufferSize">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ReadOnlyBitMemory.FirstWordBitOffset">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ReadOnlyBitMemory.Buffer">
+            <summary>
+            Gets the underlying buffer as a read-only sequence of 64-bit unsigned integers.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ReadOnlyBitMemory.Span">
+            <summary>
+            Gets a read-only view of the bits in the current buffer as a contiguous span.
+            </summary>
+            <remarks>The returned span reflects the current state of the buffer and does not allow
+            modification of its contents. Changes to the underlying buffer after retrieving the span may be reflected in
+            the returned value.</remarks>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitMemory.#ctor(System.ReadOnlyMemory{System.UInt64})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Data.Binary.ReadOnlyBitMemory"/> struct using the specified buffer of 64-bit words.
+            </summary>
+            <param name="buffer">A read-only memory region containing the underlying 64-bit words to be used as the bit storage.</param>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitMemory.#ctor(System.ReadOnlyMemory{System.UInt64},System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Data.Binary.ReadOnlyBitMemory"/> struct using the specified buffer and starting bit
+            offset.
+            </summary>
+            <remarks>The buffer is not copied; changes to the underlying memory (if any) after
+            construction may affect the view. The start parameter allows for bit-level alignment within the first ulong
+            of the buffer.</remarks>
+            <param name="buffer">The underlying read-only memory buffer containing the bits to be represented.</param>
+            <param name="start">The zero-based bit offset within the first element of the buffer at which the bit memory view begins.</param>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitMemory.#ctor(System.ReadOnlyMemory{System.UInt64},System.Byte,System.Byte)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Data.Binary.ReadOnlyBitMemory"/> structure using the specified buffer and bit range.
+            </summary>
+            <remarks>Use this constructor to create a read-only view over a sequence of bits stored in a
+            ulong-based buffer. The combination of start and lastWordInvalidBits defines the valid bit range within the
+            buffer.</remarks>
+            <param name="buffer">The underlying read-only memory buffer containing the bits to be represented.</param>
+            <param name="start">The zero-based index of the first valid bit in the buffer.</param>
+            <param name="lastWordInvalidBits">The number of invalid bits in the last ulong of the buffer. Must be between 0 and 63, inclusive.</param>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitMemory.#ctor(System.Byte,System.Byte,System.ReadOnlyMemory{System.UInt64})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Data.Binary.ReadOnlyBitMemory"/> structure using the specified buffer and bit range.
+            </summary>
+            <remarks>Use this constructor to create a read-only view over a sequence of bits stored in a
+            ulong-based buffer. The combination of start and lastWordInvalidBits defines the valid bit range within the
+            buffer.</remarks>
+            <param name="start">The zero-based index of the first valid bit in the buffer.</param>
+            <param name="lastWordInvalidBits">The number of invalid bits in the last ulong of the buffer. Must be between 0 and 63, inclusive.</param>
+            <param name="buffer">The underlying read-only memory buffer containing the bits to be represented.</param>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitMemory.Slice(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitMemory.Slice(System.UInt64,System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitMemory.SliceWordAligned">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitMemory.SliceByteAligned">
+            <inheritdoc/>
+        </member>
+        <member name="T:Shamisen.Data.Binary.ReadOnlyBitSpan">
+            <summary>
+            Represents a read-only contiguous region of bits, providing efficient access and manipulation without copying
+            the underlying data.
+            </summary>
+            <remarks>Use this type to perform bitwise operations or queries on a sequence of bits without
+            modifying the source data. The lifetime of the underlying data must outlive the span; do not store instances
+            beyond the scope in which they are created. This type is a ref struct and therefore cannot be boxed, assigned to
+            variables of type object, or captured by lambda expressions.</remarks>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ReadOnlyBitSpan.IsEmpty">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ReadOnlyBitSpan.BitLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ReadOnlyBitSpan.BufferSize">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ReadOnlyBitSpan.FirstWordBitOffset">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ReadOnlyBitSpan.ByteLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ReadOnlyBitSpan.Buffer">
+            <summary>
+            Gets a read-only span that provides access to the underlying buffer of 64-bit unsigned integers.<br/>
+            The first bit of a complete word is at MSB (most significant bit).
+            </summary>
+        </member>
+        <member name="P:Shamisen.Data.Binary.ReadOnlyBitSpan.Item(System.UInt64)">
+            <summary>
+            Gets the value of the bit at the specified index within the bit sequence.
+            </summary>
+            <param name="bitIndex">The zero-based index of the bit to retrieve. Must be less than the total number of bits in the sequence.</param>
+            <returns>A byte value representing the bit at the specified index. The value is 1 if the bit is set; otherwise, 0.</returns>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitSpan.#ctor(System.ReadOnlySpan{System.UInt64})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Data.Binary.ReadOnlyBitSpan"/> struct using the specified buffer of 64-bit words.
+            </summary>
+            <param name="buffer">A read-only memory region containing the underlying 64-bit words to be used as the bit storage.</param>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitSpan.#ctor(System.ReadOnlySpan{System.UInt64},System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Data.Binary.ReadOnlyBitSpan"/> struct using the specified buffer and starting bit
+            offset.
+            </summary>
+            <remarks>The buffer is not copied; changes to the underlying memory (if any) after
+            construction may affect the view. The start parameter allows for bit-level alignment within the first ulong
+            of the buffer.</remarks>
+            <param name="buffer">The underlying read-only memory buffer containing the bits to be represented.</param>
+            <param name="start">The zero-based bit offset within the first element of the buffer at which the bit memory view begins. Must
+            be between 0 and 63, inclusive.</param>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitSpan.#ctor(System.ReadOnlySpan{System.UInt64},System.UInt64,System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Data.Binary.ReadOnlyBitSpan"/> structure using the specified buffer and bit range.
+            </summary>
+            <remarks>Use this constructor to create a read-only view over a sequence of bits stored in a
+            ulong-based buffer. The combination of start and lastWordInvalidBits defines the valid bit range within the
+            buffer.</remarks>
+            <param name="buffer">The underlying read-only memory buffer containing the bits to be represented.</param>
+            <param name="start">The zero-based index of the first valid bit in the buffer.</param>
+            <param name="bitLength">The number of bits to be visible.</param>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitSpan.#ctor(System.Byte,System.UInt64@,System.UInt64)">
+            <summary>
+            Initializes a new instance of the ReadOnlyBitSpan structure that represents a sequence of bits starting at
+            the specified offset within the provided data.
+            </summary>
+            <param name="startOffset">The zero-based bit offset at which the span begins within the referenced data.</param>
+            <param name="head">A reference to the first 64 bits of the underlying data from which the bit span is created. The referenced
+            value is not modified.</param>
+            <param name="bitLength">The number of bits to include in the span, starting from the specified offset. Must be less than or equal to
+            the number of available bits in the referenced data.</param>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitSpan.Slice(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitSpan.Slice(System.UInt64,System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitSpan.SliceWordAligned">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Data.Binary.ReadOnlyBitSpan.SliceByteAligned">
+            <inheritdoc/>
         </member>
         <member name="T:Shamisen.Data.DataSinkUtils">
             <summary>
@@ -8059,11 +8319,6 @@
             Seeks the <see cref="T:Shamisen.IAudioSource`2"/> to the specified index in frames from the end of stream.
             </summary>
             <param name="offset">The offset.</param>
-        </member>
-        <member name="M:Shamisen.Data.DataCache`1.Finalize">
-            <summary>
-            Finalizes an instance of the <see cref="T:Shamisen.Data.DataCache`1"/> class.
-            </summary>
         </member>
         <member name="M:Shamisen.Data.DataCache`1.Dispose">
             <summary>
@@ -8916,19 +9171,19 @@
             </summary>
             <param name="step">The number of frames to step back.</param>
         </member>
-        <member name="T:Shamisen.Data.WaypointRewindingDataSource`1">
+        <member name="T:Shamisen.Data.WayPointRewindingDataSource`1">
             <summary>
             Rewinds the data source to the previously-specified way-point if needed.
             </summary>
         </member>
-        <member name="M:Shamisen.Data.WaypointRewindingDataSource`1.#ctor(Shamisen.IReadableDataSource{`0})">
+        <member name="M:Shamisen.Data.WayPointRewindingDataSource`1.#ctor(Shamisen.IReadableDataSource{`0})">
             <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Data.WaypointRewindingDataSource`1"/> class.
+            Initializes a new instance of the <see cref="T:Shamisen.Data.WayPointRewindingDataSource`1"/> class.
             </summary>
             <param name="source">The source.</param>
             <exception cref="T:System.ArgumentNullException">source</exception>
         </member>
-        <member name="P:Shamisen.Data.WaypointRewindingDataSource`1.Length">
+        <member name="P:Shamisen.Data.WayPointRewindingDataSource`1.Length">
             <summary>
             Gets the remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.<br/>
             The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
@@ -8937,7 +9192,7 @@
             The remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.
             </value>
         </member>
-        <member name="P:Shamisen.Data.WaypointRewindingDataSource`1.TotalLength">
+        <member name="P:Shamisen.Data.WayPointRewindingDataSource`1.TotalLength">
             <summary>
             Gets the total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
             The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
@@ -8946,7 +9201,7 @@
             The total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
             </value>
         </member>
-        <member name="P:Shamisen.Data.WaypointRewindingDataSource`1.Position">
+        <member name="P:Shamisen.Data.WayPointRewindingDataSource`1.Position">
             <summary>
             Gets the position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
             The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> doesn't support this property.
@@ -8955,7 +9210,7 @@
             The position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
             </value>
         </member>
-        <member name="P:Shamisen.Data.WaypointRewindingDataSource`1.SkipSupport">
+        <member name="P:Shamisen.Data.WayPointRewindingDataSource`1.SkipSupport">
             <summary>
             Gets the skip support of the <see cref="T:Shamisen.IDataSource`1"/>.
             </summary>
@@ -8963,7 +9218,7 @@
             The skip support.
             </value>
         </member>
-        <member name="P:Shamisen.Data.WaypointRewindingDataSource`1.SeekSupport">
+        <member name="P:Shamisen.Data.WayPointRewindingDataSource`1.SeekSupport">
             <summary>
             Gets the seek support of the <see cref="T:Shamisen.IDataSource`1"/>.
             </summary>
@@ -8971,42 +9226,42 @@
             The seek support.
             </value>
         </member>
-        <member name="P:Shamisen.Data.WaypointRewindingDataSource`1.ReadSupport">
+        <member name="P:Shamisen.Data.WayPointRewindingDataSource`1.ReadSupport">
             <summary>
             Gets the read support of the <see cref="T:Shamisen.IDataSource`1" />.
             </summary>
         </member>
-        <member name="P:Shamisen.Data.WaypointRewindingDataSource`1.AsyncReadSupport">
+        <member name="P:Shamisen.Data.WayPointRewindingDataSource`1.AsyncReadSupport">
             <summary>
             Gets the asynchronous read support of the <see cref="T:Shamisen.IDataSource`1" />.
             </summary>
         </member>
-        <member name="M:Shamisen.Data.WaypointRewindingDataSource`1.Pin">
+        <member name="M:Shamisen.Data.WayPointRewindingDataSource`1.Pin">
             <summary>
             Pins a way-point to this instance.
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.WaypointRewindingDataSource`1.UnPin">
+        <member name="M:Shamisen.Data.WayPointRewindingDataSource`1.UnPin">
             <summary>
             Unpins a way-point to this instance.
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.WaypointRewindingDataSource`1.Rewind">
+        <member name="M:Shamisen.Data.WayPointRewindingDataSource`1.Rewind">
             <summary>
             Rewinds this instance to the way-point.
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.WaypointRewindingDataSource`1.Read(System.Span{`0})">
+        <member name="M:Shamisen.Data.WayPointRewindingDataSource`1.Read(System.Span{`0})">
             <summary>
             Reads the data to the specified buffer.
             </summary>
             <param name="buffer">The buffer.</param>
             <returns>The length of the data written.</returns>
         </member>
-        <member name="M:Shamisen.Data.WaypointRewindingDataSource`1.Dispose">
+        <member name="M:Shamisen.Data.WayPointRewindingDataSource`1.Dispose">
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>

@@ -139,9 +139,9 @@ namespace Shamisen.Data.Binary
         {
             unsafe
             {
-                uint rawUInt32;
-                var span = new Span<byte>(&rawUInt32, sizeof(uint));
-                dataReader.CheckRead(span);
+                uint rawUInt32 = 0;
+                var span = new Span<uint>(ref rawUInt32);
+                dataReader.CheckRead(MemoryMarshal.AsBytes(span));
                 return BinaryExtensions.ConvertToLittleEndian(rawUInt32);
             }
         }

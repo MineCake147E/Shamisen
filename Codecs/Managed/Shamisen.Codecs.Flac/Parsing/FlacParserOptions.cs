@@ -53,6 +53,17 @@ namespace Shamisen.Codecs.Flac
     /// <param name="PreserveUnusedMetadata"> Gets a value indicating whether to preserve unused metadata excluding padding and invalid metadata. </param>
     public readonly record struct FlacParserOptions(bool ParseCueSheet, bool ParseVorbisComment, bool ParsePictures, bool PreserveApplication, bool PreservePadding, bool PreserveUnusedMetadata)
     {
+        /// <summary>
+        /// Gets a value indicating whether an exception should be thrown when stream information is unavailable.
+        /// </summary>
+        /// <remarks>Set this property to <see langword="true"/> to enforce strict error handling when
+        /// stream details are missing. When <see langword="false"/>, the absence of stream information will not result
+        /// in an exception.</remarks>
+        public bool ThrowWithoutStreamInfo { get; init; } = false;
+
+        /// <summary>
+        /// Gets a value indicating whether the first frame of the input should be parsed during initialization.
+        /// </summary>
         public bool ParseFirstFrame { get; init; } = true;
     }
 }

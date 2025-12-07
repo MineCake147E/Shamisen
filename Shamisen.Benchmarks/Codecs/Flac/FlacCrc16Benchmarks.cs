@@ -21,7 +21,7 @@ namespace Shamisen.Benchmarks.Codecs.Flac
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class FlacCrc16Benchmarks
     {
-        private class Config : ManualConfig
+        internal sealed class Config : ManualConfig
         {
             public Config()
             {
@@ -36,7 +36,9 @@ namespace Shamisen.Benchmarks.Codecs.Flac
 
         private ulong[]? srcBuffer;
 
-        [Params(/*2047, */4095, Priority = -990)]
+        public static IEnumerable<int> WordsSource() => Enumerable.Range(0, 6).Select(a => 1 << a);
+
+        [ParamsSource(nameof(WordsSource))]
         public int Words { get; set; }
 
         [GlobalSetup]
@@ -48,9 +50,9 @@ namespace Shamisen.Benchmarks.Codecs.Flac
         }
 
         [Benchmark]
-        public FlacCrc16 Standard() => FlacCrc16.CalculateCrc16Standard(new FlacCrc16(0), srcBuffer.AsSpan());
+        public FlacCrc16 Standard() => FlacCrc16.CalculateCrc16UInt64BigEndianStandard(new FlacCrc16(0), srcBuffer.AsSpan());
 
         [Benchmark]
-        public FlacCrc16 Pclmulqdq() => FlacCrc16.CalculateCrc16Pclmulqdq(new FlacCrc16(0), srcBuffer.AsSpan());
+        public FlacCrc16 Pclmulqdq() => FlacCrc16.CalculateCrc16UInt64BigEndianPclmulqdq(new FlacCrc16(0), srcBuffer.AsSpan());
     }
 }

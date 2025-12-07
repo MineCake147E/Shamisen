@@ -70,7 +70,7 @@ namespace Shamisen
         /// <param name="headPointer">The head pointer.</param>
         /// <param name="length">The length.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public unsafe NativeSpan(ref T headPointer, nint length)
+        public unsafe NativeSpan(ref T headPointer, nint length = 1)
         {
             CheckLength(length);
             head = ref headPointer;

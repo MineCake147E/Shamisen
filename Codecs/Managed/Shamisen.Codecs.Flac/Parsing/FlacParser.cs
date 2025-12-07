@@ -135,7 +135,7 @@ namespace Shamisen.Codecs.Flac
 
         internal FlacStreamInfoBlock StreamInfoBlock => streamInfoBlock;
 
-        public FlacFrameParser? CurrentFrame { get; private set; }
+        internal FlacFrameParser? CurrentFrame { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FlacParser"/> class.

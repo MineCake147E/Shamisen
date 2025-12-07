@@ -29,6 +29,9 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
         public static IEnumerable<TestCaseData> FlacParserParsesCorrectlyTestCaseGenerator()
             => SourceArray.Where(Directory.Exists).SelectMany(a => new DirectoryInfo(a).EnumerateFiles("*.zip", new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true }))
             .Where(a => a.Exists).Select(a => new TestCaseData(a).SetArgDisplayNames($"\"{Path.GetRelativePath(Environment.CurrentDirectory, a.FullName)}\""));
+        public static IEnumerable<TestCaseData> FlacParserDoesNotThrowTestCaseGenerator()
+            => SourceArray.Where(Directory.Exists).SelectMany(a => new DirectoryInfo(a).EnumerateFiles("*.flac", new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true }))
+            .Where(a => a.Exists).Select(a => new TestCaseData(a).SetArgDisplayNames($"\"{Path.GetRelativePath(Environment.CurrentDirectory, a.FullName)}\""));
 
         [TestCaseSource(nameof(FlacParserParsesCorrectlyTestCaseGenerator))]
         public void FlacParserParsesCorrectly(FileInfo path)
@@ -75,6 +78,34 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                     Assert.Fail($"Bit depth {wav.Format.BitDepth} is not supported!");
                     break;
             }
+        }
+
+        [TestCaseSource(nameof(FlacParserDoesNotThrowTestCaseGenerator))]
+        public void FlacParserDoesNotThrow(FileInfo path)
+        {
+            Assert.That(path.Exists);
+            using var flacStream = path.OpenRead();
+            using var flacMemory = new MemoryStream();
+            flacStream.CopyTo(flacMemory);
+            flacMemory.Position = 0;
+            using var flacSource = new StreamDataSource(flacMemory);
+            using var flac = new FlacParser(flacSource, new FlacParserOptions(true, true, true, true, true, true));
+            DumpFlacMetadata(flac);
+            Assert.DoesNotThrow(() =>
+            {
+                ulong frameIndex = 0ul;
+                ulong flacLength = 0ul;
+                while (true)
+                {
+                    var frame = flac.PrepareNextFrame();
+                    if (frame is null) break;
+                    using var dataF = new PooledArray<int>((int)frame.TotalLength.GetValueOrDefault(int.MaxValue) * frame.Format.Channels);
+                    var sf = dataF.Span;
+                    var rrf = flac.ReadFrame(sf);
+                    flacLength += (ulong)rrf.Length;
+                    frameIndex++;
+                }
+            });
         }
 
         private static void Compare<T>(FlacParser flac, SimpleWaveParser wav) where T : unmanaged, IBinaryNumber<T>, ISignedNumber<T>

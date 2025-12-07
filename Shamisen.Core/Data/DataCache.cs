@@ -124,7 +124,7 @@ namespace Shamisen.Data
         /// <param name="allocationUnit">The allocation unit.</param>
         public DataCache(int allocationUnit = 1024)
         {
-            buffers = new List<BufferInstance>();
+            buffers = [];
             if (allocationUnit <= 0) throw new ArgumentOutOfRangeException(nameof(allocationUnit), "The allocationUnit must be greater than 1!");
             allocUnit = allocationUnit;
             allocUnitDivisor = new UInt32Divisor((uint)allocUnit);
@@ -327,14 +327,6 @@ namespace Shamisen.Data
                 //
                 disposedValue = true;
             }
-        }
-
-        /// <summary>
-        /// Finalizes an instance of the <see cref="DataCache{TSample}"/> class.
-        /// </summary>
-        ~DataCache()
-        {
-            Dispose(false);
         }
 
         /// <summary>

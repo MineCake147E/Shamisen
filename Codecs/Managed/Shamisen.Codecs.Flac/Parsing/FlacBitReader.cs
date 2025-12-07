@@ -73,6 +73,8 @@ namespace Shamisen.Codecs.Flac.Parsing
         private const int BytesPerWord = sizeof(ulong);
         private const int DefaultCapacity = 131072 / BitsPerWord;
 
+        // TODO: Redesign the whole thing for better performance and maintainability.
+
         private ulong[]? buffer;
         private int bytesOfIncompleteWord;
         private int consumedBits;
@@ -297,15 +299,6 @@ namespace Shamisen.Codecs.Flac.Parsing
         }
 
         /// <summary>
-        ///  Reads the number with specified <paramref name="bits"/>.
-        /// </summary>
-        /// <param name="bits">The bits to read. must be &lt;=32.</param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        [Obsolete("Use out parameterized one instead!")]
-        public int? ReadBitsInt32(byte bits) => !ReadBitsInt32(bits, out var i) ? null : i;
-
-        /// <summary>
         /// Reads the number with specified <paramref name="bits"/>.
         /// </summary>
         /// <param name="bits">The bits.</param>
@@ -324,15 +317,6 @@ namespace Shamisen.Codecs.Flac.Parsing
             value = (int)gg >> (32 - bits);
             return true;
         }
-
-        /// <summary>
-        /// Reads the number with specified <paramref name="bits"/>.
-        /// </summary>
-        /// <param name="bits">The bits to read. must be &lt;=32.</param>
-        /// <returns></returns>
-        [Obsolete("Use ReadBitsUInt32(byte, out int) instead!")]
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public uint? ReadBitsUInt32(byte bits) => ReadBitsUInt32(bits, out var value) ? value : null;
 
         /// <summary>
         /// Reads the number with specified <paramref name="bits" />.
@@ -463,14 +447,6 @@ namespace Shamisen.Codecs.Flac.Parsing
             value = (long)gg >> (64 - bits);
             return true;
         }
-        /// <summary>
-        /// Reads the number with specified <paramref name="bits"/>.
-        /// </summary>
-        /// <param name="bits">The bits to read. must be &lt;=64.</param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        [Obsolete("Use out parameterized one instead!")]
-        public ulong? ReadBitsUInt64(byte bits) => ReadBitsUInt64(bits, out var value) ? value : null;
 
         /// <summary>
         /// Reads the number with specified <paramref name="bits" />.
@@ -589,12 +565,12 @@ namespace Shamisen.Codecs.Flac.Parsing
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public int? ReadRiceCode(int parameter)
         {
-            //As of the libFLAC's code, the Rice coding used in FLAC is:
-            //0-continuing unary code of quotient,
-            //end 1,
-            //remainder,
-            //flag bit to calculate NOT of result value
-            //The operation -(value) - 1 is equivalent to ~value.
+            // As of the RFC 9639, the Rice coding used in FLAC is:
+            // 0-continuing unary code of quotient,
+            // end 1,
+            // remainder,
+            // flag bit to calculate NOT of result value
+            // The operation -(value) - 1 is equivalent to ~value.
             var result = ReadUnaryUnsigned(out var g);
             if (!result) return null;
             if (!ReadBitsUInt32((byte)parameter, out var ngg)) return null;
@@ -1128,10 +1104,6 @@ namespace Shamisen.Codecs.Flac.Parsing
         }
 
         #region ReadNBits
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        [Obsolete("Use out parameterized one instead!")]
-        private uint? Read8Bits() => !Read8Bits(out var r) ? null : r;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private bool Read8Bits(out byte value)

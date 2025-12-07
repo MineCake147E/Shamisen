@@ -478,7 +478,7 @@
             Represents a FLAC Stream Info block.
             </summary>
         </member>
-        <member name="M:Shamisen.Codecs.Flac.FlacStreamInfoBlock.#ctor(System.UInt16,System.UInt16,Shamisen.UInt24,Shamisen.UInt24,System.UInt64,System.UInt64,System.UInt64)">
+        <member name="M:Shamisen.Codecs.Flac.FlacStreamInfoBlock.#ctor(System.UInt16,System.UInt16,Shamisen.UInt24,Shamisen.UInt24,System.UInt64,System.Runtime.Intrinsics.Vector128{System.Byte})">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacStreamInfoBlock"/> struct directly.
             </summary>
@@ -486,11 +486,10 @@
             <param name="blockMaxSize">Maximum size of the block.</param>
             <param name="frameMinSize">Minimum size of the frame.</param>
             <param name="frameMaxSize">Maximum size of the frame.</param>
-            <param name="field4">The 5th field which contains informations of <see cref="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.SampleRate"/>, <see cref="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.Channels"/>, <see cref="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.BitDepth"/>, and <see cref="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.TotalSamples"/>.</param>
-            <param name="md5head">The md5 head.</param>
-            <param name="md5tail">The md5 tail.</param>
+            <param name="field4">The 5th field which contains information of <see cref="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.SampleRate"/>, <see cref="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.Channels"/>, <see cref="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.BitDepth"/>, and <see cref="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.TotalSamples"/>.</param>
+            <param name="md5Signature">The md5 signature.</param>
         </member>
-        <member name="M:Shamisen.Codecs.Flac.FlacStreamInfoBlock.#ctor(System.UInt16,System.UInt16,Shamisen.UInt24,Shamisen.UInt24,System.UInt32,System.Byte,System.Byte,System.UInt64,System.UInt64,System.UInt64)">
+        <member name="M:Shamisen.Codecs.Flac.FlacStreamInfoBlock.#ctor(System.UInt16,System.UInt16,Shamisen.UInt24,Shamisen.UInt24,System.UInt32,System.Byte,System.Byte,System.UInt64,System.Runtime.Intrinsics.Vector128{System.Byte})">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacStreamInfoBlock"/> struct.<br/>
             Suitable for encoding purpose.
@@ -503,8 +502,7 @@
             <param name="channels">The channels.</param>
             <param name="bitDepth">The bit depth.</param>
             <param name="totalSamples">The total samples.</param>
-            <param name="md5Head">The MD5 head.</param>
-            <param name="md5Tail">The MD5 tail.</param>
+            <param name="md5Signature">The MD5 signature.</param>
         </member>
         <member name="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.MinimumBlockSize">
             <summary>
@@ -644,6 +642,9 @@
             <returns>
               <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
             </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacStreamInfoBlock.ToString">
+            <inheritdoc/>
         </member>
         <member name="T:Shamisen.Codecs.Flac.FlacUtils">
             <summary>
@@ -1278,26 +1279,12 @@
             <param name="buffer">The buffer.</param>
             <returns>The length of the data written.</returns>
         </member>
-        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsInt32(System.Byte)">
-            <summary>
-             Reads the number with specified <paramref name="bits"/>.
-            </summary>
-            <param name="bits">The bits to read. must be &lt;=32.</param>
-            <returns></returns>
-        </member>
         <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsInt32(System.Byte,System.Int32@)">
             <summary>
             Reads the number with specified <paramref name="bits"/>.
             </summary>
             <param name="bits">The bits.</param>
             <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsUInt32(System.Byte)">
-            <summary>
-            Reads the number with specified <paramref name="bits"/>.
-            </summary>
-            <param name="bits">The bits to read. must be &lt;=32.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsUInt32(System.Byte,System.UInt32@)">
@@ -1322,13 +1309,6 @@
             </summary>
             <param name="bits">The bits.</param>
             <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsUInt64(System.Byte)">
-            <summary>
-            Reads the number with specified <paramref name="bits"/>.
-            </summary>
-            <param name="bits">The bits to read. must be &lt;=64.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsUInt64(System.Byte,System.UInt64@)">
@@ -1636,7 +1616,7 @@
         </member>
         <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc8.GenerateNext(System.Byte)">
             <summary>
-            Calculates the next value of CRC-16-IBM with <paramref name="value"/>.
+            Calculates the next value of CRC-8-CCITT with <paramref name="value"/>.
             </summary>
             <param name="value">The value.</param>
             <returns></returns>
@@ -1823,6 +1803,37 @@
             <param name="crc16">The current state of <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc16"/>.</param>
             <returns></returns>
         </member>
+        <member name="T:Shamisen.Codecs.Flac.Parsing.WordBufferOptions">
+            <summary>
+            Specifies configuration options for a word buffer, including writer concurrency and channel capacity.
+            </summary>
+            <param name="SingleWriter">Indicates whether the buffer is restricted to a single writer. Set to <see langword="true"/> to optimize for
+            single-writer scenarios; otherwise, <see langword="false"/> allows multiple writers.</param>
+            <param name="ChannelCapacity">The maximum number of words that the buffer channel can hold. Specify -1 for an unbounded capacity, or a
+            positive integer to set a fixed limit.</param>
+            <param name="BufferPool">The <see cref="T:System.Buffers.ArrayPool`1"/> instance used for buffer management. Defaults to <see cref="P:System.Buffers.ArrayPool`1.Shared"/> if not specified.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.WordBufferOptions.#ctor(System.Boolean,System.Int32,System.Buffers.ArrayPool{System.UInt64})">
+            <summary>
+            Specifies configuration options for a word buffer, including writer concurrency and channel capacity.
+            </summary>
+            <param name="SingleWriter">Indicates whether the buffer is restricted to a single writer. Set to <see langword="true"/> to optimize for
+            single-writer scenarios; otherwise, <see langword="false"/> allows multiple writers.</param>
+            <param name="ChannelCapacity">The maximum number of words that the buffer channel can hold. Specify -1 for an unbounded capacity, or a
+            positive integer to set a fixed limit.</param>
+            <param name="BufferPool">The <see cref="T:System.Buffers.ArrayPool`1"/> instance used for buffer management. Defaults to <see cref="P:System.Buffers.ArrayPool`1.Shared"/> if not specified.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.WordBufferOptions.SingleWriter">
+            <summary>Indicates whether the buffer is restricted to a single writer. Set to <see langword="true"/> to optimize for
+            single-writer scenarios; otherwise, <see langword="false"/> allows multiple writers.</summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.WordBufferOptions.ChannelCapacity">
+            <summary>The maximum number of words that the buffer channel can hold. Specify -1 for an unbounded capacity, or a
+            positive integer to set a fixed limit.</summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.WordBufferOptions.BufferPool">
+            <summary>The <see cref="T:System.Buffers.ArrayPool`1"/> instance used for buffer management. Defaults to <see cref="P:System.Buffers.ArrayPool`1.Shared"/> if not specified.</summary>
+        </member>
         <member name="T:Shamisen.Codecs.Flac.FlacParser">
             <summary>
             Parses ".flac" files from <see cref="T:Shamisen.IReadableDataSource`1"/>.
@@ -1924,111 +1935,54 @@
             <summary>
             Represents some options for <see cref="T:Shamisen.Codecs.Flac.FlacParser"/>
             </summary>
+            <param name="ParseCueSheet"> Gets a value indicating whether to parse cue sheet. </param>
+            <param name="ParseVorbisComment"> Gets a value indicating whether to parse vorbis comment. </param>
+            <param name="ParsePictures"> Gets a value indicating whether to parse picture metadata <b>EXCLUDING ACTUAL PICTURE</b>. </param>
+            <param name="PreserveApplication"> Gets a value indicating whether to preserve application metadata. </param>
+            <param name="PreservePadding"> Gets a value indicating whether to preserve padding. </param>
+            <param name="PreserveUnusedMetadata"> Gets a value indicating whether to preserve unused metadata excluding padding and invalid metadata. </param>
         </member>
         <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> struct.
+            Represents some options for <see cref="T:Shamisen.Codecs.Flac.FlacParser"/>
             </summary>
-            <param name="parseCueSheet">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> parses the cue sheet.</param>
-            <param name="parseVorbisComment">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> parses the vorbis comment.</param>
-            <param name="parsePictures">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> parses the picture metadata excluding actual picture.</param>
-            <param name="preserveApplication">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> preserves the application.</param>
-            <param name="preservePadding">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> preserves the padding.</param>
-            <param name="preserveUnusedMetadata">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> preserves the unused metadata.</param>
+            <param name="ParseCueSheet"> Gets a value indicating whether to parse cue sheet. </param>
+            <param name="ParseVorbisComment"> Gets a value indicating whether to parse vorbis comment. </param>
+            <param name="ParsePictures"> Gets a value indicating whether to parse picture metadata <b>EXCLUDING ACTUAL PICTURE</b>. </param>
+            <param name="PreserveApplication"> Gets a value indicating whether to preserve application metadata. </param>
+            <param name="PreservePadding"> Gets a value indicating whether to preserve padding. </param>
+            <param name="PreserveUnusedMetadata"> Gets a value indicating whether to preserve unused metadata excluding padding and invalid metadata. </param>
         </member>
         <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.ParseCueSheet">
-            <summary>
-            Gets a value indicating whether to parse cue sheet.
-            </summary>
-            <value>
-              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to parse cue sheet; otherwise, <c>false</c>.
-            </value>
+            <summary> Gets a value indicating whether to parse cue sheet. </summary>
         </member>
         <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.ParseVorbisComment">
-            <summary>
-            Gets a value indicating whether to parse vorbis comment.
-            </summary>
-            <value>
-              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to parse vorbis comment; otherwise, <c>false</c>.
-            </value>
+            <summary> Gets a value indicating whether to parse vorbis comment. </summary>
         </member>
         <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.ParsePictures">
-            <summary>
-            Gets a value indicating whether to parse picture metadata <b>EXCLUDING ACTUAL PICTURE</b>.
-            </summary>
-            <value>
-              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to parse pictures; otherwise, <c>false</c>.
-            </value>
+            <summary> Gets a value indicating whether to parse picture metadata <b>EXCLUDING ACTUAL PICTURE</b>. </summary>
         </member>
         <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.PreserveApplication">
-            <summary>
-            Gets a value indicating whether to preserve application metadata.
-            </summary>
-            <value>
-              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to preserve application metadata; otherwise, <c>false</c>.
-            </value>
+            <summary> Gets a value indicating whether to preserve application metadata. </summary>
         </member>
         <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.PreservePadding">
-            <summary>
-            Gets a value indicating whether to preserve padding.
-            </summary>
-            <value>
-              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to preserve padding; otherwise, <c>false</c>.
-            </value>
+            <summary> Gets a value indicating whether to preserve padding. </summary>
         </member>
         <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.PreserveUnusedMetadata">
-            <summary>
-            Gets a value indicating whether to preserve unused metadata excluding padding and invalid metadata.
-            </summary>
-            <value>
-              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to preserve unused metadata; otherwise, <c>false</c>.
-            </value>
+            <summary> Gets a value indicating whether to preserve unused metadata excluding padding and invalid metadata. </summary>
         </member>
-        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.Equals(System.Object)">
+        <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.ThrowWithoutStreamInfo">
             <summary>
-            Indicates whether the current object is equal to another object of the same type.
+            Gets a value indicating whether an exception should be thrown when stream information is unavailable.
             </summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
-            </returns>
+            <remarks>Set this property to <see langword="true"/> to enforce strict error handling when
+            stream details are missing. When <see langword="false"/>, the absence of stream information will not result
+            in an exception.</remarks>
         </member>
-        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.Equals(Shamisen.Codecs.Flac.FlacParserOptions)">
+        <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.ParseFirstFrame">
             <summary>
-            Indicates whether the current object is equal to another object of the same type.
+            Gets a value indicating whether the first frame of the input should be parsed during initialization.
             </summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.GetHashCode">
-            <summary>
-            Returns the hash code for this instance.
-            </summary>
-            <returns>
-            A 32-bit signed integer that is the hash code for this instance.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.op_Equality(Shamisen.Codecs.Flac.FlacParserOptions,Shamisen.Codecs.Flac.FlacParserOptions)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> objects are equal.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> to compare.</param>
-            <returns>
-              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.op_Inequality(Shamisen.Codecs.Flac.FlacParserOptions,Shamisen.Codecs.Flac.FlacParserOptions)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> objects are not equal.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> to compare.</param>
-            <param name="right">The second  <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> to compare.</param>
-            <returns>
-              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
-            </returns>
         </member>
         <member name="T:Shamisen.Codecs.Flac.SubFrames.FlacConstantSubFrame">
             <summary>
@@ -2221,6 +2175,12 @@
         <member name="T:Shamisen.Codecs.Flac.Utils.FixedArray32`1">
             <summary>
             A 32-element fixed array of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type of the elements.</typeparam>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Utils.FixedArray16`1">
+            <summary>
+            A 16-element fixed array of type <typeparamref name="T"/>.
             </summary>
             <typeparam name="T">The type of the elements.</typeparam>
         </member>
